@@ -3,25 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fate/Web Project</title>
+    <title>성배전쟁 - Fate/Web Project</title>
     <!-- 나눔고딕 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
-    <!-- 분리된 CSS 파일 링크 -->
-    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Fate/stay night 테마 스타일 설정 */
+        body {
+          margin: 0;
+          padding: 0;
+          font-family: 'Nanum Gothic', sans-serif;
+          background: radial-gradient(circle at center, #1a1a3a 0%, #0a0a1a 100%);
+          background-attachment: fixed;
+          color: #e0e0e0;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .content-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          padding: 20px;
+        }
+
+        .holy-grail-wrapper {
+          padding: 20px;
+          background: radial-gradient(circle, rgba(212, 175, 55, 0.25) 0%, rgba(0,0,0,0) 70%);
+          border-radius: 50%;
+          margin-bottom: 20px;
+        }
+
+        .holy-grail-img {
+          max-width: 220px;
+          height: auto;
+          filter: drop-shadow(0 0 10px #d4af37) drop-shadow(0 0 25px #8b0000);
+        }
+
+        .main-title {
+          font-size: 2.8rem;
+          font-weight: 800;
+          letter-spacing: 2px;
+          color: #d4af37;
+          text-shadow: 2px 2px 0px #8b0000, 0 0 15px rgba(212, 175, 55, 0.5);
+          margin: 10px 0 15px 0;
+        }
+
+        .sub-title {
+          font-size: 1.1rem;
+          font-weight: 400;
+          color: #9c9ca6;
+          letter-spacing: 0.5px;
+          margin: 0;
+          max-width: 600px;
+          line-height: 1.5;
+        }
+    </style>
 </head>
 <body>
-
-    <header>
-        <h1 class="main-title">Fate/Web Project</h1>
-    </header>
 
     <main class="content-container">
         <!-- 성배 이미지 영역 -->
         <div class="holy-grail-wrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
-        <p class="sub-text">만능의 원망기, 성배가 여기에 현현하다.</p>
+
+        <!-- 본제목: 성배전쟁 -->
+        <h1 class="main-title">성배전쟁</h1>
+
+        <!-- 소제목: 온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전 -->
+        <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
 </body>
 </html>
+```》
