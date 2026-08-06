@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <!-- ... 기존 head 내용 ... -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fate/Web Project - Holy Grail</title>
+    <!-- 외부 폰트 (나눔고딕) 적용 -->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,39 +15,20 @@
     </header>
 
     <main>
-        <!-- 성배 섹션 추가 -->
+        <!-- 성배 섹션 -->
         <section class="holy-grail-section">
             <div class="holy-grail-container">
-                <!-- 성배 이미지 태그 -->
+                <!-- 성배 이미지 -->
                 <img src="holygrail.png" alt="Holy Grail" class="holy-grail-image">
             </div>
             <p class="grail-description mana-highlight">만능의 원망기, 성배가 여기에 현현하다.</p>
         </section>
 
-        <!-- 다른 콘텐츠 영역 ... -->
+        <!-- 상호작용 버튼 영역 -->
+        <section class="action-section">
+            <button class="fate-button">령주를 가지고 명한다</button>
+        </section>
     </main>
 
 </body>
 </html>
-                opacity: 0.7;
-            }
-            100% {
-                transform: scale(1.15);
-                opacity: 1;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <div class="aura-wrapper">
-            <!-- holygrail.png 파일이 동일한 폴더에 위치해야 합니다 -->
-            <img src="holygrail.png" alt="성배" class="holygrail-img">
-        </div>
-        <h1 class="title">성배전쟁</h1>
-    </div>
-
-</body>
-</html>
-
