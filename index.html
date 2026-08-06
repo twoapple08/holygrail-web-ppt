@@ -1,76 +1,30 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성배전쟁</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <!-- ... 기존 head 내용 ... -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-        body {
-            background-color: #050505;
-            color: #ffffff;
-            font-family: 'Malgun Gothic', sans-serif;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+    <header>
+        <h1 class="main-title">Fate/Web Project</h1>
+    </header>
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+    <main>
+        <!-- 성배 섹션 추가 -->
+        <section class="holy-grail-section">
+            <div class="holy-grail-container">
+                <!-- 성배 이미지 태그 -->
+                <img src="holygrail.png" alt="Holy Grail" class="holy-grail-image">
+            </div>
+            <p class="grail-description mana-highlight">만능의 원망기, 성배가 여기에 현현하다.</p>
+        </section>
 
-        .aura-wrapper {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 40px;
-        }
+        <!-- 다른 콘텐츠 영역 ... -->
+    </main>
 
-        /* 빛나는 오라 효과 */
-        .aura-wrapper::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(255, 140, 0, 0.4) 40%, rgba(0, 0, 0, 0) 70%);
-            border-radius: 50%;
-            animation: pulse 3s infinite alternate ease-in-out;
-            z-index: 1;
-        }
-
-        .holygrail-img {
-            width: 220px;
-            height: auto;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.6));
-        }
-
-        .title {
-            font-size: 3rem;
-            font-weight: 700;
-            letter-spacing: 0.2em;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 140, 0, 0.3);
-            z-index: 2;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(0.9);
+</body>
+</html>
                 opacity: 0.7;
             }
             100% {
