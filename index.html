@@ -241,14 +241,14 @@
             pointer-events: none !important;
         }
 
-        /* --- 3. 메인 화면 좌측 하단 유입자 안내 문구 (50% 축소 1.05rem & 문구 수정) --- */
+        /* --- 3. 메인 화면 좌측 하단 유입자 안내 문구 --- */
         .intro-notice-left {
             position: absolute;
             bottom: 25px;
             left: 25px;
             z-index: 20;
             max-width: 500px;
-            font-size: 1.05rem; /* 기존 2.1rem에서 50% 축소 */
+            font-size: 1.05rem;
             color: rgba(230, 220, 205, 0.65);
             letter-spacing: 1px;
             line-height: 1.45;
@@ -390,10 +390,27 @@
 
         .description-content {
             font-size: 1.1rem;
-            line-height: 1.8;
+            line-height: 1.85;
             color: #d0c5b5;
             letter-spacing: 1px;
             word-break: keep-all;
+        }
+
+        .description-quote {
+            font-style: italic;
+            color: rgba(215, 215, 225, 0.85);
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .description-quote-author {
+            font-style: normal;
+            font-size: 0.95rem;
+            color: #a08a75;
+            display: block;
+            margin-top: -10px;
+            margin-bottom: 20px;
+            text-align: right;
         }
 
         /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
@@ -590,7 +607,7 @@
         </div>
     </main>
 
-    <!-- 메인 화면 좌측 하단 유입자 안내 문구 구역 (문구 수정 및 축소) -->
+    <!-- 메인 화면 좌측 하단 유입자 안내 문구 구역 -->
     <div class="intro-notice-left" id="introNotice">
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
@@ -608,7 +625,12 @@
         </div>
         <div class="detail-description-right">
             <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
-            <p class="description-content">설명 적을곳</p>
+            <div class="description-content">
+                <span class="description-quote">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
+                <span class="description-quote-author">- 코토미네 키레이</span>
+                <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
+                <p style="margin-top: 10px;">성배전쟁은 성배가 7명의 마술사를 마스터로 지정해 령주(令呪)를 부여하고 서번트 소환 자격을 얻는다.</p>
+            </div>
         </div>
     </section>
 
