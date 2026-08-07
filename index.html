@@ -66,33 +66,48 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 상단 아이템 획득 드롭다운 알림 팝업 --- */
-        .word-acquire-toast {
+        /* --- 신규개념 획득 알림 모션 (화면 위쪽에서 생성, 아래에서 위로 상승) --- */
+        #acquireToastContainer {
             position: absolute;
-            top: -80px;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
-            background: rgba(20, 0, 0, 0.9);
-            border: 2px solid #b30000;
-            border-radius: 6px;
-            padding: 12px 32px;
-            box-shadow: 0 0 20px rgba(255, 30, 30, 0.8), inset 0 0 10px rgba(100, 0, 0, 0.6);
-            color: #fffdfa;
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-align: center;
-            user-select: none;
             pointer-events: none;
-            opacity: 0;
-            transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease-in-out;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        .word-acquire-toast.show {
-            top: 40px;
-            opacity: 1;
+        .word-toast-item {
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: float-fade-top 3.5s forwards cubic-bezier(0.25, 0.1, 0.25, 1);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6);
+            user-select: none;
+            white-space: nowrap;
+        }
+
+        @keyframes float-fade-top {
+            0% {
+                transform: translateY(40px);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-40px);
+                opacity: 0;
+            }
         }
 
         /* --- 신규개념 (노란색 하이라이트 키워드) 전용 스타일 --- */
@@ -199,7 +214,7 @@
             transform: translateY(-10px);
         }
 
-        /* 페이트 로고 전용 감싸는 레이아웃 */
+        /* 페이트 로고 감싸는 레이아웃 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -215,7 +230,6 @@
             animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* 페이트 로고 이미지 스타일 */
         .fate-logo-img {
             width: 320px;
             max-width: 100%;
@@ -640,10 +654,10 @@
 </head>
 <body>
 
-    <!-- 상단 단어 획득 알림 토스트 팝업 레이어 -->
-    <div class="word-acquire-toast" id="acquireToast"></div>
+    <!-- 신규개념 획득 알림 토스트 팝업 컨테이너 (화면 위쪽에서 생성, 아래에서 위로 상승) -->
+    <div id="acquireToastContainer"></div>
 
-    <!-- BGM & SFX 레이어 (sfx/ 폴더 경로 지정) -->
+    <!-- BGM & SFX 레이어 -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
@@ -739,7 +753,6 @@
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
                              (performance.navigation && performance.navigation.type === 1);
             
-            // 새로고침으로 진입한 경우 신규개념 세션 이력 전면 삭제
             if (isReload) {
                 const keysToRemove = ['magician', 'master', 'reiju', 'servant'];
                 keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
@@ -761,7 +774,7 @@
             const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
-            const acquireToast = document.getElementById('acquireToast');
+            const acquireToastContainer = document.getElementById('acquireToastContainer');
 
             const initialNotice = document.getElementById('initialNotice');
             const grailWrapper = document.getElementById('grailWrapper');
@@ -774,7 +787,6 @@
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
-            let toastTimeout = null;
 
             // 볼륨 연동
             volumeSlider.addEventListener('input', function() {
@@ -797,7 +809,7 @@
                 }
             });
 
-            // 코토미네 보이스 4.4초 자동 정지 제어
+            // 코토미네 보이스 4.4초 제한 제어
             if (kotomineSfx) {
                 kotomineSfx.addEventListener('timeupdate', function() {
                     if (this.currentTime >= 4.4) {
@@ -815,16 +827,19 @@
                 }
             });
 
-            // 단어 획득 알림 모션 함수
-            function showAcquireToast(wordText) {
-                acquireToast.innerText = `${wordText}를 획득했습니다.`;
-                acquireToast.classList.add('show');
+            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승)
+            function spawnAcquireToast(wordText) {
+                const toastEl = document.createElement('div');
+                toastEl.className = 'word-toast-item';
+                toastEl.innerText = `—${wordText}을(를) 획득했습니다—`;
 
-                if (toastTimeout) clearTimeout(toastTimeout);
+                acquireToastContainer.appendChild(toastEl);
 
-                toastTimeout = setTimeout(() => {
-                    acquireToast.classList.remove('show');
-                }, 2500);
+                setTimeout(() => {
+                    if (toastEl && toastEl.parentNode) {
+                        toastEl.parentNode.removeChild(toastEl);
+                    }
+                }, 3500);
             }
 
             // 신규개념(노란색 키워드) 클릭 및 상태 관리
@@ -852,7 +867,7 @@
                         }
 
                         // 2. 알림 팝업 출력
-                        showAcquireToast(this.innerText.trim());
+                        spawnAcquireToast(this.innerText.trim());
                     }
                 });
             });
