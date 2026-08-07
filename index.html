@@ -214,7 +214,7 @@
             transform: translateY(-10px);
         }
 
-        /* 페이트 로고 감싸는 레이아웃 */
+        /* 페이트 로고 감싸는 레이아웃 (붉은 계열 글로우 적용) */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -235,19 +235,20 @@
             max-width: 100%;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7));
+            filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85));
             display: block;
             margin: 0 auto;
         }
 
+        /* 소제목 (밝기 상향 및 흰색 글로우, 대시 자간 축소) */
         .sub-title {
-            font-size: 1.25rem;
-            font-weight: 400;
-            color: rgba(215, 215, 225, 0.9);
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
             letter-spacing: 1.5px;
             transform: translateX(2px);
             line-height: 1.6;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 15px rgba(0, 0, 0, 0.9);
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 2px 10px rgba(0, 0, 0, 1);
             padding: 0 15px;
             margin-bottom: 35px;
             opacity: 0;
@@ -255,6 +256,10 @@
 
         .sub-title.animate {
             animation: fade-in 1.0s ease-out forwards;
+        }
+
+        .connected-dash {
+            letter-spacing: -3px;
         }
 
         /* PRESS TO START 버튼 */
@@ -654,7 +659,7 @@
 </head>
 <body>
 
-    <!-- 신규개념 획득 알림 토스트 팝업 컨테이너 (화면 위쪽에서 생성, 아래에서 위로 상승) -->
+    <!-- 신규개념 획득 토스트 알림 컨테이너 (화면 위쪽에서 생성, 아래에서 위로 상승) -->
     <div id="acquireToastContainer"></div>
 
     <!-- BGM & SFX 레이어 -->
@@ -683,7 +688,7 @@
             <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
         </div>
 
-        <p class="sub-title" id="subTitle">성배와 영령——그리고 운명의 이야기</p>
+        <p class="sub-title" id="subTitle">성배와 영령<span class="connected-dash">——</span>그리고 운명의 이야기</p>
 
         <div class="press-start-wrapper" id="pressStartWrapper">
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
@@ -827,7 +832,7 @@
                 }
             });
 
-            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승)
+            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승, 지정 양식 적용)
             function spawnAcquireToast(wordText) {
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
