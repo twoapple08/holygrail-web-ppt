@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성배전쟁 - Fate/stay night 테마</title>
-    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
@@ -29,7 +28,7 @@
             background-color: #000000;
         }
 
-        /* 배경 이미지 위에 겹쳐질 은은한 마력 오라 레이어 */
+        /* 배경 마력 오라 레이어 */
         .background-aura {
             position: absolute;
             top: 0;
@@ -42,7 +41,7 @@
             pointer-events: none;
         }
 
-        /* 화면 아래쪽 전체에 깔리는 붉은 먼지/안개 이펙트 레이어 */
+        /* 화면 아래 붉은 먼지 안개 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -70,7 +69,7 @@
             margin: 0 auto;
         }
 
-        /* 성배 이미지 래퍼 */
+        /* 성배 이미지 래퍼: 영상 스타일의 정갈한 스르륵 페이드인 등장 연출 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -79,9 +78,11 @@
             padding: 20px;
             background: transparent !important;
             margin-bottom: 20px;
+            opacity: 0;
+            animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards;
         }
 
-        /* 성배 본체 (위아래 미세 부유 루프) */
+        /* 성배 본체 (등장 후 은은한 위아래 부유 모션) */
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
@@ -95,7 +96,7 @@
             margin: 0 auto;
         }
 
-        /* 본제목: 성배 이미지 바로 아래 배치 */
+        /* 본제목: 성배 등장 후 부드럽게 페이드인 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -109,9 +110,11 @@
                 -1px 1px 0px #700000,
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
+            opacity: 0;
+            animation: fade-in 1.0s ease-out 1.2s forwards;
         }
 
-        /* 소제목 */
+        /* 소제목: 본제목 등장 직후 연달아 노출 */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -120,6 +123,8 @@
             line-height: 1.6;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
+            opacity: 0;
+            animation: fade-in 1.0s ease-out 1.6s forwards;
         }
 
         /* 화면 우측 하단 워터마크 */
@@ -132,9 +137,23 @@
             letter-spacing: 1.5px;
             z-index: 20;
             pointer-events: none;
+            opacity: 0;
+            animation: fade-in 1.2s ease-out 2.0s forwards;
         }
 
-        /* --- 기본 애니메이션 정의 --- */
+        /* --- 키프레임 애니메이션 정의 --- */
+
+        /* 성배 영상 참고: 부드럽고 스르륵 나타나는 페이드인 */
+        @keyframes grail-smooth-fadein {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
         @keyframes grail-gentle-float {
             0%, 100% {
@@ -164,31 +183,33 @@
                 opacity: 1;
             }
         }
+
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- 배경 마력 이펙트 레이어 -->
     <div class="background-aura"></div>
 
-    <!-- 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
     <div class="red-dust-effect"></div>
 
-    <!-- 컨텐츠 레이어 -->
     <main class="content-container">
-        <!-- 1. 성배 이미지 -->
         <div class="holy-grail-wrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
 
-        <!-- 2. 본제목 -->
         <h1 class="main-title">성배전쟁</h1>
 
-        <!-- 3. 소제목 -->
         <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
-    <!-- 화면 우측 하단 워터마크 -->
     <footer class="watermark">Made by 사과사과</footer>
 
 </body>
