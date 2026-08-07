@@ -344,8 +344,8 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 중앙 [성배] 탭 선택창 (단일 원본 구조) --- */
-        .center-grail-text-container {
+        /* --- 4. 탭 선택창 (동적 행렬 그리드) --- */
+        .tab-selection-container {
             position: absolute;
             z-index: 30;
             top: 50%;
@@ -353,50 +353,81 @@
             transform: translate(-50%, -50%);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
+            transition: opacity 0.8s ease-out;
+            width: 90%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 25px;
         }
 
-        .center-grail-text-container.show {
+        .tab-selection-container.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .center-grail-btn {
+        .tab-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+
+        .tab-item-wrapper {
+            position: relative;
+            display: inline-block;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: top, left, transform, opacity;
+        }
+
+        .tab-item-btn {
             font-family: 'Song Myung', serif;
-            font-size: 4.5rem;
+            font-size: 4.2rem;
             font-weight: 700;
             color: #fffdfa;
-            letter-spacing: 12px;
+            letter-spacing: 8px;
             background: transparent;
             border: none;
             outline: none;
             cursor: pointer;
             user-select: none;
+            white-space: nowrap;
             text-shadow: 
                 3px 3px 0px #700000, 
                 -1px -1px 0px #700000, 
                 1px -1px 0px #700000, 
                 -1px 1px 0px #700000,
                 0 0 40px rgba(255, 215, 0, 0.8);
-            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease, font-size 0.3s ease;
         }
 
-        .center-grail-btn:hover {
+        .tab-item-btn:hover {
             color: #ffffff;
             transform: scale(1.08);
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        .center-grail-text-container.move-top-left {
-            top: 7%;
-            left: 6%;
-            transform: translate(0, 0) scale(0.75);
+        .tab-item-wrapper.move-top-left {
+            position: fixed !important;
+            top: 7vh !important;
+            left: 6vw !important;
+            transform: scale(0.75) !important;
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
-            pointer-events: none;
+            pointer-events: none !important;
+            z-index: 35 !important;
         }
 
-        /* --- 5. 상세 페이지 (성배 탭) --- */
-        .grail-detail-view {
+        .tab-item-wrapper.fade-out-stay {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* --- 5. 상세 페이지 일반 레이아웃 --- */
+        .tab-detail-view {
             position: absolute;
             top: 0;
             left: 0;
@@ -410,22 +441,23 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
 
-        .grail-detail-view.show {
+        .tab-detail-view.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .detail-grail-left {
+        .detail-left-box {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-width: 280px;
         }
 
-        .detail-grail-img {
+        .detail-img {
             width: 280px;
             max-width: 100%;
             height: auto;
@@ -433,7 +465,7 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        .grail-sub-label {
+        .detail-sub-label {
             margin-top: 15px;
             font-size: 0.95rem;
             font-weight: 400;
@@ -443,7 +475,7 @@
             text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
         }
 
-        .detail-description-right {
+        .detail-right-box {
             flex: 1;
             max-width: 650px;
             background: rgba(15, 0, 0, 0.75);
@@ -452,17 +484,18 @@
             padding: 40px 35px;
             box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
             backdrop-filter: blur(4px);
+            min-height: 250px;
         }
 
         .description-title {
-            font-size: 1.4rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: #f5f0e6;
             letter-spacing: 2px;
             margin-bottom: 20px;
             border-bottom: 1px solid rgba(180, 0, 0, 0.6);
-            padding-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 50, 50, 0.6);
+            padding-bottom: 12px;
+            text-shadow: 0 0 12px rgba(255, 50, 50, 0.7);
         }
 
         .description-content {
@@ -665,27 +698,29 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
-    <div class="center-grail-text-container" id="centerGrailWrapper">
-        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
-    </div>
+    <!-- 2단계: 탭 선택창 (동적 행렬 그리드) -->
+    <div class="tab-selection-container" id="tabSelectionContainer"></div>
 
-    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
-    <section class="grail-detail-view" id="grailDetailView">
-        <div class="detail-grail-left">
-            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
-            <span class="grail-sub-label">소(小)성배</span>
+    <!-- 3단계: 성배 탭 (기본) -->
+    <section class="tab-detail-view" id="tabDetail_sung">
+        <div class="detail-left-box">
+            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-img">
+            <span class="detail-sub-label">소(小)성배</span>
         </div>
-        <div class="detail-description-right">
+        <div class="detail-right-box">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <p style="margin-top: 12px;">성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
+                <!-- '성배전쟁' 키워드 및 sungbwar 고유 ID 연결 완료 -->
+                <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
+
+    <!-- 동적으로 추가될 고유 탭 레이아웃을 보관하는 컨테이너 -->
+    <div id="dynamicTabDetailViews"></div>
 
     <!-- 화면 좌측 하단 뒤로가기 버튼 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
@@ -712,9 +747,37 @@
     </div>
 
     <script>
+        // 전역 정의: 마스터 신규개념 레지스트리 (성배 및 성배전쟁 등록)
+        const CONCEPT_REGISTRY = {
+            'sung': { name: '성배', builtIn: true },
+            'sungbwar': { name: '성배전쟁', builtIn: false }
+        };
+
+        // 모바일/PC 새로고침 시 세션 초기화
+        (function checkReloadAndReset() {
+            const navEntries = performance.getEntriesByType('navigation');
+            const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
+                             (performance.navigation && performance.navigation.type === 1);
+            
+            if (isReload) {
+                Object.keys(CONCEPT_REGISTRY).forEach(id => {
+                    sessionStorage.removeItem('fate_concept_' + id);
+                });
+                sessionStorage.removeItem('fate_concept_order');
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             if (!history.state || history.state.stage !== 1) {
                 history.replaceState({ stage: 1 }, '', '');
+            }
+
+            // 성배(sung) 고유 ID 기본 소지
+            sessionStorage.setItem('fate_concept_sung', 'true');
+            let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+            if (!conceptOrder.includes('sung')) {
+                conceptOrder.push('sung');
+                sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder));
             }
 
             const bgm = document.getElementById('bgm');
@@ -729,20 +792,22 @@
 
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
-            const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
+            const acquireToastContainer = document.getElementById('acquireToastContainer');
 
             const grailWrapper = document.getElementById('grailWrapper');
             const subTitle = document.getElementById('subTitle');
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
 
-            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
-            const grailDetailView = document.getElementById('grailDetailView');
+            const tabSelectionContainer = document.getElementById('tabSelectionContainer');
+            const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
+            let currentActiveTabId = null;
+            let activeToastCount = 0;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -771,6 +836,153 @@
                 }
             });
 
+            function spawnAcquireToast(wordText) {
+                activeToastCount++;
+                const toastEl = document.createElement('div');
+                toastEl.className = 'word-toast-item';
+                toastEl.innerText = `—${wordText}을(를) 획득했습니다—`;
+                acquireToastContainer.appendChild(toastEl);
+
+                setTimeout(() => {
+                    if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+                    activeToastCount = Math.max(0, activeToastCount - 1);
+                }, 1800);
+            }
+
+            // 신규개념 키워드 상호작용 및 획득 처리
+            const keywords = document.querySelectorAll('.interactive-keyword');
+            keywords.forEach(el => {
+                const id = el.getAttribute('data-key');
+                if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
+                    el.classList.add('clicked');
+                }
+
+                el.addEventListener('click', function() {
+                    if (activeToastCount > 0) {
+                        if (noshinSfx) {
+                            noshinSfx.volume = parseFloat(seSlider.value);
+                            noshinSfx.currentTime = 0;
+                            noshinSfx.play().catch(e => console.log(e));
+                        }
+                        return;
+                    }
+
+                    if (!this.classList.contains('clicked')) {
+                        this.classList.add('clicked');
+                        sessionStorage.setItem('fate_concept_' + id, 'true');
+
+                        let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+                        if (!orderList.includes(id)) {
+                            orderList.push(id);
+                            sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
+                        }
+
+                        if (wordSfx) {
+                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
+                            wordSfx.currentTime = 0;
+                            wordSfx.play().catch(e => console.log(e));
+                        }
+
+                        spawnAcquireToast(this.innerText.trim());
+                    }
+                });
+            });
+
+            // 탭 선택창 동적 구성 및 폰트 자동 크기 스케일링
+            function renderTabSelectionWindow() {
+                tabSelectionContainer.innerHTML = '';
+                const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+                const possessedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
+
+                if (possessedIds.length === 0) return;
+
+                const totalTabs = possessedIds.length;
+                let maxCharCountInRow = 0;
+                
+                const rows = [];
+                for (let i = 0; i < possessedIds.length; i += 6) {
+                    rows.push(possessedIds.slice(i, i + 6));
+                }
+
+                rows.forEach(row => {
+                    const rowChars = row.reduce((acc, id) => acc + CONCEPT_REGISTRY[id].name.length, 0);
+                    if (rowChars > maxCharCountInRow) maxCharCountInRow = rowChars;
+                });
+
+                let fontSizeRem = 4.2;
+                if (totalTabs > 4 || maxCharCountInRow > 12) {
+                    fontSizeRem = Math.max(2.0, 4.2 - (totalTabs * 0.25) - (maxCharCountInRow * 0.08));
+                }
+
+                rows.forEach(rowIds => {
+                    const rowDiv = document.createElement('div');
+                    rowDiv.className = 'tab-row';
+
+                    rowIds.forEach(id => {
+                        const wrapperDiv = document.createElement('div');
+                        wrapperDiv.className = 'tab-item-wrapper';
+                        wrapperDiv.id = 'tabWrapper_' + id;
+
+                        const btn = document.createElement('button');
+                        btn.className = 'tab-item-btn';
+                        btn.innerText = CONCEPT_REGISTRY[id].name;
+                        btn.style.fontSize = fontSizeRem + 'rem';
+                        btn.addEventListener('click', (e) => openTabDetailView(id, wrapperDiv));
+                        
+                        wrapperDiv.appendChild(btn);
+                        rowDiv.appendChild(wrapperDiv);
+
+                        if (id !== 'sung' && !document.getElementById('tabDetail_' + id)) {
+                            createPlaceholderTabDetailView(id);
+                        }
+                    });
+
+                    tabSelectionContainer.appendChild(rowDiv);
+                });
+            }
+
+            function createPlaceholderTabDetailView(id) {
+                const viewSection = document.createElement('section');
+                viewSection.className = 'tab-detail-view';
+                viewSection.id = 'tabDetail_' + id;
+
+                viewSection.innerHTML = `
+                    <div class="detail-left-box"></div>
+                    <div class="detail-right-box">
+                        <h2 class="description-title">${CONCEPT_REGISTRY[id].name}</h2>
+                        <div class="description-content"></div>
+                    </div>
+                `;
+                dynamicTabDetailViews.appendChild(viewSection);
+            }
+
+            // 탭 선택 시 부드럽게 좌측 상단으로 이동하는 모션
+            function openTabDetailView(selectedId, selectedWrapper) {
+                history.pushState({ stage: 3, id: selectedId }, '', '');
+
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                currentActiveTabId = selectedId;
+
+                const allWrappers = document.querySelectorAll('.tab-item-wrapper');
+                allWrappers.forEach(wrap => {
+                    if (wrap === selectedWrapper) {
+                        wrap.classList.add('move-top-left');
+                    } else {
+                        wrap.classList.add('fade-out-stay');
+                    }
+                });
+
+                const targetView = document.getElementById('tabDetail_' + selectedId);
+                setTimeout(() => {
+                    if (targetView) targetView.classList.add('show');
+                    currentStage = 3;
+                }, 1100);
+            }
+
             pressStartBtn.addEventListener('click', function() {
                 history.pushState({ stage: 2 }, '', '');
 
@@ -789,26 +1001,11 @@
                 }, 250);
 
                 setTimeout(() => {
-                    centerGrailWrapper.classList.add('show');
+                    renderTabSelectionWindow();
+                    tabSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
                 }, 1450);
-            });
-
-            centerGrailBtn.addEventListener('click', function() {
-                history.pushState({ stage: 3 }, '', '');
-
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-
-                centerGrailWrapper.classList.add('move-top-left');
-
-                setTimeout(() => {
-                    grailDetailView.classList.add('show');
-                    currentStage = 3;
-                }, 300);
             });
 
             backBtn.addEventListener('click', function() {
@@ -831,14 +1028,39 @@
 
                 if (currentStage === 3) {
                     currentStage = targetStage;
-                    grailDetailView.classList.remove('show');
+
+                    if (currentActiveTabId) {
+                        const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
+                        if (activeView) activeView.classList.remove('show');
+                    }
+
                     setTimeout(() => {
-                        centerGrailWrapper.classList.remove('move-top-left');
-                        currentStage = 2;
-                    }, 300);
+                        const allWrappers = document.querySelectorAll('.tab-item-wrapper');
+                        allWrappers.forEach(wrap => {
+                            wrap.classList.remove('move-top-left');
+                            wrap.classList.remove('fade-out-stay');
+                        });
+                        
+                        if (targetStage === 2) {
+                            renderTabSelectionWindow();
+                            tabSelectionContainer.classList.add('show');
+                        } else if (targetStage === 1) {
+                            tabSelectionContainer.classList.remove('show');
+                            backBtnWrapper.classList.remove('show');
+                            grailWrapper.classList.remove('slow-fade-out');
+                            subTitle.classList.remove('slow-fade-out');
+                            introNotice.classList.remove('slow-fade-out');
+                            pressStartWrapper.classList.remove('flash-exit');
+                            pressStartWrapper.style.opacity = '1';
+                            pressStartWrapper.style.pointerEvents = 'auto';
+                        }
+                        currentActiveTabId = null;
+                    }, 400);
+
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
-                    centerGrailWrapper.classList.remove('show');
+
+                    tabSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
