@@ -276,37 +276,40 @@
             const subTitle = document.getElementById('subTitle');
             const watermark = document.getElementById('watermark');
 
-            // 0. BGM 재생 (클릭 시 즉시 시작)
-            if (bgm) {
-                bgm.play().catch(error => {
-                    console.log("BGM 재생 예외 발생:", error);
-                });
-            }
-
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. 배경 이미지 페이드인
+            // 2. BGM 재생 설정: 음량 80%(0.8) 설정 및 2초(2000ms) 지연 재생
+            if (bgm) {
+                bgm.volume = 0.8; // 볼륨 80% 지정
+                setTimeout(() => {
+                    bgm.play().catch(error => {
+                        console.log("BGM 재생 예외 발생:", error);
+                    });
+                }, 2000);
+            }
+
+            // 3. 배경 이미지 페이드인
             setTimeout(() => {
                 bgLayer.classList.add('active');
             }, 300);
 
-            // 3. 은은한 붉은 안개 이펙트 자연스럽게 연출
+            // 4. 은은한 붉은 안개 이펙트 연출
             setTimeout(() => {
                 dustEffect.classList.add('active');
             }, 500);
 
-            // 4. 성배 이미지 페이드인
+            // 5. 성배 이미지 페이드인
             setTimeout(() => {
                 grailWrapper.classList.add('animate');
             }, 1400);
 
-            // 5. 본제목 페이드인
+            // 6. 본제목 페이드인
             setTimeout(() => {
                 mainTitle.classList.add('animate');
             }, 2200);
 
-            // 6. 소제목 및 워터마크 페이드인
+            // 7. 소제목 및 워터마크 페이드인
             setTimeout(() => {
                 subTitle.classList.add('animate');
                 watermark.classList.add('animate');
