@@ -755,6 +755,19 @@
     </div>
 
     <script>
+        // 모바일 데스크톱 모드 및 PC 새로고침 시 세션 데이터를 강제 초기화하는 로직
+        (function checkReloadAndReset() {
+            const navEntries = performance.getEntriesByType('navigation');
+            const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
+                             (performance.navigation && performance.navigation.type === 1);
+            
+            // 새로고침으로 진입한 경우 신규개념 세션 이력 전면 삭제
+            if (isReload) {
+                const keysToRemove = ['magician', 'master', 'reiju', 'servant'];
+                keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             const bgm = document.getElementById('bgm');
             const pstSfx = document.getElementById('pstSfx');
@@ -837,7 +850,7 @@
                 }, 2500);
             }
 
-            // 신규개념(노란색 키워드) 클릭 및 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
+            // 신규개념(노란색 키워드) 클릭 및 상태 관리
             const keywords = document.querySelectorAll('.interactive-keyword');
             
             keywords.forEach(el => {
@@ -846,6 +859,8 @@
                 // 세션 데이터가 있는 경우에만 클릭 상태 부여
                 if (sessionStorage.getItem(key) === 'true') {
                     el.classList.add('clicked');
+                } else {
+                    el.classList.remove('clicked');
                 }
 
                 el.addEventListener('click', function() {
@@ -980,4 +995,3 @@
     </script>
 </body>
 </html>
-
