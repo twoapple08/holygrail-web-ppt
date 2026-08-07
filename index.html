@@ -301,10 +301,10 @@
             height: 100%;
             z-index: 25;
             display: flex;
-            justify-content: flex-start; /* 좌측 정렬 기반 */
+            justify-content: flex-start;
             align-items: center;
-            padding: 0 8%; /* 좌측 여백 설정 */
-            gap: 5%; /* 이미지와 설명창 사이의 간격 */
+            padding-left: 18%; /* 오른쪽 이동을 위해 좌측 여백 확장 (기존 8% -> 18%) */
+            gap: 10%; /* 성배 이미지와 설명창 사이의 간격 확장 (기존 5% -> 10%) */
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.0s ease-in-out;
@@ -330,10 +330,10 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        /* 우측 설명 상자 (크기 확장) */
+        /* 우측 설명 상자 */
         .detail-description-right {
             flex: 1;
-            max-width: 650px; /* 기존 450px -> 650px 확장 */
+            max-width: 650px;
             background: rgba(15, 0, 0, 0.75);
             border: 2px solid rgba(160, 0, 0, 0.8);
             border-radius: 8px;
@@ -566,7 +566,6 @@
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
         </div>
         <div class="detail-description-right">
-            <!-- 텍스트 교체 반영 구역 -->
             <h2 class="description-title">설명적을곳</h2>
             <p class="description-content">설명 적을곳</p>
         </div>
