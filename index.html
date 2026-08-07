@@ -134,21 +134,21 @@
         /* 어록 스타일 (클릭 100% 보장) */
         .description-quote {
             font-style: italic;
-            color: rgba(200, 190, 175, 0.75);
+            color: rgba(220, 210, 195, 0.9);
             display: inline-block;
             cursor: pointer !important;
             pointer-events: auto !important;
             position: relative;
             z-index: 1000;
             user-select: none;
-            animation: quote-gentle-glow 2.5s infinite alternate ease-in-out;
+            animation: quote-gentle-glow 1.2s infinite alternate ease-in-out;
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
         }
 
         .description-quote:hover {
             color: #ffffff !important;
             transform: scale(1.02);
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6) !important;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important;
         }
 
         .description-quote.glow-fade-out {
@@ -157,8 +157,8 @@
         }
 
         @keyframes quote-gentle-glow {
-            0% { text-shadow: 0 0 3px rgba(200, 190, 175, 0.2); }
-            100% { text-shadow: 0 0 10px rgba(220, 210, 195, 0.5), 0 0 16px rgba(200, 190, 175, 0.3); }
+            0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); }
+            100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
         }
 
         /* --- 1. 시작 컨테이너 --- */
@@ -265,6 +265,11 @@
             animation: fade-in 1.0s ease-out forwards;
         }
 
+        .extended-dash {
+            letter-spacing: 4px;
+            margin: 0 2px;
+        }
+
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
@@ -333,7 +338,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 마인드맵 트리 컨테이너 (순수 페이드 전환) --- */
+        /* --- 4. 마인드맵 트리 컨테이너 (포커스 슬라이드 매트릭스) --- */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -351,6 +356,16 @@
             pointer-events: auto;
         }
 
+        /* 전체 마인드맵 매트릭스 레이어 (포커스 이동 시 transform 적용) */
+        .tree-matrix-world {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
         /* 트리 가지 (SVG Lines) */
         .tree-svg-layer {
             position: absolute;
@@ -365,7 +380,9 @@
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
-            filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)); /* 짙은 붉은색 그림자 */
+            filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6));
+            cursor: pointer;
+            pointer-events: stroke; /* 선 클릭 가능 */
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
@@ -668,6 +685,7 @@
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
+    <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
 
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
@@ -693,10 +711,12 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 트리 마인드맵 컨테이너 -->
+    <!-- 트리 마인드맵 컨테이너 (포커스 슬라이드 매트릭스) -->
     <div class="tree-selection-container" id="treeSelectionContainer">
-        <svg class="tree-svg-layer" id="treeSvg"></svg>
-        <div id="treeNodesBox"></div>
+        <div class="tree-matrix-world" id="treeMatrixWorld">
+            <svg class="tree-svg-layer" id="treeSvg"></svg>
+            <div id="treeNodesBox"></div>
+        </div>
     </div>
 
     <!-- 동적 탭 보관소 -->
@@ -744,8 +764,8 @@
     <script>
         // ★ 마인드맵 트리 데이터베이스 ★
         const CONCEPT_REGISTRY = {
-            'sung': { name: '성배', parent: null },
-            'sungbwar': { name: '성배전쟁', parent: 'sung' }
+            'sung': { name: '성배', parent: null, x: 50, y: 35 },
+            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 }
         };
 
         // 탭별 상세뷰 내용 데이터베이스
@@ -790,6 +810,7 @@
             const wordSfx = document.getElementById('wordSfx');
             const noshinSfx = document.getElementById('noshinSfx');
             const kotomineSfx = document.getElementById('kotomineSfx');
+            const moveSfx = document.getElementById('moveSfx');
 
             const volumeSlider = document.getElementById('volumeSlider');
             const seSlider = document.getElementById('seSlider');
@@ -806,6 +827,7 @@
             const introNotice = document.getElementById('introNotice');
 
             const treeSelectionContainer = document.getElementById('treeSelectionContainer');
+            const treeMatrixWorld = document.getElementById('treeMatrixWorld');
             const treeSvg = document.getElementById('treeSvg');
             const treeNodesBox = document.getElementById('treeNodesBox');
             const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
@@ -813,6 +835,7 @@
 
             let currentStage = 1;
             let currentActiveTabId = null;
+            let currentFocusedId = 'sung'; // 현재 화면 중앙에 포커스된 노드 ID
             let activeToastCount = 0;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
@@ -820,6 +843,7 @@
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
+                if (moveSfx) moveSfx.volume = parseFloat(this.value);
             });
             voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
 
@@ -827,11 +851,11 @@
                 if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
             });
 
-            // ★ 전역 오디오 락오프 해제 엔진 (100% 가동 보장) ★
+            // ★ 전역 오디오 락오프 해제 엔진 ★
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgm, pstSfx, wordSfx, noshinSfx, kotomineSfx].forEach(audio => {
+                [bgm, pstSfx, wordSfx, noshinSfx, kotomineSfx, moveSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -913,7 +937,7 @@
                             wordSfx.currentTime = 0;
                             wordSfx.play().catch(()=>{});
                         }
-                        spawnAcquireToast(keyTarget.innerText.trim());
+                        spawnAcquireToast(wordText = keyTarget.innerText.trim());
                     }
                 }
             });
@@ -941,8 +965,21 @@
                 }
             }
 
-            // ★ 고유번호 획득 기반 마인드맵 & 동적 SVG 그라데이션 렌더링 엔진 ★
-            function renderTreeGrid() {
+            // ★ 특정 탭선택 버튼으로 카메라/매트릭스 포커스 이동 연산 ★
+            function focusToNode(targetId) {
+                const nodeInfo = CONCEPT_REGISTRY[targetId];
+                if (!nodeInfo) return;
+
+                currentFocusedId = targetId;
+
+                // 화면 중앙(50vw, 50vh)에 대상 노드 좌표가 오도록 매트릭스 역산 이동
+                const offsetX = 50 - nodeInfo.x;
+                const offsetY = 50 - nodeInfo.y;
+                treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
+            }
+
+            // ★ 마인드맵 & 동적 SVG 그라데이션 렌더링 엔진 ★
+            function renderTreeGrid(resetFocus = false) {
                 treeSvg.innerHTML = '<defs></defs>';
                 const svgDefs = treeSvg.querySelector('defs');
                 treeNodesBox.innerHTML = '';
@@ -950,38 +987,91 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                const levels = [];
-                function assignLevel(id, depth) {
-                    if (!levels[depth]) levels[depth] = [];
-                    if (!levels[depth].includes(id)) levels[depth].push(id);
+                if (resetFocus) currentFocusedId = 'sung';
+                focusToNode(currentFocusedId);
+
+                // 1. 연결선 렌더링 먼저 수행 (노드 밑에 깔리도록)
+                unlockedIds.forEach(id => {
+                    const parentId = CONCEPT_REGISTRY[id].parent;
+                    if (parentId && unlockedIds.includes(parentId)) {
+                        const pNode = CONCEPT_REGISTRY[parentId];
+                        const cNode = CONCEPT_REGISTRY[id];
+
+                        const gradId = `fadeGrad_${parentId}_${id}`;
+                        const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                        linearGrad.setAttribute('id', gradId);
+                        linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
+                        linearGrad.setAttribute('x1', pNode.x + '%');
+                        linearGrad.setAttribute('y1', pNode.y + '%');
+                        linearGrad.setAttribute('x2', cNode.x + '%');
+                        linearGrad.setAttribute('y2', cNode.y + '%');
+
+                        const stopsData = [
+                            { offset: '0%', opacity: '0' },
+                            { offset: '22%', opacity: '1' },
+                            { offset: '78%', opacity: '1' },
+                            { offset: '100%', opacity: '0' }
+                        ];
+
+                        stopsData.forEach(data => {
+                            const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                            stop.setAttribute('offset', data.offset);
+                            stop.setAttribute('stop-color', '#8B0000');
+                            stop.setAttribute('stop-opacity', data.opacity);
+                            linearGrad.appendChild(stop);
+                        });
+                        svgDefs.appendChild(linearGrad);
+
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('class', 'tree-branch-line');
+                        line.setAttribute('x1', pNode.x + '%');
+                        line.setAttribute('y1', pNode.y + '%');
+                        line.setAttribute('x2', cNode.x + '%');
+                        line.setAttribute('y2', cNode.y + '%');
+                        line.setAttribute('stroke', `url(#${gradId})`);
+
+                        // ★ 선 클릭 시 포커스 슬라이드 연동 ★
+                        line.onclick = () => {
+                            const nextFocus = (currentFocusedId === parentId) ? id : parentId;
+                            if (moveSfx) {
+                                moveSfx.volume = parseFloat(seSlider.value);
+                                moveSfx.currentTime = 0;
+                                moveSfx.play().catch(()=>{});
+                            }
+                            focusToNode(nextFocus);
+                        };
+
+                        treeSvg.appendChild(line);
+                        setTimeout(() => { line.classList.add('drawn'); }, 100);
+                    }
+                });
+
+                // 2. `(이름) 탭 선택 버튼` 노드 생성
+                unlockedIds.forEach(id => {
+                    const nodeInfo = CONCEPT_REGISTRY[id];
+
+                    const nodeBox = document.createElement('div');
+                    nodeBox.className = 'tree-node-box';
+                    nodeBox.style.left = nodeInfo.x + '%';
+                    nodeBox.style.top = nodeInfo.y + '%';
+
+                    const btn = document.createElement('button');
+                    btn.className = 'tab-item-btn';
+                    btn.style.fontSize = '4.5rem';
+                    btn.innerText = nodeInfo.name;
                     
-                    const children = unlockedIds.filter(childId => CONCEPT_REGISTRY[childId].parent === id);
-                    children.forEach(childId => assignLevel(childId, depth + 1));
-                }
-                
-                if (unlockedIds.includes('sung')) assignLevel('sung', 0);
-
-                const positions = {}; 
-
-                levels.forEach((levelNodes, depth) => {
-                    const yPercent = 20 + (depth * 30); 
-                    
-                    levelNodes.forEach((id, index) => {
-                        const xPercent = (100 / (levelNodes.length + 1)) * (index + 1); 
-                        positions[id] = { x: xPercent, y: yPercent };
-
-                        const nodeBox = document.createElement('div');
-                        nodeBox.className = 'tree-node-box';
-                        nodeBox.style.left = xPercent + '%';
-                        nodeBox.style.top = yPercent + '%';
-
-                        const btn = document.createElement('button');
-                        btn.className = 'tab-item-btn';
-                        btn.style.fontSize = (4.5 - (depth * 0.5)) + 'rem';
-                        btn.innerText = CONCEPT_REGISTRY[id].name;
-                        
-                        // ★ 순수 페이드인 아웃 클릭 연산 적용 ★
-                        btn.onclick = () => {
+                    // ★ `(이름) 탭 선택 버튼` 클릭 제어 아키텍처 ★
+                    btn.onclick = () => {
+                        if (currentFocusedId !== id) {
+                            // 현재 정중앙에 포커스되지 않은 경우 -> 해당 버튼을 정중앙으로 슬라이드 이동
+                            if (moveSfx) {
+                                moveSfx.volume = parseFloat(seSlider.value);
+                                moveSfx.currentTime = 0;
+                                moveSfx.play().catch(()=>{});
+                            }
+                            focusToNode(id);
+                        } else {
+                            // 이미 정중앙에 포커스된 경우 -> 해당 탭 상세 뷰로 페이드인 진입
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
                                 pstSfx.volume = parseFloat(seSlider.value);
@@ -997,59 +1087,14 @@
                                 setTimeout(() => {
                                     targetView.classList.add('show');
                                     currentStage = 3;
-                                }, 600); // 0.6초간 완벽히 페이드아웃 후, 0.6초간 페이드인
+                                }, 600);
                             }
-                        };
+                        }
+                    };
 
-                        nodeBox.appendChild(btn);
-                        treeNodesBox.appendChild(nodeBox);
-                        ensureDetailViewExists(id);
-                    });
-                });
-
-                unlockedIds.forEach(id => {
-                    const parentId = CONCEPT_REGISTRY[id].parent;
-                    if (parentId && positions[parentId] && positions[id]) {
-                        // 그라데이션 동적 생성 (양 끝단이 자연스럽게 페이드아웃됨)
-                        const gradId = `fadeGrad_${parentId}_${id}`;
-                        const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-                        linearGrad.setAttribute('id', gradId);
-                        linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
-                        linearGrad.setAttribute('x1', positions[parentId].x + '%');
-                        linearGrad.setAttribute('y1', positions[parentId].y + '%');
-                        linearGrad.setAttribute('x2', positions[id].x + '%');
-                        linearGrad.setAttribute('y2', positions[id].y + '%');
-
-                        const stopsData = [
-                            { offset: '0%', opacity: '0' },
-                            { offset: '22%', opacity: '1' },
-                            { offset: '78%', opacity: '1' },
-                            { offset: '100%', opacity: '0' }
-                        ];
-
-                        stopsData.forEach(data => {
-                            const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-                            stop.setAttribute('offset', data.offset);
-                            stop.setAttribute('stop-color', '#8B0000'); // 짙은 붉은색
-                            stop.setAttribute('stop-opacity', data.opacity);
-                            linearGrad.appendChild(stop);
-                        });
-                        svgDefs.appendChild(linearGrad);
-
-                        // 마력 생명선 렌더링
-                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        line.setAttribute('class', 'tree-branch-line');
-                        line.setAttribute('x1', positions[parentId].x + '%');
-                        line.setAttribute('y1', positions[parentId].y + '%');
-                        line.setAttribute('x2', positions[id].x + '%');
-                        line.setAttribute('y2', positions[id].y + '%');
-                        line.setAttribute('stroke', `url(#${gradId})`);
-                        treeSvg.appendChild(line);
-                        
-                        setTimeout(() => {
-                            line.classList.add('drawn');
-                        }, 100);
-                    }
+                    nodeBox.appendChild(btn);
+                    treeNodesBox.appendChild(nodeBox);
+                    ensureDetailViewExists(id);
                 });
             }
 
@@ -1070,7 +1115,7 @@
                 }, 250);
 
                 setTimeout(() => {
-                    renderTreeGrid();
+                    renderTreeGrid(true); // 최초 진입 시 성배가 정중앙에 오도록 포커스 리셋
                     treeSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
@@ -1079,7 +1124,7 @@
 
             backBtn.addEventListener('click', function() { history.back(); });
 
-            // ★ 뒤로가기 모션 역시 순수 페이드 인아웃 동기화 ★
+            // ★ 뒤로가기 모션 동기화 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
                 if (targetStage >= currentStage) return;
@@ -1098,7 +1143,7 @@
 
                     setTimeout(() => {
                         if (targetStage === 2) {
-                            renderTreeGrid();
+                            renderTreeGrid(false);
                             treeSelectionContainer.classList.add('show');
                         }
                         if (targetStage === 1) {
@@ -1111,7 +1156,7 @@
                             pressStartWrapper.style.pointerEvents = 'auto';
                         }
                         currentActiveTabId = null;
-                    }, 600); // 0.6초 대기 후 교차 페이드인
+                    }, 600);
 
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
@@ -1135,7 +1180,7 @@
             });
 
             startBtn.addEventListener('click', function() {
-                unlockAllAudioPolicy(); // 시작 시 확실한 오디오 정책 락오프
+                unlockAllAudioPolicy(); 
                 
                 const btnContainer = document.getElementById('btnContainer');
                 const bgLayer = document.getElementById('bgLayer');
@@ -1153,6 +1198,7 @@
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
+                if (moveSfx) moveSfx.volume = parseFloat(seSlider.value);
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
