@@ -441,6 +441,30 @@
             user-select: none;
         }
 
+        /* 클릭 가능한 노란색 하이라이트 키워드 스타일 */
+        .interactive-keyword {
+            color: #ffd700;
+            font-weight: 700;
+            cursor: pointer;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            user-select: none;
+        }
+
+        .interactive-keyword:hover {
+            color: #ffffff;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 클릭 완료 후 주변 글자와 동일해진 비활성화 스타일 */
+        .interactive-keyword.clicked {
+            color: #d0c5b5 !important;
+            font-weight: 400 !important;
+            cursor: default !important;
+            text-shadow: none !important;
+            pointer-events: none !important;
+        }
+
         /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
         .bottom-left-controls {
             position: absolute;
@@ -664,8 +688,12 @@
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
                 <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <!-- 요청된 줄바꿈 적용 구역: '지정해' 다음 <br> 추가 -->
-                <p style="margin-top: 10px;">성배전쟁은 성배가 7명의 마술사를 마스터로 지정해<br>령주(令呪)를 부여하고 서번트 소환 자격을 얻은 7명의 마술사가 모두 서번트 소환해 성공하면 시작된다.</p>
+                <!-- 수정된 텍스트 및 최초 등장 키워드 노란색 하이라이트 구역 -->
+                <p style="margin-top: 10px;">
+                    성배가 7명의 <span class="interactive-keyword" data-key="magician">마술사</span>를 <span class="interactive-keyword" data-key="master">마스터</span>로 지정해<br>
+                    <span class="interactive-keyword" data-key="reiju">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant">서번트</span> 소환 자격을 얻고<br>
+                    7명의 마술사가 모두 서번트 소환에 성공하면 성배전쟁은 시작된다.
+                </p>
             </div>
         </div>
     </section>
@@ -721,6 +749,7 @@
 
         let currentStage = 1;
 
+        // BGM, SFX, VOICE 볼륨 연동
         volumeSlider.addEventListener('input', function() {
             if (bgm) bgm.volume = parseFloat(this.value);
         });
@@ -740,12 +769,41 @@
             }
         });
 
+        // 1. 코토미네 보이스 4.4초 자동 정지 제어
+        if (kotomineSfx) {
+            kotomineSfx.addEventListener('timeupdate', function() {
+                if (this.currentTime >= 4.4) {
+                    this.pause();
+                    this.currentTime = 0;
+                }
+            });
+        }
+
         kotomineTrigger.addEventListener('click', function() {
             if (kotomineSfx) {
                 kotomineSfx.volume = parseFloat(voiceSlider.value);
                 kotomineSfx.currentTime = 0;
                 kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
             }
+        });
+
+        // 2. 키워드 클릭 상태 관리 (localStorage 기반 영구 비활성화)
+        const keywords = document.querySelectorAll('.interactive-keyword');
+        
+        keywords.forEach(el => {
+            const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
+            
+            // 페이지 로드 시 기존 클릭 이력이 있으면 비활성화 상태로 고정
+            if (localStorage.getItem(key) === 'true') {
+                el.classList.add('clicked');
+            }
+
+            el.addEventListener('click', function() {
+                if (!this.classList.contains('clicked')) {
+                    this.classList.add('clicked');
+                    localStorage.setItem(key, 'true'); // 클릭 상태 저장하여 영구 클릭 불가
+                }
+            });
         });
 
         pressStartBtn.addEventListener('click', function() {
