@@ -66,7 +66,7 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 신규개념 획득 알림 모션 (화면 위쪽에서 생성, 아래에서 위로 상승, 빠르게 소멸) --- */
+        /* --- 신규개념 획득 알림 모션 (column-reverse로 위치 밀림 및 순간이동 방지) --- */
         #acquireToastContainer {
             position: absolute;
             top: 30px;
@@ -76,8 +76,9 @@
             pointer-events: none;
             width: 100%;
             display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
             align-items: center;
+            gap: 10px;
         }
 
         .word-toast-item {
@@ -85,27 +86,32 @@
             font-size: 1.8rem;
             font-weight: 700;
             letter-spacing: 2px;
-            margin-bottom: 10px;
             opacity: 0;
-            animation: float-fade-top 2.2s forwards cubic-bezier(0.25, 0.1, 0.25, 1);
+            animation: float-fade-precise 1.0s forwards cubic-bezier(0.25, 0.1, 0.25, 1);
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6);
             user-select: none;
             white-space: nowrap;
         }
 
-        @keyframes float-fade-top {
+        @keyframes float-fade-precise {
             0% {
-                transform: translateY(40px);
+                transform: translateY(30px);
                 opacity: 0;
             }
-            15% {
+            25% {
+                transform: translateY(15px);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(0px);
                 opacity: 1;
             }
             75% {
+                transform: translateY(-15px);
                 opacity: 1;
             }
             100% {
-                transform: translateY(-40px);
+                transform: translateY(-30px);
                 opacity: 0;
             }
         }
@@ -660,7 +666,7 @@
 </head>
 <body>
 
-    <!-- 신규개념 획득 토스트 알림 컨테이너 (화면 위쪽에서 생성, 아래에서 위로 상승) -->
+    <!-- 신규개념 획득 토스트 알림 컨테이너 (column-reverse로 다중 알람 밀림/순간이동 방지) -->
     <div id="acquireToastContainer"></div>
 
     <!-- BGM & SFX 레이어 -->
@@ -833,7 +839,7 @@
                 }
             });
 
-            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승, 2.2초 빠르게 소멸)
+            // 신규개념 획득 토스트 알림 생성 함수 (1초 길이 및 정밀 페이드 인/아웃 적용)
             function spawnAcquireToast(wordText) {
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
@@ -845,7 +851,7 @@
                     if (toastEl && toastEl.parentNode) {
                         toastEl.parentNode.removeChild(toastEl);
                     }
-                }, 2200);
+                }, 1000);
             }
 
             // 신규개념(노란색 키워드) 클릭 및 상태 관리
