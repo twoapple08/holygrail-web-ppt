@@ -248,9 +248,9 @@
             pointer-events: none !important;
         }
 
-        /* --- 성배 및 제목 전용 애니메이션 덮어쓰기 페이드아웃 클래스 --- */
+        /* --- 성배 및 제목 전용 순수 페이드아웃 클래스 (크기/위치 변형 일절 없음) --- */
         .slow-fade-out {
-            animation: smooth-fade-out-down 1.2s ease-out forwards !important;
+            animation: pure-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
         }
 
@@ -385,15 +385,13 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 타이틀 및 성배 전용 천천히 페이드아웃 애니메이션 */
-        @keyframes smooth-fade-out-down {
+        /* 위치/크기 변형 없이 오직 불투명도만 감소하는 순수 페이드아웃 */
+        @keyframes pure-fade-out {
             0% {
                 opacity: 1;
-                transform: translateY(0) scale(1);
             }
             100% {
                 opacity: 0;
-                transform: translateY(-8px) scale(0.96);
             }
         }
 
@@ -555,7 +553,7 @@
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 소멸 -> 성배 및 제목 은은한 페이드아웃 -> 좌측 하단 뒤로가기 등장
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 소멸 -> 성배 및 제목 제자리 페이드아웃 -> 좌측 하단 뒤로가기 등장
         pressStartBtn.addEventListener('click', function() {
             // 1. 클릭 효과음 재생 (SFX 슬라이더 음량 반영)
             if (pstSfx) {
@@ -569,7 +567,7 @@
             // 2. 프투스 버튼 섬광 발광 후 빠른 소멸 (0.0초)
             pressStartWrapper.classList.add('flash-exit');
 
-            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들 완벽한 페이드아웃 시작
+            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들이 크기 축소 없이 제자리 페이드아웃 시작
             setTimeout(() => {
                 grailWrapper.classList.add('slow-fade-out');
                 mainTitle.classList.add('slow-fade-out');
