@@ -22,6 +22,7 @@
             align-items: center;
             overflow: hidden;
             position: relative;
+            /* 배경 이미지 지정 및 화면에 가득 차도록 설정 */
             background-image: url('first-background.png');
             background-size: cover;
             background-position: center;
@@ -69,7 +70,7 @@
             background: transparent;
         }
 
-        /* 성배 이미지 래퍼 (빛이 번쩍이며 등장 - 더 빠르게) */
+        /* 성배 이미지 래퍼 (빛이 강렬하게 번쩍이며 등장 - 즉시 시작) */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -80,7 +81,6 @@
             margin-bottom: 20px;
             opacity: 0;
             transform: scale(0.5);
-            /* 더 빠른 등장 및 확산 애니메이션 */
             animation: grail-flash-appear-fast 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) 0.3s forwards;
         }
 
@@ -96,7 +96,7 @@
             filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
         }
 
-        /* 본제목: 성배 이미지 바로 아래 배치 (중심에서 좌우로 빠르게 펼쳐짐) */
+        /* 본제목: 성배 이미지 바로 아래 배치 (중심에서 좌우로 싹 펼쳐짐) */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -112,11 +112,11 @@
             text-transform: uppercase;
             opacity: 0;
             transform: scaleX(0.2) translateY(15px);
-            /* 더 빠른 펼침 애니메이션 - 0.9초 지연 */
-            animation: title-spread-appear-fast 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 0.9s forwards;
+            /* 성배 등장 직후인 0.7초에 시작 지연 설정 */
+            animation: title-spread-appear-fast 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 0.7s forwards;
         }
 
-        /* 소제목 (본제목 등장 후 페이드 인 - 1.5초 지연) */
+        /* 소제목 (본제목 등장 후 페이드 인 - 1.4초 지연 설정으로 오류 수정) */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -126,10 +126,11 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
             opacity: 0;
-            animation: fade-in 1.0s ease-out 1.5초 지연;
+            /* 한글 단위 제거 및 표준 초 단위 설정으로 소제목 노출 오류 해결 */
+            animation: fade-in 1.0s ease-out 1.4s forwards;
         }
 
-        /* 화면 맨 오른쪽 아래 워터마크 (등장 애니메이션 적용 - 1.9초 지연) */
+        /* 화면 맨 오른쪽 아래 워터마크 (등장 애니메이션 적용 - 1.8초 지연) */
         .watermark {
             position: absolute;
             bottom: 20px;
@@ -140,7 +141,7 @@
             z-index: 20;
             pointer-events: none;
             opacity: 0;
-            animation: fade-in 1.5s ease-out 1.9s forwards;
+            animation: fade-in 1.5s ease-out 1.8s forwards;
         }
 
         /* --- 동적 애니메이션 정의 --- */
@@ -188,6 +189,7 @@
             }
         }
 
+        /* 배경 마력 오라의 맥동 효과 */
         @keyframes pulse-aura {
             0% {
                 opacity: 0.4;
@@ -199,6 +201,7 @@
             }
         }
 
+        /* 화면 아래 붉은 안개 점멸 효과 */
         @keyframes dust-fade {
             0% {
                 opacity: 0.7;
@@ -237,7 +240,7 @@
         <!-- 2. 본제목 (성배 아래에서 좌우로 빠르게 펼쳐짐) -->
         <h1 class="main-title">성배전쟁</h1>
 
-        <!-- 3. 소제목 (페이드 인) -->
+        <!-- 3. 소제목 (페이드 인 - 노출 오류 수정 완료) -->
         <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
@@ -246,3 +249,4 @@
 
 </body>
 </html>
+```》
