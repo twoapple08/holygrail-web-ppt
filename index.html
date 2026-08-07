@@ -363,10 +363,9 @@
         }
 
         .tree-branch-line {
-            stroke: #d0c5b5;
-            stroke-width: 3px;
+            stroke-width: 4px;
             fill: none;
-            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.7));
+            filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6)); /* 짙은 붉은색 그림자 */
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
@@ -828,16 +827,30 @@
                 if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
             });
 
-            // 오디오 정책 잠금 해제
-            function unlockAudioPolicy() {
+            // ★ 전역 오디오 락오프 해제 엔진 (100% 가동 보장) ★
+            let isAudioUnlocked = false;
+            function unlockAllAudioPolicy() {
+                if (isAudioUnlocked) return;
                 [bgm, pstSfx, wordSfx, noshinSfx, kotomineSfx].forEach(audio => {
                     if (audio) {
-                        audio.play().then(() => { audio.pause(); audio.currentTime = 0; }).catch(() => {});
+                        const originalVol = audio.volume;
+                        audio.volume = 0; 
+                        const playPromise = audio.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(() => {
+                                audio.pause();
+                                audio.currentTime = 0;
+                                audio.volume = originalVol;
+                            }).catch(() => {});
+                        }
                     }
                 });
-                document.removeEventListener('click', unlockAudioPolicy);
+                isAudioUnlocked = true;
+                document.removeEventListener('pointerdown', unlockAllAudioPolicy);
+                document.removeEventListener('click', unlockAllAudioPolicy);
             }
-            document.addEventListener('click', unlockAudioPolicy);
+            document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
+            document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
             // ★ 어록 터치/클릭 100% 재생 전역 위임엔진 ★
             document.addEventListener('click', function(e) {
@@ -928,9 +941,10 @@
                 }
             }
 
-            // ★ 고유번호 획득 기반 마인드맵 렌더링 엔진 ★
+            // ★ 고유번호 획득 기반 마인드맵 & 동적 SVG 그라데이션 렌더링 엔진 ★
             function renderTreeGrid() {
-                treeSvg.innerHTML = '';
+                treeSvg.innerHTML = '<defs></defs>';
+                const svgDefs = treeSvg.querySelector('defs');
                 treeNodesBox.innerHTML = '';
                 
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
@@ -969,7 +983,11 @@
                         // ★ 순수 페이드인 아웃 클릭 연산 적용 ★
                         btn.onclick = () => {
                             history.pushState({ stage: 3, id: id }, '', '');
-                            if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
+                            if (pstSfx) { 
+                                pstSfx.volume = parseFloat(seSlider.value);
+                                pstSfx.currentTime = 0; 
+                                pstSfx.play().catch(()=>{}); 
+                            }
                             
                             currentActiveTabId = id;
                             treeSelectionContainer.classList.remove('show');
@@ -992,12 +1010,40 @@
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && positions[parentId] && positions[id]) {
+                        // 그라데이션 동적 생성 (양 끝단이 자연스럽게 페이드아웃됨)
+                        const gradId = `fadeGrad_${parentId}_${id}`;
+                        const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+                        linearGrad.setAttribute('id', gradId);
+                        linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
+                        linearGrad.setAttribute('x1', positions[parentId].x + '%');
+                        linearGrad.setAttribute('y1', positions[parentId].y + '%');
+                        linearGrad.setAttribute('x2', positions[id].x + '%');
+                        linearGrad.setAttribute('y2', positions[id].y + '%');
+
+                        const stopsData = [
+                            { offset: '0%', opacity: '0' },
+                            { offset: '22%', opacity: '1' },
+                            { offset: '78%', opacity: '1' },
+                            { offset: '100%', opacity: '0' }
+                        ];
+
+                        stopsData.forEach(data => {
+                            const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+                            stop.setAttribute('offset', data.offset);
+                            stop.setAttribute('stop-color', '#8B0000'); // 짙은 붉은색
+                            stop.setAttribute('stop-opacity', data.opacity);
+                            linearGrad.appendChild(stop);
+                        });
+                        svgDefs.appendChild(linearGrad);
+
+                        // 마력 생명선 렌더링
                         const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                         line.setAttribute('class', 'tree-branch-line');
                         line.setAttribute('x1', positions[parentId].x + '%');
                         line.setAttribute('y1', positions[parentId].y + '%');
                         line.setAttribute('x2', positions[id].x + '%');
                         line.setAttribute('y2', positions[id].y + '%');
+                        line.setAttribute('stroke', `url(#${gradId})`);
                         treeSvg.appendChild(line);
                         
                         setTimeout(() => {
@@ -1038,7 +1084,11 @@
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
                 if (targetStage >= currentStage) return;
 
-                if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
+                if (pstSfx) { 
+                    pstSfx.volume = parseFloat(seSlider.value);
+                    pstSfx.currentTime = 0; 
+                    pstSfx.play().catch(()=>{}); 
+                }
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
@@ -1085,6 +1135,8 @@
             });
 
             startBtn.addEventListener('click', function() {
+                unlockAllAudioPolicy(); // 시작 시 확실한 오디오 정책 락오프
+                
                 const btnContainer = document.getElementById('btnContainer');
                 const bgLayer = document.getElementById('bgLayer');
                 const dustEffect = document.getElementById('dustEffect');
