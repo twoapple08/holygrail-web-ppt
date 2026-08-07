@@ -69,7 +69,7 @@
             background: transparent;
         }
 
-        /* 성배 이미지 래퍼 */
+        /* 성배 이미지 래퍼 (정중앙 섬광 후 등장) */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -78,9 +78,12 @@
             padding: 20px;
             background: transparent !important;
             margin-bottom: 20px;
+            opacity: 0;
+            transform: scale(0.7);
+            animation: grail-flash-appear 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
         }
 
-        /* 성배 본체 (위아래로 아주 살짝씩만 부유) */
+        /* 성배 본체 (위아래로 아주 살짝씩만 부유하는 루프 애니메이션) */
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
@@ -92,11 +95,11 @@
             filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
         }
 
-        /* 본제목: 자간을 아주 조금 더 넓힘 */
+        /* 본제목 (아래쪽에서 중앙에 있다가 좌우로 퍼지며 등장 - 1.0초 지연) */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 7px; /* 자간 확장 */
+            letter-spacing: 7px;
             margin-bottom: 12px;
             color: #f5f0e6;
             text-shadow: 
@@ -106,9 +109,12 @@
                 -1px 1px 0px #700000,
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
+            opacity: 0;
+            transform: scaleX(0.2) translateY(15px);
+            animation: title-spread-appear 1.2s cubic-bezier(0.16, 1, 0.3, 1) 1.0s forwards;
         }
 
-        /* 소제목 */
+        /* 소제목 (페이드 인 등장 - 1.8초 지연) */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -117,9 +123,11 @@
             line-height: 1.6;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
+            opacity: 0;
+            animation: fade-in 1.2s ease-out 1.8s forwards;
         }
 
-        /* 화면 맨 오른쪽 아래 워터마크 */
+        /* 화면 맨 오른쪽 아래 워터마크 (2.2초 지연) */
         .watermark {
             position: absolute;
             bottom: 20px;
@@ -129,16 +137,52 @@
             letter-spacing: 1.5px;
             z-index: 20;
             pointer-events: none;
+            opacity: 0;
+            animation: fade-in 1.5s ease-out 2.2s forwards;
         }
 
         /* --- 동적 애니메이션 정의 --- */
 
+        /* 성배가 섬광과 함께 번쩍이며 나타나는 연출 */
+        @keyframes grail-flash-appear {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+                filter: drop-shadow(0 0 50px rgba(255, 255, 255, 1));
+            }
+            50% {
+                opacity: 0.8;
+                transform: scale(1.08);
+                filter: drop-shadow(0 0 35px rgba(255, 230, 100, 0.9));
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+                filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            }
+        }
+
+        /* 성배 본체가 위아래로 아주 살짝만 움직이는 루프 효과 */
         @keyframes grail-gentle-float {
             0%, 100% {
                 transform: translateY(0);
             }
             50% {
                 transform: translateY(-4px);
+            }
+        }
+
+        /* 본제목이 중심에서 좌우로 퍼지며 나타나는 연출 */
+        @keyframes title-spread-appear {
+            0% {
+                opacity: 0;
+                transform: scaleX(0.2) translateY(15px);
+                letter-spacing: 0px;
+            }
+            100% {
+                opacity: 1;
+                transform: scaleX(1) translateY(0);
+                letter-spacing: 7px;
             }
         }
 
@@ -156,6 +200,16 @@
         @keyframes dust-fade {
             0% {
                 opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* 단순 페이드인 */
+        @keyframes fade-in {
+            0% {
+                opacity: 0;
             }
             100% {
                 opacity: 1;
