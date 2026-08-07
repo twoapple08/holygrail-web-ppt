@@ -156,10 +156,10 @@
             position: absolute;
             z-index: 50;
             display: flex;
-            flex-direction: column; /* 세로 정렬 */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 70px; /* 시작하기 버튼 약 1개 높이의 간격 */
+            gap: 70px; /* 버튼과 텍스트 사이 약 1개 간격 분리 */
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
@@ -195,7 +195,7 @@
             pointer-events: none;
         }
 
-        /* --- 시작하기 창 하단 전체화면 안내 문구 (중앙 정렬 속성) --- */
+        /* 시작하기 창 하단 전체화면 안내 문구 */
         .initial-notice-center {
             font-size: 0.95rem;
             color: rgba(215, 205, 190, 0.7);
@@ -204,10 +204,6 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8);
             transition: opacity 0.6s ease-out;
             pointer-events: none;
-        }
-
-        .initial-notice-center.hide {
-            opacity: 0;
         }
 
         /* --- 2. 메인 화면 컨테이너 --- */
@@ -349,7 +345,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 탭 선택창 (이동 트랜지션 적용) --- */
+        /* --- 4. 탭 선택창 --- */
         .tab-selection-container {
             position: absolute;
             z-index: 30;
@@ -640,24 +636,17 @@
             margin-top: 2px;
         }
 
-        /* --- 키프레임 애니메이션 정의 --- */
-
+        /* --- 키프레임 애니메이션 --- */
         @keyframes pure-fade-out { 0% { opacity: 1; } 100% { opacity: 0; } }
-
         @keyframes simple-flash-fade {
             0% { opacity: 1; filter: brightness(1); color: #ffffff; }
             30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
             100% { opacity: 0; filter: brightness(8); color: #ffffff; transform: translateX(2px) scale(0.95); }
         }
-
         @keyframes slow-blink-loop { 0% { opacity: 0.2; } 50% { opacity: 0.85; } 100% { opacity: 0.2; } }
-
         @keyframes grail-smooth-fadein { 0% { opacity: 0; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
-
         @keyframes grail-gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
-
         @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
     </style>
 </head>
@@ -677,10 +666,9 @@
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- 1단계: [시작하기] UI 버튼 및 안내 문구 포함 컨테이너 -->
+    <!-- 1단계: [시작하기] UI 버튼 및 안내 문구 그룹 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
-        <!-- 시작하기 창 하단 전체화면 안내 문구 (버튼 아래 배치) -->
         <div class="initial-notice-center" id="initialNotice">
             ※이 사이트는 컴퓨터 전체화면을 기준으로 제작되었습니다.
         </div>
@@ -704,7 +692,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 탭 선택창 (동적 생성 및 행 구분 그리드) -->
+    <!-- 2단계: 탭 선택창 -->
     <div class="tab-selection-container" id="tabSelectionContainer"></div>
 
     <!-- 3단계: 성배 탭 (기본 특정단어 탭) -->
@@ -719,7 +707,6 @@
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <!-- 추후 신규개념 키워드 연결을 위해 속성 준비 -->
                 <p>성배란 <span class="interactive-keyword" data-key="sungwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
@@ -753,14 +740,13 @@
     </div>
 
     <script>
-        // 전역 정의: 마스터 신규개념 레지스트리 (고유 ID : 단어명)
+        // 전역 정의: 마스터 신규개념 레지스트리
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', builtIn: true },
             'sungwar': { name: '성배전쟁', builtIn: false }
-            // 추후 신규개념 추가 지시 시 이곳 및 키워드 data-key 연동
         };
 
-        // 모바일 데스크톱 모드 및 PC 새로고침 시 세션 데이터를 강제 초기화
+        // 모바일/PC 세션 초기화 (새로고침 시)
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -775,10 +761,13 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 접속 시 성배(sung) 고유 ID 기본 소지 설정 (알림 없이)
+            // 접속 시 초기 스테이지 브라우저 스택 할당
+            if (!history.state || history.state.stage !== 1) {
+                history.replaceState({ stage: 1 }, '', '');
+            }
+
+            // 접속 시 성배(sung) 고유 ID 기본 소지
             sessionStorage.setItem('fate_concept_sung', 'true');
-            
-            // 소지 순서 세션 관리
             let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
             if (!conceptOrder.includes('sung')) {
                 conceptOrder.push('sung');
@@ -801,7 +790,6 @@
             const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
 
-            const initialNotice = document.getElementById('initialNotice'); // 변경됨
             const grailWrapper = document.getElementById('grailWrapper');
             const subTitle = document.getElementById('subTitle');
             const pressStartWrapper = document.getElementById('pressStartWrapper');
@@ -815,7 +803,7 @@
             let currentActiveTabId = null;
             let activeToastCount = 0;
 
-            // 볼륨 연동
+            // 볼륨 조절
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
@@ -839,7 +827,7 @@
                 if (kotomineSfx) {
                     kotomineSfx.volume = parseFloat(voiceSlider.value);
                     kotomineSfx.currentTime = 0;
-                    kotomineSfx.play().catch(e => console.log("보이스 예외:", e));
+                    kotomineSfx.play().catch(e => console.log(e));
                 }
             });
 
@@ -856,7 +844,7 @@
                 }, 1800);
             }
 
-            // 신규개념 키워드 이벤트 처리
+            // 키워드 이벤트 처리
             const keywords = document.querySelectorAll('.interactive-keyword');
             keywords.forEach(el => {
                 const id = el.getAttribute('data-key');
@@ -895,7 +883,7 @@
                 });
             });
 
-            // 동적 탭 선택창 렌더링 및 이동 감싸기 DOM 구축
+            // 탭 선택창 동적 구성
             function renderTabSelectionWindow() {
                 tabSelectionContainer.innerHTML = '';
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
@@ -948,6 +936,7 @@
                 });
             }
 
+            // 고유 탭 생성
             function createPlaceholderTabDetailView(id) {
                 const viewSection = document.createElement('section');
                 viewSection.className = 'tab-detail-view';
@@ -955,20 +944,22 @@
 
                 viewSection.innerHTML = `
                     <div class="detail-left-box">
-                        <!-- 마스터 지정 대기: 이미지 비워둠 -->
+                        <!-- 마스터 지정 대기 -->
                     </div>
                     <div class="detail-right-box">
                         <h2 class="description-title">${CONCEPT_REGISTRY[id].name}</h2>
                         <div class="description-content">
-                            <!-- 마스터 지정 대기: 설명 비워둠 -->
+                            <!-- 마스터 지정 대기 -->
                         </div>
                     </div>
                 `;
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // 특정단어 탭 진입 시 선택된 탭 이름의 좌측 상단 이동 모션 가동
+            // 탭 클릭 진입 시 히스토리 추가 & 모션
             function openTabDetailView(selectedId, selectedWrapper) {
+                history.pushState({ stage: 3, id: selectedId }, '', '');
+
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
                     pstSfx.play().catch(e => console.log(e));
@@ -976,7 +967,6 @@
 
                 currentActiveTabId = selectedId;
 
-                // 클릭된 탭은 좌측 상단으로 이동, 선택받지 못한 탭은 제자리 페이드아웃
                 const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                 allWrappers.forEach(wrap => {
                     if (wrap === selectedWrapper) {
@@ -988,16 +978,16 @@
 
                 const targetView = document.getElementById('tabDetail_' + selectedId);
                 setTimeout(() => {
-                    if (targetView) {
-                        targetView.classList.add('show');
-                    }
+                    if (targetView) targetView.classList.add('show');
                     currentStage = 3;
                 }, 1100);
             }
 
+            // PRESS TO START 클릭 시 히스토리 추가
             pressStartBtn.addEventListener('click', function() {
+                history.pushState({ stage: 2 }, '', '');
+
                 if (pstSfx) {
-                    pstSfx.volume = parseFloat(seSlider.value);
                     pstSfx.currentTime = 0;
                     pstSfx.play().catch(e => console.log(e));
                 }
@@ -1018,19 +1008,32 @@
                 }, 1450);
             });
 
+            // UI 뒤로가기 버튼 클릭 시 브라우저 Back 트리거
             backBtn.addEventListener('click', function() {
+                history.back(); // popstate 이벤트를 발생시켜 뒤로가기 로직 연동
+            });
+
+            // ★ 모바일(브라우저) 및 물리 뒤로가기 수신 (핵심) ★
+            window.addEventListener('popstate', function(event) {
+                const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
+
+                // 순방향 (앞으로 가기) 방어 로직 (버그 차단)
+                if (targetStage >= currentStage) {
+                    return;
+                }
+
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
                     pstSfx.play().catch(e => console.log(e));
                 }
-
                 if (kotomineSfx) {
                     kotomineSfx.pause();
                     kotomineSfx.currentTime = 0;
                 }
 
                 if (currentStage === 3) {
-                    // 특정단어 탭 -> 탭 선택창 복귀 (이동했던 탭 원래 위치로 복원)
+                    currentStage = targetStage; // 이중 탭 방지용 즉시 반영
+
                     if (currentActiveTabId) {
                         const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                         if (activeView) activeView.classList.remove('show');
@@ -1042,13 +1045,27 @@
                             wrap.classList.remove('move-top-left');
                             wrap.classList.remove('fade-out-stay');
                         });
-                        renderTabSelectionWindow();
-                        tabSelectionContainer.classList.add('show');
-                        currentStage = 2;
+                        
+                        if (targetStage === 2) {
+                            renderTabSelectionWindow();
+                            tabSelectionContainer.classList.add('show');
+                        } else if (targetStage === 1) {
+                            // 연달아 뒤로가기 했을 경우 예외 처리
+                            tabSelectionContainer.classList.remove('show');
+                            backBtnWrapper.classList.remove('show');
+                            grailWrapper.classList.remove('slow-fade-out');
+                            subTitle.classList.remove('slow-fade-out');
+                            introNotice.classList.remove('slow-fade-out');
+                            pressStartWrapper.classList.remove('flash-exit');
+                            pressStartWrapper.style.opacity = '1';
+                            pressStartWrapper.style.pointerEvents = 'auto';
+                        }
                         currentActiveTabId = null;
                     }, 400);
 
-                } else if (currentStage === 2) {
+                } else if (currentStage === 2 && targetStage === 1) {
+                    currentStage = 1;
+
                     tabSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
@@ -1064,18 +1081,17 @@
                         void pressStartWrapper.offsetWidth;
                         pressStartWrapper.style.opacity = '1';
                         pressStartWrapper.style.pointerEvents = 'auto';
-                        currentStage = 1;
                     }, 800);
                 }
             });
 
+            // 시작하기 버튼 
             startBtn.addEventListener('click', function() {
                 const btnContainer = document.getElementById('btnContainer');
                 const bgLayer = document.getElementById('bgLayer');
                 const dustEffect = document.getElementById('dustEffect');
                 const controlsGroup = document.getElementById('controlsGroup');
 
-                // 둘 다 한 컨테이너 안에 있으므로 btnContainer 만 숨겨도 됩니다
                 btnContainer.classList.add('hide');
 
                 if (bgm) {
