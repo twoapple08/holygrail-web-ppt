@@ -388,29 +388,54 @@
             text-shadow: 0 0 10px rgba(255, 50, 50, 0.6);
         }
 
+        /* 폰트 크기 1.3배 확대 적용 (1.1rem -> 1.43rem) */
         .description-content {
-            font-size: 1.1rem;
+            font-size: 1.43rem;
             line-height: 1.85;
             color: #d0c5b5;
             letter-spacing: 1px;
             word-break: keep-all;
         }
 
+        /* 클릭 가능한 코토미네 키레이 인용구 레이아웃 */
+        .kotomine-quote-box {
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .kotomine-quote-box:hover {
+            background: rgba(120, 0, 0, 0.35);
+            box-shadow: 0 0 12px rgba(255, 30, 30, 0.5);
+        }
+
+        .kotomine-quote-box:hover .description-quote {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .kotomine-quote-box:hover .description-quote-author {
+            color: #ffcccc;
+        }
+
         .description-quote {
             font-style: italic;
-            color: rgba(215, 215, 225, 0.85);
-            margin-bottom: 16px;
+            color: rgba(235, 225, 210, 0.9);
             display: block;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
         }
 
         .description-quote-author {
             font-style: normal;
-            font-size: 0.95rem;
+            font-size: 1.15rem;
             color: #a08a75;
             display: block;
-            margin-top: -10px;
-            margin-bottom: 20px;
+            margin-top: 4px;
             text-align: right;
+            transition: color 0.3s ease;
         }
 
         /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
@@ -583,6 +608,8 @@
     <!-- BGM & SFX 레이어 -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="pst.mp3" preload="auto"></audio>
+    <!-- voice 폴더 경로가 반영된 코토미네 오디오 레이어 -->
+    <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
     <!-- 메인 배경 & 안개 -->
     <div class="main-background-layer" id="bgLayer"></div>
@@ -626,8 +653,11 @@
         <div class="detail-description-right">
             <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
             <div class="description-content">
-                <span class="description-quote">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
-                <span class="description-quote-author">- 코토미네 키레이</span>
+                <!-- 클릭 시 voice/holygrail-kotomine.mp3 가 재생되는 인터랙티브 박스 -->
+                <div class="kotomine-quote-box" id="kotomineTrigger">
+                    <span class="description-quote">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
+                    <span class="description-quote-author">- 코토미네 키레이</span>
+                </div>
                 <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
                 <p style="margin-top: 10px;">성배전쟁은 성배가 7명의 마술사를 마스터로 지정해 령주(令呪)를 부여하고 서번트 소환 자격을 얻는다.</p>
             </div>
@@ -657,6 +687,7 @@
     <script>
         const bgm = document.getElementById('bgm');
         const pstSfx = document.getElementById('pstSfx');
+        const kotomineSfx = document.getElementById('kotomineSfx');
         const volumeSlider = document.getElementById('volumeSlider');
         const seSlider = document.getElementById('seSlider');
 
@@ -664,6 +695,7 @@
         const pressStartBtn = document.getElementById('pressStartBtn');
         const centerGrailBtn = document.getElementById('centerGrailBtn');
         const backBtn = document.getElementById('backBtn');
+        const kotomineTrigger = document.getElementById('kotomineTrigger');
 
         const grailWrapper = document.getElementById('grailWrapper');
         const mainTitle = document.getElementById('mainTitle');
@@ -683,12 +715,22 @@
 
         seSlider.addEventListener('input', function() {
             if (pstSfx) pstSfx.volume = parseFloat(this.value);
+            if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
         });
 
         seSlider.addEventListener('change', function() {
             if (pstSfx) {
                 pstSfx.currentTime = 0;
                 pstSfx.play().catch(e => console.log(e));
+            }
+        });
+
+        // 코토미네 키레이 대사 클릭 이벤트: voice/holygrail-kotomine.mp3 재생
+        kotomineTrigger.addEventListener('click', function() {
+            if (kotomineSfx) {
+                kotomineSfx.volume = parseFloat(seSlider.value);
+                kotomineSfx.currentTime = 0;
+                kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
             }
         });
 
@@ -733,6 +775,12 @@
             if (pstSfx) {
                 pstSfx.currentTime = 0;
                 pstSfx.play().catch(e => console.log(e));
+            }
+
+            // 페이지 이탈 시 재생 중인 코토미네 보이스 정지
+            if (kotomineSfx) {
+                kotomineSfx.pause();
+                kotomineSfx.currentTime = 0;
             }
 
             if (currentStage === 3) {
@@ -780,6 +828,7 @@
             }
 
             if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
+            if (kotomineSfx) kotomineSfx.volume = parseFloat(seSlider.value);
 
             setTimeout(() => bgLayer.classList.add('active'), 300);
             setTimeout(() => dustEffect.classList.add('active'), 500);
