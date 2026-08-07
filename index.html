@@ -22,10 +22,10 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-            background-color: #000000; /* 초기 검은색 배경 */
+            background-color: #000000;
         }
 
-        /* 메인 배경 이미지 (초기 숨김, 클릭 후 페이드인) */
+        /* 메인 배경 이미지 */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -42,7 +42,6 @@
             transition: opacity 1.5s ease-in-out;
         }
 
-        /* 클릭 후 배경 활성화 클래스 */
         .main-background-layer.active {
             opacity: 1;
         }
@@ -62,13 +61,12 @@
             transition: opacity 1.8s ease-in-out;
         }
 
-        /* 붉은 안개 활성화 시 은은한 상승 및 루프 동기화 */
         .red-dust-effect.active {
             opacity: 0.55;
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- Fate/stay night 스타일 시작하기 버튼 --- */
+        /* --- 1. [시작하기] UI 버튼 --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -105,14 +103,13 @@
             transform: scale(1.05);
         }
 
-        /* 버튼 퇴장 클래스 */
         .start-btn-container.hide {
             opacity: 0;
             transform: translateX(2px) scale(0.9);
             pointer-events: none;
         }
 
-        /* 컨텐츠 컨테이너 (성배 및 타이틀 Y축 중앙 정렬) */
+        /* --- 2. 타이틀 컨텐츠 컨테이너 --- */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -130,7 +127,6 @@
             transform: translateY(-10px);
         }
 
-        /* 성배 이미지 래퍼 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -150,16 +146,12 @@
             width: 170px;
             max-width: 100%;
             height: auto;
-            background-color: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
             animation: grail-gentle-float 3s infinite ease-in-out;
             filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
             display: block;
             margin: 0 auto;
         }
 
-        /* 본제목 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -182,7 +174,6 @@
             animation: fade-in 1.0s ease-out forwards;
         }
 
-        /* 소제목 */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -201,7 +192,7 @@
             animation: fade-in 1.0s ease-out forwards;
         }
 
-        /* --- PRESS TO START 버튼 감싸는 페이드인 래퍼 --- */
+        /* PRESS TO START 버튼 */
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
@@ -215,7 +206,6 @@
             pointer-events: auto;
         }
 
-        /* --- 느리게 깜빡이는 PRESS TO START 본체 --- */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -230,7 +220,6 @@
             cursor: pointer;
             user-select: none;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
-            
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
 
@@ -242,30 +231,147 @@
             transform: scale(1.08);
         }
 
-        /* --- 프투스 전용 섬광 후 빠른 소멸 클래스 --- */
         .press-start-wrapper.flash-exit {
             animation: simple-flash-fade 0.25s ease-out forwards !important;
             pointer-events: none !important;
         }
 
-        /* --- 성배 및 제목 전용 순수 페이드아웃 클래스 (크기/위치 변형 일절 없음) --- */
         .slow-fade-out {
             animation: pure-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
         }
 
-        /* --- 화면 좌측 하단 고정 레이아웃 ((화살표)뒤로가기 버튼) --- */
+        /* --- 3. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
+        .center-grail-text-container {
+            position: absolute;
+            z-index: 30;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out;
+        }
+
+        .center-grail-text-container.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .center-grail-btn {
+            font-family: 'Song Myung', serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: #f5f0e6;
+            letter-spacing: 12px;
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            user-select: none;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 40px rgba(255, 215, 0, 0.8);
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .center-grail-btn:hover {
+            color: #ffffff;
+            transform: scale(1.08);
+            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 성배 텍스트 좌측 상단으로 축소 이동 */
+        .center-grail-text-container.move-top-left {
+            top: 10%;
+            left: 8%;
+            transform: translate(0, 0) scale(0.55);
+            pointer-events: none;
+        }
+
+        /* --- 4. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
+        .grail-detail-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 25;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10%;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.0s ease-in-out;
+        }
+
+        .grail-detail-view.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 좌측 대형 성배 이미지 */
+        .detail-grail-left {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-grail-img {
+            width: 280px;
+            max-width: 100%;
+            height: auto;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7));
+            animation: grail-gentle-float 3.5s infinite ease-in-out;
+        }
+
+        /* 우측 설명 상자 */
+        .detail-description-right {
+            flex: 1;
+            max-width: 450px;
+            background: rgba(15, 0, 0, 0.75);
+            border: 2px solid rgba(160, 0, 0, 0.8);
+            border-radius: 8px;
+            padding: 35px 30px;
+            box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+
+        .description-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f5f0e6;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(180, 0, 0, 0.6);
+            padding-bottom: 10px;
+            text-shadow: 0 0 10px rgba(255, 50, 50, 0.6);
+        }
+
+        .description-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d0c5b5;
+            letter-spacing: 1px;
+            word-break: keep-all;
+        }
+
+        /* --- 5. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
         .bottom-left-controls {
             position: absolute;
             bottom: 20px;
             left: 25px;
-            z-index: 20;
+            z-index: 40;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.6s ease-in-out;
         }
 
-        /* 타이틀 요소 완파 후 좌측 하단 등장 */
         .bottom-left-controls.show {
             opacity: 1;
             pointer-events: auto;
@@ -295,7 +401,7 @@
             transform: scale(1.03);
         }
 
-        /* --- 화면 우측 하단 레이아웃 (SFX/BGM 조절기 + 워터마크) --- */
+        /* --- 6. 화면 우측 하단 레이아웃 (SFX/BGM 슬라이더 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -304,7 +410,7 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 8px;
-            z-index: 20;
+            z-index: 40;
             opacity: 0;
             pointer-events: none;
         }
@@ -314,7 +420,6 @@
             animation: fade-in 1.2s ease-out forwards;
         }
 
-        /* Fate 테마 볼륨 조절 스파이크 패널 */
         .sound-panel {
             display: flex;
             flex-direction: column;
@@ -344,7 +449,6 @@
             text-align: left;
         }
 
-        /* 커스텀 볼륨 range 슬라이더 */
         .volume-slider {
             -webkit-appearance: none;
             appearance: none;
@@ -374,7 +478,6 @@
             background: #ff6666;
         }
 
-        /* 화면 우측 하단 워터마크 */
         .watermark {
             font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.4);
@@ -385,66 +488,31 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 위치/크기 변형 없이 오직 불투명도만 감소하는 순수 페이드아웃 */
         @keyframes pure-fade-out {
-            0% {
-                opacity: 1;
-            }
-            100% {
-                opacity: 0;
-            }
+            0% { opacity: 1; }
+            100% { opacity: 0; }
         }
 
-        /* 단순 발광 후 빠른 페이드아웃 모션 */
         @keyframes simple-flash-fade {
-            0% {
-                opacity: 1;
-                filter: brightness(1);
-                color: #ffffff;
-            }
-            30% {
-                opacity: 1;
-                filter: brightness(5) drop-shadow(0 0 20px #ffffff);
-                color: #ffffff;
-            }
-            100% {
-                opacity: 0;
-                filter: brightness(8);
-                color: #ffffff;
-                transform: translateX(2px) scale(0.95);
-            }
+            0% { opacity: 1; filter: brightness(1); color: #ffffff; }
+            30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
+            100% { opacity: 0; filter: brightness(8); color: #ffffff; transform: translateX(2px) scale(0.95); }
         }
 
         @keyframes slow-blink-loop {
-            0% {
-                opacity: 0.2;
-            }
-            50% {
-                opacity: 0.85;
-            }
-            100% {
-                opacity: 0.2;
-            }
+            0% { opacity: 0.2; }
+            50% { opacity: 0.85; }
+            100% { opacity: 0.2; }
         }
 
         @keyframes grail-smooth-fadein {
-            0% {
-                opacity: 0;
-                transform: scale(0.96);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
+            0% { opacity: 0; transform: scale(0.96); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         @keyframes grail-gentle-float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-4px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
         }
 
         @keyframes dust-fade-soft {
@@ -460,53 +528,61 @@
 </head>
 <body>
 
-    <!-- BGM 오디오 레이어 (무한 반복) -->
+    <!-- BGM & SFX 레이어 -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
-
-    <!-- 프투스 클릭 시 효과음 레이어 -->
     <audio id="pstSfx" src="pst.mp3" preload="auto"></audio>
 
-    <!-- 1. 메인 배경 이미지 레이어 -->
+    <!-- 메인 배경 & 안개 -->
     <div class="main-background-layer" id="bgLayer"></div>
-
-    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- 3. 페스나 스타일 [시작하기] UI 버튼 컨테이너 -->
+    <!-- 1단계: [시작하기] UI 버튼 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
     </div>
 
-    <!-- 4. 컨텐츠 레이어 (성배 및 타이틀 Y축 중앙 정렬) -->
+    <!-- 1단계 메인 타이틀 컨텐츠 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
 
         <h1 class="main-title" id="mainTitle">성배전쟁</h1>
-
         <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
 
-        <!-- 소제목 아래 위치한 회색 PRESS TO START 버튼 (페이드인 래퍼) -->
         <div class="press-start-wrapper" id="pressStartWrapper">
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
         </div>
     </main>
 
-    <!-- 화면 좌측 하단 레이아웃 (타이틀 퇴장 후 등장하는 (화살표)뒤로가기 버튼) -->
+    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
+    <div class="center-grail-text-container" id="centerGrailWrapper">
+        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
+    </div>
+
+    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
+    <section class="grail-detail-view" id="grailDetailView">
+        <div class="detail-grail-left">
+            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
+        </div>
+        <div class="detail-description-right">
+            <h2 class="description-title">성배 (Holy Grail)</h2>
+            <p class="description-content">설명 적을곳</p>
+        </div>
+    </section>
+
+    <!-- 화면 좌측 하단 (화살표)뒤로가기 버튼 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- 화면 우측 하단 사운드 컨트롤러 레이어 (SFX/BGM 슬라이더 + 워터마크) -->
+    <!-- 화면 우측 하단 컨트롤러 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
-            <!-- 효과음(SFX) 볼륨 조절 슬라이더 (기본값 10%) -->
             <div class="volume-control-box">
                 <span class="volume-label">SFX</span>
                 <input type="range" id="seSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
             </div>
-            <!-- 배경음(BGM) 볼륨 조절 슬라이더 (기본값 10%) -->
             <div class="volume-control-box">
                 <span class="volume-label">BGM</span>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
@@ -520,141 +596,147 @@
         const pstSfx = document.getElementById('pstSfx');
         const volumeSlider = document.getElementById('volumeSlider');
         const seSlider = document.getElementById('seSlider');
+
+        const startBtn = document.getElementById('startBtn');
         const pressStartBtn = document.getElementById('pressStartBtn');
+        const centerGrailBtn = document.getElementById('centerGrailBtn');
+        const backBtn = document.getElementById('backBtn');
 
         const grailWrapper = document.getElementById('grailWrapper');
         const mainTitle = document.getElementById('mainTitle');
         const subTitle = document.getElementById('subTitle');
         const pressStartWrapper = document.getElementById('pressStartWrapper');
+
+        const centerGrailWrapper = document.getElementById('centerGrailWrapper');
+        const grailDetailView = document.getElementById('grailDetailView');
         const backBtnWrapper = document.getElementById('backBtnWrapper');
-        const backBtn = document.getElementById('backBtn');
 
-        // BGM 슬라이더 변경 시 즉시 BGM 볼륨 조절
+        // 현재 서브 단계 상태 제어 변수 (1: 메인타이틀, 2: 중앙성배, 3: 성배상세)
+        let currentStage = 1;
+
+        // 볼륨 연동
         volumeSlider.addEventListener('input', function() {
-            if (bgm) {
-                bgm.volume = parseFloat(this.value);
-            }
+            if (bgm) bgm.volume = parseFloat(this.value);
         });
 
-        // SFX 슬라이더 변경 시 즉시 효과음 볼륨 조절
         seSlider.addEventListener('input', function() {
-            if (pstSfx) {
-                pstSfx.volume = parseFloat(this.value);
-            }
+            if (pstSfx) pstSfx.volume = parseFloat(this.value);
         });
 
-        // SFX 슬라이더 조작 완료(드래그 종료) 시 볼륨 샘플 체감 재생
         seSlider.addEventListener('change', function() {
             if (pstSfx) {
                 pstSfx.currentTime = 0;
-                pstSfx.play().catch(error => {
-                    console.log("SFX 샘플 재생 예외 발생:", error);
-                });
+                pstSfx.play().catch(e => console.log(e));
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 소멸 -> 성배 및 제목 제자리 페이드아웃 -> 좌측 하단 뒤로가기 등장
+        // 1단계 -> 2단계: 프투스 클릭 연출
         pressStartBtn.addEventListener('click', function() {
-            // 1. 클릭 효과음 재생 (SFX 슬라이더 음량 반영)
             if (pstSfx) {
                 pstSfx.volume = parseFloat(seSlider.value);
                 pstSfx.currentTime = 0;
-                pstSfx.play().catch(error => {
-                    console.log("pst.mp3 재생 예외 발생:", error);
-                });
+                pstSfx.play().catch(e => console.log(e));
             }
 
-            // 2. 프투스 버튼 섬광 발광 후 빠른 소멸 (0.0초)
             pressStartWrapper.classList.add('flash-exit');
 
-            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들이 크기 축소 없이 제자리 페이드아웃 시작
             setTimeout(() => {
                 grailWrapper.classList.add('slow-fade-out');
                 mainTitle.classList.add('slow-fade-out');
                 subTitle.classList.add('slow-fade-out');
             }, 250);
 
-            // 4. 타이틀 페이드아웃 완파 시점(0.25s + 1.2s = 1.45s 후), 좌측 하단 뒤로가기 등장
+            // 타이틀 소멸 완료 후 중앙 [성배] 대형 텍스트 페이드인
             setTimeout(() => {
+                centerGrailWrapper.classList.add('show');
                 backBtnWrapper.classList.add('show');
+                currentStage = 2;
             }, 1450);
         });
 
-        // 뒤로가기 버튼 클릭 시 부드러운 복원(역재생) 상호작용
-        backBtn.addEventListener('click', function() {
-            // 1. 좌측 하단 뒤로가기 버튼 즉각 페이드아웃
-            backBtnWrapper.classList.remove('show');
+        // 2단계 -> 3단계: 중앙 [성배] 텍스트 클릭 연출
+        centerGrailBtn.addEventListener('click', function() {
+            if (pstSfx) {
+                pstSfx.currentTime = 0;
+                pstSfx.play().catch(e => console.log(e));
+            }
 
-            // 2. 성배 이미지, 본제목, 소제목 페이드인 복원 (0.2초 시점)
-            setTimeout(() => {
-                grailWrapper.classList.remove('slow-fade-out');
-                mainTitle.classList.remove('slow-fade-out');
-                subTitle.classList.remove('slow-fade-out');
-            }, 200);
+            // 성배 텍스트 좌측 상단으로 이동 및 축소
+            centerGrailWrapper.classList.add('move-top-left');
 
-            // 3. 프투스 버튼 섬광 클래스 제거 및 은은한 페이드인 복원 (0.7초 시점)
+            // 좌측 대형 성배 이미지 & 우측 설명상자 페이드인 (0.3초 지연 후)
             setTimeout(() => {
-                pressStartWrapper.classList.remove('flash-exit');
-                pressStartWrapper.style.opacity = '0';
-                void pressStartWrapper.offsetWidth;
-                pressStartWrapper.style.opacity = '1';
-                pressStartWrapper.style.pointerEvents = 'auto';
-            }, 700);
+                grailDetailView.classList.add('show');
+                currentStage = 3;
+            }, 300);
         });
 
-        document.getElementById('startBtn').addEventListener('click', function() {
+        // 역재생 상호작용 (좌측 하단 [⇦ 뒤로가기] 버튼)
+        backBtn.addEventListener('click', function() {
+            if (pstSfx) {
+                pstSfx.currentTime = 0;
+                pstSfx.play().catch(e => console.log(e));
+            }
+
+            if (currentStage === 3) {
+                // 3단계 -> 2단계: 상세뷰 페이드아웃 및 성배 텍스트 중앙 복귀
+                grailDetailView.classList.remove('show');
+                setTimeout(() => {
+                    centerGrailWrapper.classList.remove('move-top-left');
+                    currentStage = 2;
+                }, 300);
+
+            } else if (currentStage === 2) {
+                // 2단계 -> 1단계: 중앙 성배 페이드아웃 후 초기 타이틀 복원
+                centerGrailWrapper.classList.remove('show');
+                backBtnWrapper.classList.remove('show');
+
+                setTimeout(() => {
+                    grailWrapper.classList.remove('slow-fade-out');
+                    mainTitle.classList.remove('slow-fade-out');
+                    subTitle.classList.remove('slow-fade-out');
+                }, 300);
+
+                setTimeout(() => {
+                    pressStartWrapper.classList.remove('flash-exit');
+                    pressStartWrapper.style.opacity = '0';
+                    void pressStartWrapper.offsetWidth;
+                    pressStartWrapper.style.opacity = '1';
+                    pressStartWrapper.style.pointerEvents = 'auto';
+                    currentStage = 1;
+                }, 800);
+            }
+        });
+
+        // 시작하기 버튼 시퀀스
+        startBtn.addEventListener('click', function() {
             const btnContainer = document.getElementById('btnContainer');
             const bgLayer = document.getElementById('bgLayer');
             const dustEffect = document.getElementById('dustEffect');
             const controlsGroup = document.getElementById('controlsGroup');
 
-            // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. BGM & SFX 초기 음량 할당(10%) 및 BGM 0.7초(700ms) 지연 재생
             if (bgm) {
                 bgm.volume = parseFloat(volumeSlider.value);
                 setTimeout(() => {
-                    bgm.play().catch(error => {
-                        console.log("BGM 재생 예외 발생:", error);
-                    });
+                    bgm.play().catch(e => console.log(e));
                 }, 700);
             }
 
-            if (pstSfx) {
-                pstSfx.volume = parseFloat(seSlider.value);
-            }
+            if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
 
-            // 3. 배경 이미지 페이드인
-            setTimeout(() => {
-                bgLayer.classList.add('active');
-            }, 300);
+            setTimeout(() => bgLayer.classList.add('active'), 300);
+            setTimeout(() => dustEffect.classList.add('active'), 500);
+            setTimeout(() => grailWrapper.classList.add('animate'), 1400);
+            setTimeout(() => mainTitle.classList.add('animate'), 2200);
 
-            // 4. 은은한 붉은 안개 이펙트 연출
-            setTimeout(() => {
-                dustEffect.classList.add('active');
-            }, 500);
-
-            // 5. 성배 이미지 페이드인
-            setTimeout(() => {
-                grailWrapper.classList.add('animate');
-            }, 1400);
-
-            // 6. 본제목 페이드인
-            setTimeout(() => {
-                mainTitle.classList.add('animate');
-            }, 2200);
-
-            // 7. 소제목, 워터마크 및 사운드 컨트롤러 페이드인 (2.8초)
             setTimeout(() => {
                 subTitle.classList.add('animate');
                 controlsGroup.classList.add('animate');
             }, 2800);
 
-            // 8. PRESS TO START: 소제목 등장 0.7초 뒤(3.5초) 부드럽게 등장
-            setTimeout(() => {
-                pressStartWrapper.classList.add('animate');
-            }, 3500);
+            setTimeout(() => pressStartWrapper.classList.add('animate'), 3500);
         });
     </script>
 </body>
