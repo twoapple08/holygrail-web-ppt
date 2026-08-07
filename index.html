@@ -241,7 +241,33 @@
             pointer-events: none !important;
         }
 
-        /* --- 3. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
+        /* --- 3. 메인 화면 좌측 하단 유입자 안내 문구 (워터마크 2.5배 크기) --- */
+        .intro-notice-left {
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            z-index: 20;
+            max-width: 600px;
+            font-size: 2.1rem; /* 워터마크 0.85rem의 약 2.5배 */
+            color: rgba(230, 220, 205, 0.65);
+            letter-spacing: 1px;
+            line-height: 1.45;
+            user-select: none;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            word-break: keep-all;
+        }
+
+        .intro-notice-left.animate {
+            animation: fade-in 1.2s ease-out forwards;
+        }
+
+        .intro-notice-left.slow-fade-out {
+            animation: pure-fade-out 1.2s ease-out forwards !important;
+        }
+
+        /* --- 4. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
         .center-grail-text-container {
             position: absolute;
             z-index: 30;
@@ -284,7 +310,6 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 성배 텍스트 좌측 상단으로 이동 시: 스케일 확장(0.55 -> 0.75) 및 밝기 증대 효과 */
         .center-grail-text-container.move-top-left {
             top: 7%;
             left: 6%;
@@ -293,7 +318,7 @@
             pointer-events: none;
         }
 
-        /* --- 4. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
+        /* --- 5. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
         .grail-detail-view {
             position: absolute;
             top: 0;
@@ -316,11 +341,11 @@
             pointer-events: auto;
         }
 
-        /* 좌측 대형 성배 이미지 */
         .detail-grail-left {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
 
         .detail-grail-img {
@@ -331,7 +356,16 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        /* 우측 설명 상자 */
+        .grail-sub-label {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: rgba(215, 205, 190, 0.65);
+            letter-spacing: 2px;
+            user-select: none;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
+        }
+
         .detail-description-right {
             flex: 1;
             max-width: 650px;
@@ -362,7 +396,7 @@
             word-break: keep-all;
         }
 
-        /* --- 5. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
+        /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
         .bottom-left-controls {
             position: absolute;
             bottom: 20px;
@@ -402,7 +436,7 @@
             transform: scale(1.03);
         }
 
-        /* --- 6. 화면 우측 하단 레이아웃 (SFX/BGM 슬라이더 + 워터마크) --- */
+        /* --- 7. 화면 우측 하단 레이아웃 (SFX/BGM 슬라이더 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -556,6 +590,11 @@
         </div>
     </main>
 
+    <!-- 메인 화면 좌측 하단 유입자 안내 문구 구역 -->
+    <div class="intro-notice-left" id="introNotice">
+        ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있습니다.
+    </div>
+
     <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
     <div class="center-grail-text-container" id="centerGrailWrapper">
         <button class="center-grail-btn" id="centerGrailBtn">성배</button>
@@ -565,6 +604,7 @@
     <section class="grail-detail-view" id="grailDetailView">
         <div class="detail-grail-left">
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
+            <span class="grail-sub-label">소(小)성배</span>
         </div>
         <div class="detail-description-right">
             <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
@@ -607,6 +647,7 @@
         const mainTitle = document.getElementById('mainTitle');
         const subTitle = document.getElementById('subTitle');
         const pressStartWrapper = document.getElementById('pressStartWrapper');
+        const introNotice = document.getElementById('introNotice');
 
         const centerGrailWrapper = document.getElementById('centerGrailWrapper');
         const grailDetailView = document.getElementById('grailDetailView');
@@ -642,6 +683,7 @@
                 grailWrapper.classList.add('slow-fade-out');
                 mainTitle.classList.add('slow-fade-out');
                 subTitle.classList.add('slow-fade-out');
+                introNotice.classList.add('slow-fade-out');
             }, 250);
 
             setTimeout(() => {
@@ -686,6 +728,7 @@
                     grailWrapper.classList.remove('slow-fade-out');
                     mainTitle.classList.remove('slow-fade-out');
                     subTitle.classList.remove('slow-fade-out');
+                    introNotice.classList.remove('slow-fade-out');
                 }, 300);
 
                 setTimeout(() => {
@@ -723,6 +766,7 @@
 
             setTimeout(() => {
                 subTitle.classList.add('animate');
+                introNotice.classList.add('animate');
                 controlsGroup.classList.add('animate');
             }, 2800);
 
