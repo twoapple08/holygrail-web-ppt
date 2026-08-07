@@ -47,7 +47,7 @@
             opacity: 1;
         }
 
-        /* 화면 아래 붉은 먼지/안개 이펙트 (초기 숨김) */
+        /* 화면 아래 붉은 먼지/안개 이펙트 (페이드인 전환 설정) */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -58,13 +58,14 @@
             z-index: 2;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 1.0s ease-in-out;
+            will-change: opacity;
+            transition: opacity 1.2s ease-in-out; /* 부드러운 페이드인 핵심 지정 */
         }
 
-        /* 붉은 안개 활성화 클래스 */
+        /* 붉은 안개 활성화 및 루프 점멸 애니메이션 연동 */
         .red-dust-effect.active {
             opacity: 1;
-            animation: dust-fade 6s infinite alternate ease-in-out;
+            animation: dust-fade 6s infinite alternate ease-in-out 1.2s;
         }
 
         /* --- Fate/stay night 스타일 시작하기 버튼 --- */
@@ -246,7 +247,7 @@
     <!-- 1. 메인 배경 이미지 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
 
-    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
+    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 (페이드인 연출) -->
     <div class="red-dust-effect" id="dustEffect"></div>
 
     <!-- 3. 페스나 스타일 [시작하기] UI 버튼 컨테이너 -->
@@ -281,7 +282,7 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. 붉은 이펙트 먼지 등장
+            // 2. 붉은 이펙트 먼지 페이드인 시작
             setTimeout(() => {
                 dustEffect.classList.add('active');
             }, 300);
