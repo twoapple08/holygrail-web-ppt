@@ -118,8 +118,6 @@
             transition: color 0.3s ease, text-shadow 0.3s ease;
             user-select: none;
             display: inline-block;
-            position: relative;
-            z-index: 10;
         }
 
         .interactive-keyword:hover {
@@ -135,17 +133,15 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 --- */
+        /* --- 어록 속성 (연하게 일렁이는 흰색 글로우 & 마우스 올렸을 때 밝은 글로우 극대화) --- */
         .description-quote {
             font-style: italic;
             color: rgba(235, 225, 210, 0.9);
             display: inline-block;
-            cursor: pointer !important;
+            cursor: pointer;
             user-select: none;
             animation: quote-gentle-glow 2.5s infinite alternate ease-in-out;
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
-            position: relative;
-            z-index: 10;
         }
 
         .description-quote:hover {
@@ -248,6 +244,7 @@
             transform: translateY(-10px);
         }
 
+        /* 페이트 로고 감싸는 레이아웃 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -273,6 +270,7 @@
             margin: 0 auto;
         }
 
+        /* 소제목 */
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -295,6 +293,7 @@
             margin: 0 2px;
         }
 
+        /* PRESS TO START 버튼 */
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
@@ -369,45 +368,21 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 (포인터 레이어 전면 수리) --- */
-        .center-tab-group-container {
+        /* --- 4. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
+        .center-grail-text-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             z-index: 30;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
         }
 
-        .center-tab-group-container.show {
+        .center-grail-text-container.show {
             opacity: 1;
-            pointer-events: auto !important;
-        }
-
-        .tab-item-wrapper {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            white-space: nowrap;
-            pointer-events: auto !important;
-            z-index: 32;
-            transition: top 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        left 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
-                        opacity 0.8s ease-in-out, 
-                        filter 1.4s ease-in-out;
-            will-change: top, left, transform, opacity;
-        }
-
-        #tabWrapper_grail {
-            top: 48%;
-        }
-
-        #tabWrapper_sung {
-            top: 57%;
+            pointer-events: auto;
         }
 
         .center-grail-btn {
@@ -419,7 +394,7 @@
             background: transparent;
             border: none;
             outline: none;
-            cursor: pointer !important;
+            cursor: pointer;
             user-select: none;
             text-shadow: 
                 3px 3px 0px #700000, 
@@ -428,10 +403,6 @@
                 -1px 1px 0px #700000,
                 0 0 40px rgba(255, 215, 0, 0.8);
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-            display: inline-block;
-            pointer-events: auto !important;
-            position: relative;
-            z-index: 35;
         }
 
         .center-grail-btn:hover {
@@ -440,28 +411,22 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 이동된 상 태에서도 포인터 차단을 풀고 고정 포지션 보장 */
-        .tab-item-wrapper.move-top-left {
-            top: 7% !important;
-            left: 6% !important;
-            transform: translate(0, 0) scale(0.75) !important;
+        .center-grail-text-container.move-top-left {
+            top: 7%;
+            left: 6%;
+            transform: translate(0, 0) scale(0.75);
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
-            z-index: 35;
+            pointer-events: none;
         }
 
-        .tab-item-wrapper.fade-out-stay {
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* --- 5. 상세 페이지 (Stage 3) --- */
+        /* --- 5. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
         .grail-detail-view {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 35;
+            z-index: 25;
             display: flex;
             justify-content: flex-start;
             align-items: center;
@@ -469,12 +434,12 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 1.0s ease-in-out;
         }
 
         .grail-detail-view.show {
-            opacity: 1 !important;
-            pointer-events: auto !important;
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .detail-grail-left {
@@ -482,13 +447,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            pointer-events: auto;
         }
 
         .detail-grail-img {
             width: 280px;
             max-width: 100%;
-            height auto;
+            height: auto;
             filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7));
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
@@ -512,10 +476,6 @@
             padding: 40px 35px;
             box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
             backdrop-filter: blur(4px);
-            min-height: 250px;
-            pointer-events: auto;
-            position: relative;
-            z-index: 40;
         }
 
         .description-title {
@@ -535,7 +495,6 @@
             color: #d0c5b5;
             letter-spacing: 1px;
             word-break: keep-all;
-            pointer-events: auto;
         }
 
         .description-quote-author {
@@ -549,12 +508,12 @@
             user-select: none;
         }
 
-        /* --- 6. 화면 좌측 하단 뒤로가기 버튼 --- */
+        /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
         .bottom-left-controls {
             position: absolute;
             bottom: 20px;
             left: 25px;
-            z-index: 50;
+            z-index: 40;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.6s ease-in-out;
@@ -589,7 +548,7 @@
             transform: scale(1.03);
         }
 
-        /* --- 7. 화면 우측 하단 컨트롤러 --- */
+        /* --- 7. 화면 우측 하단 레이아웃 (SFX/BGM/VOICE 슬라이더 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -598,7 +557,7 @@
             flex-direction: column;
             align-items: flex-end;
             gap: 8px;
-            z-index: 50;
+            z-index: 40;
             opacity: 0;
             pointer-events: none;
         }
@@ -758,20 +717,13 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 인터랙션 탭 그룹 -->
-    <div class="center-tab-group-container" id="centerTabGroup">
-        <!-- 기본 성배 탭 (sungbae 고유번호 소지) -->
-        <div class="tab-item-wrapper" id="tabWrapper_grail">
-            <button class="center-grail-btn" id="tabBtn_grail" type="button">성배</button>
-        </div>
-        <!-- sung 고유번호 획득 시 동적으로 연동되는 성배전쟁 탭 -->
-        <div class="tab-item-wrapper" id="tabWrapper_sung" style="display: none;">
-            <button class="center-grail-btn" id="tabBtn_sung" type="button">성배전쟁</button>
-        </div>
+    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
+    <div class="center-grail-text-container" id="centerGrailWrapper">
+        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
     </div>
 
-    <!-- 3단계: 성배 상세 페이지 -->
-    <section class="grail-detail-view" id="detailView_grail">
+    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
+    <section class="grail-detail-view" id="grailDetailView">
         <div class="detail-grail-left">
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
             <span class="grail-sub-label">소(小)성배</span>
@@ -779,25 +731,11 @@
         <div class="detail-description-right">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
-                <!-- 어록 속성 영역 -->
+                <!-- 어록 속성 영역 (마우스 호버 시 강한 글로우) -->
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <!-- sung 고유번호를 부여받은 신규개념 성배전쟁 -->
-                <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sung">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3단계: 성배전쟁 상세 고유 페이지 (공간 비워둠) -->
-    <section class="grail-detail-view" id="detailView_sung">
-        <div class="detail-grail-left" id="sungDetailLeft">
-            <!-- 비워둠 -->
-        </div>
-        <div class="detail-description-right" id="sungDetailRight">
-            <h2 class="description-title" id="sungDetailTitle"></h2>
-            <div class="description-content" id="sungDetailContent">
-                <!-- 비워둠 -->
+                <p>성배란 <span class="interactive-keyword" data-key="grailwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
@@ -827,22 +765,19 @@
     </div>
 
     <script>
-        // 모바일 데스크톱 모드 및 PC 새로고침 시 세션 초기화
+        // 모바일 데스크톱 모드 및 PC 새로고침 시 세션 데이터를 강제 초기화하는 로직
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
                              (performance.navigation && performance.navigation.type === 1);
             
             if (isReload) {
-                const keysToRemove = ['sung', 'sungbae'];
+                const keysToRemove = ['grailwar'];
                 keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
             }
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 성배(sungbae) 고유번호 기본 소지 세션 등록
-            sessionStorage.setItem('fate_kw_clicked_sungbae', 'true');
-
             const bgm = document.getElementById('bgm');
             const pstSfx = document.getElementById('pstSfx');
             const wordSfx = document.getElementById('wordSfx');
@@ -855,6 +790,7 @@
 
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
+            const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
@@ -865,27 +801,12 @@
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
 
-            const centerTabGroup = document.getElementById('centerTabGroup');
+            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
+            const grailDetailView = document.getElementById('grailDetailView');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
-            const tabWrappers = {
-                grail: document.getElementById('tabWrapper_grail'),
-                sung: document.getElementById('tabWrapper_sung')
-            };
-
-            const tabBtns = {
-                grail: document.getElementById('tabBtn_grail'),
-                sung: document.getElementById('tabBtn_sung')
-            };
-
-            const detailViews = {
-                grail: document.getElementById('detailView_grail'),
-                sung: document.getElementById('detailView_sung')
-            };
-
             let currentStage = 1;
-            let currentActiveTabKey = null;
-            let activeToastCount = 0;
+            let activeToastCount = 0; // 현재 화면에 유지 중인 알람 개수 카운트
 
             // 볼륨 연동
             volumeSlider.addEventListener('input', function() {
@@ -909,7 +830,7 @@
                 }
             });
 
-            // 코토미네 보이스 시간제한
+            // 코토미네 보이스 4.4초 제한 제어
             if (kotomineSfx) {
                 kotomineSfx.addEventListener('timeupdate', function() {
                     if (this.currentTime >= 4.4) {
@@ -919,23 +840,20 @@
                 });
             }
 
-            // 어록 클릭 이벤트
-            if (kotomineTrigger) {
-                kotomineTrigger.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    if (!this.classList.contains('glow-fade-out')) {
-                        this.classList.add('glow-fade-out');
-                    }
+            // 어록 클릭 시 음성 재생 및 0.5초 글로우 페이드아웃 처리
+            kotomineTrigger.addEventListener('click', function() {
+                if (!this.classList.contains('glow-fade-out')) {
+                    this.classList.add('glow-fade-out');
+                }
 
-                    if (kotomineSfx) {
-                        kotomineSfx.volume = parseFloat(voiceSlider.value);
-                        kotomineSfx.currentTime = 0;
-                        kotomineSfx.play().catch(e => console.log("보이스 재생 예외:", e));
-                    }
-                });
-            }
+                if (kotomineSfx) {
+                    kotomineSfx.volume = parseFloat(voiceSlider.value);
+                    kotomineSfx.currentTime = 0;
+                    kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
+                }
+            });
 
-            // 토스트 생성
+            // 신규개념 획득 토스트 알림 생성 함수 (1.8초 지속)
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
                 const toastEl = document.createElement('div');
@@ -952,93 +870,45 @@
                 }, 1800);
             }
 
-            // 신규개념 키워드 이벤트
+            // 신규개념(노란색 키워드) 클릭 및 상태 관리
             const keywords = document.querySelectorAll('.interactive-keyword');
             
             keywords.forEach(el => {
-                const key = el.getAttribute('data-key');
-                const sessionKey = 'fate_kw_clicked_' + key;
+                const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
                 
-                if (sessionStorage.getItem(sessionKey) === 'true') {
+                if (sessionStorage.getItem(key) === 'true') {
                     el.classList.add('clicked');
                 } else {
                     el.classList.remove('clicked');
                 }
 
-                el.addEventListener('click', function(e) {
-                    e.stopPropagation();
-
+                el.addEventListener('click', function() {
+                    // 알람이 유지되는 동안(activeToastCount > 0)에는 획득 차단 및 sfx-noshin.mp3 재생
                     if (activeToastCount > 0) {
                         if (noshinSfx) {
                             noshinSfx.volume = parseFloat(seSlider.value);
                             noshinSfx.currentTime = 0;
-                            noshinSfx.play().catch(err => console.log(err));
+                            noshinSfx.play().catch(e => console.log(e));
                         }
                         return;
                     }
 
                     if (!this.classList.contains('clicked')) {
                         this.classList.add('clicked');
-                        sessionStorage.setItem(sessionKey, 'true');
+                        sessionStorage.setItem(key, 'true');
 
+                        // 1. 효과음 재생 (볼륨 30% 증폭 적용: 최대 1 제한)
                         if (wordSfx) {
                             wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 1.3);
                             wordSfx.currentTime = 0;
-                            wordSfx.play().catch(err => console.log(err));
+                            wordSfx.play().catch(e => console.log(e));
                         }
 
+                        // 2. 알림 팝업 출력
                         spawnAcquireToast(this.innerText.trim());
                     }
                 });
             });
-
-            function refreshDynamicTabs() {
-                const hasSung = sessionStorage.getItem('fate_kw_clicked_sung') === 'true';
-                
-                if (hasSung) {
-                    tabWrappers.sung.style.display = 'block';
-                    tabWrappers.grail.style.top = '40%';
-                    tabWrappers.sung.style.top = '54%';
-                } else {
-                    tabWrappers.sung.style.display = 'none';
-                    tabWrappers.grail.style.top = '48%';
-                }
-            }
-
-            // 탭 클릭 및 고유 페이지(Stage 3) 진입 공통 함수
-            function openTabDetail(selectedKey, event) {
-                if (event) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-
-                currentActiveTabKey = selectedKey;
-
-                Object.keys(tabWrappers).forEach(k => {
-                    const wrap = tabWrappers[k];
-                    if (k === selectedKey) {
-                        wrap.classList.add('move-top-left');
-                    } else {
-                        wrap.classList.add('fade-out-stay');
-                    }
-                });
-
-                setTimeout(() => {
-                    if (detailViews[selectedKey]) {
-                        detailViews[selectedKey].classList.add('show');
-                    }
-                    currentStage = 3;
-                }, 1100);
-            }
-
-            // 탭 버튼 클릭 이벤트 바인딩 수리
-            tabBtns.grail.onclick = function(e) { openTabDetail('grail', e); };
-            tabBtns.sung.onclick = function(e) { openTabDetail('sung', e); };
 
             pressStartBtn.addEventListener('click', function() {
                 if (pstSfx) {
@@ -1056,11 +926,24 @@
                 }, 250);
 
                 setTimeout(() => {
-                    refreshDynamicTabs();
-                    centerTabGroup.classList.add('show');
+                    centerGrailWrapper.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
                 }, 1450);
+            });
+
+            centerGrailBtn.addEventListener('click', function() {
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                centerGrailWrapper.classList.add('move-top-left');
+
+                setTimeout(() => {
+                    grailDetailView.classList.add('show');
+                    currentStage = 3;
+                }, 300);
             });
 
             backBtn.addEventListener('click', function() {
@@ -1075,22 +958,14 @@
                 }
 
                 if (currentStage === 3) {
-                    if (currentActiveTabKey && detailViews[currentActiveTabKey]) {
-                        detailViews[currentActiveTabKey].classList.remove('show');
-                    }
-
+                    grailDetailView.classList.remove('show');
                     setTimeout(() => {
-                        Object.keys(tabWrappers).forEach(k => {
-                            tabWrappers[k].classList.remove('move-top-left');
-                            tabWrappers[k].classList.remove('fade-out-stay');
-                        });
-                        refreshDynamicTabs();
+                        centerGrailWrapper.classList.remove('move-top-left');
                         currentStage = 2;
-                        currentActiveTabKey = null;
-                    }, 400);
+                    }, 300);
 
                 } else if (currentStage === 2) {
-                    centerTabGroup.classList.remove('show');
+                    centerGrailWrapper.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
