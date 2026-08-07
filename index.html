@@ -159,7 +159,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 70px; /* 버튼과 텍스트 사이 약 1개 간격 분리 */
+            gap: 70px;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
@@ -195,7 +195,6 @@
             pointer-events: none;
         }
 
-        /* 시작하기 창 하단 전체화면 안내 문구 */
         .initial-notice-center {
             font-size: 0.95rem;
             color: rgba(215, 205, 190, 0.7);
@@ -378,6 +377,7 @@
             flex-wrap: nowrap;
         }
 
+        /* 탭 이동 모션이 부드럽고 묵직하게 작동하도록 트랜지션 확장 적용 */
         .tab-item-wrapper {
             position: relative;
             display: inline-block;
@@ -416,6 +416,7 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
+        /* 좌측 상단으로 부드럽게 미끄러지듯 이동하는 좌표 지정 */
         .tab-item-wrapper.move-top-left {
             position: fixed !important;
             top: 7% !important;
@@ -956,7 +957,7 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // 탭 클릭 진입 시 히스토리 추가 & 모션
+            // 탭 클릭 진입 시 완만하고 부드러운 좌측 상단 이동 모션 가동
             function openTabDetailView(selectedId, selectedWrapper) {
                 history.pushState({ stage: 3, id: selectedId }, '', '');
 
@@ -988,6 +989,7 @@
                 history.pushState({ stage: 2 }, '', '');
 
                 if (pstSfx) {
+                    pstSfx.volume = parseFloat(seSlider.value);
                     pstSfx.currentTime = 0;
                     pstSfx.play().catch(e => console.log(e));
                 }
@@ -1010,14 +1012,13 @@
 
             // UI 뒤로가기 버튼 클릭 시 브라우저 Back 트리거
             backBtn.addEventListener('click', function() {
-                history.back(); // popstate 이벤트를 발생시켜 뒤로가기 로직 연동
+                history.back();
             });
 
-            // ★ 모바일(브라우저) 및 물리 뒤로가기 수신 (핵심) ★
+            // 모바일 및 물리 뒤로가기 수신
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
 
-                // 순방향 (앞으로 가기) 방어 로직 (버그 차단)
                 if (targetStage >= currentStage) {
                     return;
                 }
@@ -1032,7 +1033,7 @@
                 }
 
                 if (currentStage === 3) {
-                    currentStage = targetStage; // 이중 탭 방지용 즉시 반영
+                    currentStage = targetStage;
 
                     if (currentActiveTabId) {
                         const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
@@ -1050,7 +1051,6 @@
                             renderTabSelectionWindow();
                             tabSelectionContainer.classList.add('show');
                         } else if (targetStage === 1) {
-                            // 연달아 뒤로가기 했을 경우 예외 처리
                             tabSelectionContainer.classList.remove('show');
                             backBtnWrapper.classList.remove('show');
                             grailWrapper.classList.remove('slow-fade-out');
