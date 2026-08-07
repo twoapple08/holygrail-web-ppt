@@ -66,33 +66,49 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 상단 아이템 획득 드롭다운 알림 팝업 --- */
-        .word-acquire-toast {
+        /* --- 단어 획득 컨테이너 및 흰색 텍스트 페이드 인/아웃 모션 --- */
+        #acquireToastContainer {
             position: absolute;
-            top: -80px;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             z-index: 100;
-            background: rgba(20, 0, 0, 0.9);
-            border: 2px solid #b30000;
-            border-radius: 6px;
-            padding: 12px 32px;
-            box-shadow: 0 0 20px rgba(255, 30, 30, 0.8), inset 0 0 10px rgba(100, 0, 0, 0.6);
-            color: #fffdfa;
-            font-size: 1.2rem;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-align: center;
-            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             pointer-events: none;
-            opacity: 0;
-            transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease-in-out;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
         }
 
-        .word-acquire-toast.show {
-            top: 40px;
-            opacity: 1;
+        .word-toast-item {
+            position: absolute;
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-align: center;
+            user-select: none;
+            white-space: nowrap;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1), 0 0 5px rgba(255, 215, 0, 0.8);
+            animation: toast-float-fade 3.0s forwards cubic-bezier(0.33, 1, 0.68, 1);
+        }
+
+        @keyframes toast-float-fade {
+            0% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            20% {
+                transform: translateY(-250px);
+                opacity: 1;
+            }
+            80% {
+                transform: translateY(-270px);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-350px);
+                opacity: 0;
+            }
         }
 
         /* --- 0. 최초 접속 화면 우측 하단 전체화면 안내 문구 --- */
@@ -660,8 +676,8 @@
 </head>
 <body>
 
-    <!-- 상단 단어 획득 알림 토스트 팝업 레이어 -->
-    <div class="word-acquire-toast" id="acquireToast"></div>
+    <!-- 동적 단어 획득 알림 토스트 팝업 컨테이너 -->
+    <div id="acquireToastContainer"></div>
 
     <!-- BGM & SFX 레이어 (sfx/ 폴더 경로 지정) -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
@@ -768,7 +784,7 @@
         const centerGrailBtn = document.getElementById('centerGrailBtn');
         const backBtn = document.getElementById('backBtn');
         const kotomineTrigger = document.getElementById('kotomineTrigger');
-        const acquireToast = document.getElementById('acquireToast');
+        const acquireToastContainer = document.getElementById('acquireToastContainer');
 
         const initialNotice = document.getElementById('initialNotice');
         const grailWrapper = document.getElementById('grailWrapper');
@@ -782,7 +798,6 @@
         const backBtnWrapper = document.getElementById('backBtnWrapper');
 
         let currentStage = 1;
-        let toastTimeout = null;
 
         // 볼륨 연동
         volumeSlider.addEventListener('input', function() {
@@ -791,7 +806,7 @@
 
         seSlider.addEventListener('input', function() {
             if (pstSfx) pstSfx.volume = parseFloat(this.value);
-            if (wordSfx) wordSfx.volume = parseFloat(this.value);
+            if (wordSfx) wordSfx.volume = Math.min(1.0, parseFloat(this.value) * 1.3);
         });
 
         voiceSlider.addEventListener('input', function() {
@@ -823,16 +838,20 @@
             }
         });
 
-        // 단어 획득 알림 모션 함수
-        function showAcquireToast(wordText) {
-            acquireToast.innerText = `${wordText}를 획득했습니다.`;
-            acquireToast.classList.add('show');
+        // 흰색 대형 텍스트 페이드 인/아웃 연속 알림 팝업 함수 (새로운 엘리먼트 생성 방식)
+        function spawnAcquireToast(wordText) {
+            const toastEl = document.createElement('div');
+            toastEl.className = 'word-toast-item';
+            toastEl.innerText = `${wordText}를 획득했습니다.`;
 
-            if (toastTimeout) clearTimeout(toastTimeout);
+            acquireToastContainer.appendChild(toastEl);
 
-            toastTimeout = setTimeout(() => {
-                acquireToast.classList.remove('show');
-            }, 2500);
+            // 애니메이션 종료(3초) 후 요소 자동 제거
+            setTimeout(() => {
+                if (toastEl && toastEl.parentNode) {
+                    toastEl.parentNode.removeChild(toastEl);
+                }
+            }, 3000);
         }
 
         // 키워드 클릭 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
@@ -850,15 +869,15 @@
                     this.classList.add('clicked');
                     sessionStorage.setItem(key, 'true');
 
-                    // 1. 단어 획득 효과음 재생
+                    // 1. 단어 획득 효과음 재생 (볼륨 30% 증폭)
                     if (wordSfx) {
-                        wordSfx.volume = parseFloat(seSlider.value);
+                        wordSfx.volume = Math.min(1.0, parseFloat(seSlider.value) * 1.3);
                         wordSfx.currentTime = 0;
                         wordSfx.play().catch(e => console.log(e));
                     }
 
-                    // 2. 상단 드롭다운 알림 팝업 출현
-                    showAcquireToast(this.innerText.trim());
+                    // 2. 하단에서 상승하는 흰색 페이드 인/아웃 알림 출현 (독립 팝업 생성)
+                    spawnAcquireToast(this.innerText.trim());
                 }
             });
         });
@@ -957,7 +976,7 @@
             }
 
             if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-            if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
+            if (wordSfx) wordSfx.volume = Math.min(1.0, parseFloat(seSlider.value) * 1.3);
             if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
             setTimeout(() => bgLayer.classList.add('active'), 300);
