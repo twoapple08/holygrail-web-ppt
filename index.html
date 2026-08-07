@@ -89,4 +89,310 @@
             cursor: pointer;
             outline: none;
             position: relative;
-            box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(
+            box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .fate-start-btn:hover {
+            color: #ffffff;
+            background: rgba(60, 0, 0, 0.95);
+            border-color: #ff2222;
+            box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* 버튼 퇴장 클래스 */
+        .start-btn-container.hide {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        /* 컨텐츠 컨테이너 (성배 및 타이틀 Y축 중앙 정렬) */
+        .content-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            width: 100%;
+            max-width: 700px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+            background: transparent;
+            margin: 0 auto;
+            pointer-events: none;
+            transform: translateY(-10px);
+        }
+
+        /* 성배 이미지 래퍼 */
+        .holy-grail-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            background: transparent !important;
+            margin-bottom: 15px;
+            opacity: 0;
+        }
+
+        .holy-grail-wrapper.animate {
+            animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .holy-grail-img {
+            width: 170px;
+            max-width: 100%;
+            height: auto;
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            animation: grail-gentle-float 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* 본제목 */
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 7px;
+            margin-bottom: 12px;
+            color: #f5f0e6;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 35px rgba(255, 50, 50, 0.7);
+            text-transform: uppercase;
+            opacity: 0;
+        }
+
+        .main-title.animate {
+            animation: fade-in 1.0s ease-out forwards;
+        }
+
+        /* 소제목 */
+        .sub-title {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #ffffff;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+            padding: 0 15px;
+            opacity: 0;
+        }
+
+        .sub-title.animate {
+            animation: fade-in 1.0s ease-out forwards;
+        }
+
+        /* --- 우측 하단 컨트롤러 레이아웃 (워터마크 + 볼륨 조절기) --- */
+        .bottom-right-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .bottom-right-controls.animate {
+            pointer-events: auto;
+            animation: fade-in 1.2s ease-out forwards;
+        }
+
+        /* Fate 테마 볼륨 조절 스파이크 슬라이더 UI */
+        .volume-control-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(15, 0, 0, 0.65);
+            border: 1px solid rgba(140, 0, 0, 0.8);
+            padding: 6px 12px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(80, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .volume-label {
+            font-size: 0.8rem;
+            color: #d0c5b5;
+            letter-spacing: 1px;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        /* 커스텀 볼륨 range 슬라이더 */
+        .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 4px;
+            background: rgba(80, 10, 10, 0.8);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff3333;
+            border: 1px solid #ffffff;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.25);
+            background: #ff6666;
+        }
+
+        /* 화면 우측 하단 워터마크 */
+        .watermark {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1.5px;
+            user-select: none;
+        }
+
+        /* --- 키프레임 애니메이션 정의 --- */
+
+        @keyframes grail-smooth-fadein {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes grail-gentle-float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        @keyframes dust-fade-soft {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.75; }
+        }
+
+        @keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
+
+    <div class="main-background-layer" id="bgLayer"></div>
+
+    <div class="red-dust-effect" id="dustEffect"></div>
+
+    <div class="start-btn-container" id="btnContainer">
+        <button class="fate-start-btn" id="startBtn">시작하기</button>
+    </div>
+
+    <main class="content-container">
+        <div class="holy-grail-wrapper" id="grailWrapper">
+            <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
+        </div>
+
+        <h1 class="main-title" id="mainTitle">성배전쟁</h1>
+
+        <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
+    </main>
+
+    <div class="bottom-right-controls" id="controlsGroup">
+        <div class="volume-control-box">
+            <span class="volume-label">BGM</span>
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.7">
+        </div>
+        <footer class="watermark">Made by 사과사과</footer>
+    </div>
+
+    <script>
+        const bgm = document.getElementById('bgm');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        // 슬라이더 변경 시 즉시 BGM 볼륨 조절
+        volumeSlider.addEventListener('input', function() {
+            if (bgm) {
+                bgm.volume = parseFloat(this.value);
+            }
+        });
+
+        document.getElementById('startBtn').addEventListener('click', function() {
+            const btnContainer = document.getElementById('btnContainer');
+            const bgLayer = document.getElementById('bgLayer');
+            const dustEffect = document.getElementById('dustEffect');
+            const grailWrapper = document.getElementById('grailWrapper');
+            const mainTitle = document.getElementById('mainTitle');
+            const subTitle = document.getElementById('subTitle');
+            const controlsGroup = document.getElementById('controlsGroup');
+
+            // 1. 시작 버튼 사라짐
+            btnContainer.classList.add('hide');
+
+            // 2. BGM 재생 설정: 초기 음량 70%(0.7) 설정 및 정확히 0.7초(700ms) 지연 재생
+            if (bgm) {
+                bgm.volume = parseFloat(volumeSlider.value);
+                setTimeout(() => {
+                    bgm.play().catch(error => {
+                        console.log("BGM 재생 예외 발생:", error);
+                    });
+                }, 700);
+            }
+
+            // 3. 배경 이미지 페이드인
+            setTimeout(() => {
+                bgLayer.classList.add('active');
+            }, 300);
+
+            // 4. 은은한 붉은 안개 이펙트 연출
+            setTimeout(() => {
+                dustEffect.classList.add('active');
+            }, 500);
+
+            // 5. 성배 이미지 페이드인
+            setTimeout(() => {
+                grailWrapper.classList.add('animate');
+            }, 1400);
+
+            // 6. 본제목 페이드인
+            setTimeout(() => {
+                mainTitle.classList.add('animate');
+            }, 2200);
+
+            // 7. 소제목, 워터마크 및 볼륨 조절기 페이드인
+            setTimeout(() => {
+                subTitle.classList.add('animate');
+                controlsGroup.classList.add('animate');
+            }, 2800);
+        });
+    </script>
+</body>
+</html>
