@@ -29,11 +29,6 @@
             background-color: #000000;
         }
 
-        /* 묵직한 카메라 셰이크 */
-        body.shake-active {
-            animation: camera-impact 0.45s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-
         /* 배경 마력 오라 레이어 */
         .background-aura {
             position: absolute;
@@ -60,25 +55,24 @@
             animation: dust-fade 6s infinite alternate ease-in-out;
         }
 
-        /* --- 비네트 & 순백 덮침 연출 --- */
+        /* --- 초고농도 깊은 비네트 연출 --- */
 
-        /* 깊고 짙은 붉은 비네트 (화면 중심 근처까지 깊게 조여듬) */
+        /* 비네트 범위를 중심부 바로 앞까지 획기적으로 깊게 확장 */
         .vignette-deep-charge {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            /* 기존보다 훨씬 깊은 고농도 비네트 반경 설정 */
-            box-shadow: inset 0 0 350px rgba(180, 0, 20, 1), inset 0 0 120px rgba(80, 0, 0, 1);
+            box-shadow: inset 0 0 600px rgba(220, 0, 20, 1), inset 0 0 250px rgba(60, 0, 0, 1);
             z-index: 22;
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            animation: vignette-deep-pulse 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            animation: vignette-ultra-deep 1.0s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        /* 화면을 완전한 순백으로 강타한 후 부드럽게 사라지는 오버레이 */
+        /* 순백의 완전 덮침 후 훨씬 빠르고 기민한 페이드아웃 */
         .white-flash-overlay {
             position: absolute;
             top: 0;
@@ -90,8 +84,8 @@
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            /* 1.2초에 하얗게 완전히 덮고 1.8초까지 페이드아웃 */
-            animation: white-cover-fadeout 0.8s ease-out 1.15s forwards;
+            /* 빠른 속도로 덮었다가 싹 사라지는 페이드아웃 */
+            animation: white-cover-fast-fade 0.4s ease-out 1.0s forwards;
         }
 
         /* 컨텐츠 컨테이너 */
@@ -109,7 +103,7 @@
             margin: 0 auto;
         }
 
-        /* 성배 이미지: 애니메이션 없이 하얀 화면 속에서 즉시 배치된 후 페이드아웃 시 노출 */
+        /* 성배 이미지 래퍼 (하얀 장막 속에서 딜레이 없이 즉시 설치되도록 복구) */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -119,8 +113,8 @@
             background: transparent !important;
             margin-bottom: 20px;
             opacity: 0;
-            /* 하얀색이 덮인 시점(1.2초)에 모션 없이 즉시 출현 고정 */
-            animation: instant-appear 0.01s linear 1.2초지연_대체 1.2초 forwards;
+            will-change: opacity;
+            animation: instant-appear 0.01s linear 1.1s forwards;
         }
 
         .holy-grail-img {
@@ -136,7 +130,7 @@
             margin: 0 auto;
         }
 
-        /* 본제목: 페이드아웃이 끝나는 시점(1.8초)에 깔끔하게 등장 */
+        /* 본제목 (페이드 아웃 직후 등장) */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -152,10 +146,10 @@
             text-transform: uppercase;
             opacity: 0;
             will-change: opacity;
-            animation: fade-in 0.5s ease-out 1.85s forwards;
+            animation: fade-in 0.4s ease-out 1.35s forwards;
         }
 
-        /* 소제목: 본제목 등장 직후 연달아 노출 */
+        /* 소제목 */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -165,7 +159,7 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
             opacity: 0;
-            animation: fade-in 0.8s ease-out 2.1s forwards;
+            animation: fade-in 0.6s ease-out 1.55s forwards;
         }
 
         /* 화면 우측 하단 워터마크 */
@@ -179,40 +173,40 @@
             z-index: 20;
             pointer-events: none;
             opacity: 0;
-            animation: fade-in 1.2s ease-out 2.3s forwards;
+            animation: fade-in 0.8s ease-out 1.75s forwards;
         }
 
         /* --- 동적 애니메이션 정의 --- */
 
-        /* 화면 깊은 곳까지 비네트가 드리워졌다가 소멸 */
-        @keyframes vignette-deep-pulse {
+        /* 화면을 매우 깊숙하게 침식하는 비네트 연출 */
+        @keyframes vignette-ultra-deep {
             0% {
                 opacity: 0;
-                box-shadow: inset 0 0 100px rgba(180, 0, 20, 0);
+                box-shadow: inset 0 0 100px rgba(220, 0, 20, 0);
             }
             85% {
                 opacity: 1;
-                box-shadow: inset 0 0 450px rgba(240, 10, 30, 1);
+                box-shadow: inset 0 0 700px rgba(255, 10, 30, 1);
             }
             100% {
                 opacity: 0;
             }
         }
 
-        /* 순백의 완전 덮침 및 페이드아웃 연출 */
-        @keyframes white-cover-fadeout {
+        /* 순백 덮침 후 한층 빠르고 슬림해진 페이드아웃 */
+        @keyframes white-cover-fast-fade {
             0% {
                 opacity: 0;
             }
-            20% {
-                opacity: 1; /* 완전히 하얗게 덮음 */
+            25% {
+                opacity: 1;
             }
             100% {
-                opacity: 0; /* 부드럽게 하얀색이 사라짐 */
+                opacity: 0;
             }
         }
 
-        /* 어떠한 움직임 없이 하얀 장막 안에서 즉시 노출 고정 */
+        /* 성배 이미지 즉시 출력 고정 */
         @keyframes instant-appear {
             0% {
                 opacity: 0;
@@ -220,16 +214,6 @@
             100% {
                 opacity: 1;
             }
-        }
-
-        /* 카메라 임팩트 셰이크 */
-        @keyframes camera-impact {
-            0% { transform: translate(0, 0); }
-            20% { transform: translate(-10px, 6px); }
-            40% { transform: translate(8px, -8px); }
-            60% { transform: translate(-5px, 4px); }
-            80% { transform: translate(3px, -2px); }
-            100% { transform: translate(0, 0); }
         }
 
         @keyframes grail-gentle-float {
@@ -261,18 +245,18 @@
     <!-- 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
     <div class="red-dust-effect"></div>
 
-    <!-- 비네트 붉은 충전 및 순백 덮침 레이어 -->
+    <!-- 초고농도 극대화 비네트 충전 및 하얀 페이드 오버레이 레이어 -->
     <div class="vignette-deep-charge"></div>
     <div class="white-flash-overlay"></div>
 
     <!-- 컨텐츠 레이어 -->
     <main class="content-container">
-        <!-- 1. 성배 이미지 (하얀 장막 속 무이펙트 즉시 설치) -->
+        <!-- 1. 성배 이미지 (정상 출력 복구) -->
         <div class="holy-grail-wrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
 
-        <!-- 2. 본제목 (페이드아웃 완료 후 등장) -->
+        <!-- 2. 본제목 -->
         <h1 class="main-title">성배전쟁</h1>
 
         <!-- 3. 소제목 -->
@@ -282,11 +266,5 @@
     <!-- 화면 우측 하단 워터마크 -->
     <footer class="watermark">Made by 사과사과</footer>
 
-    <script>
-        // 순백 덮침 및 성배 배치 완료 시점(1.2초)에 맞춰 정밀 카메라 셰이크 동기화
-        setTimeout(() => {
-            document.body.classList.add('shake-active');
-        }, 1200);
-    </script>
 </body>
 </html>
