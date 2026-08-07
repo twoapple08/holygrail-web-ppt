@@ -208,18 +208,20 @@
             cursor: pointer;
             user-select: none;
             opacity: 0;
-            pointer-events: auto;
+            pointer-events: none;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
         }
 
+        /* 페이드인 후 느린 점멸 연출 가동 */
         .press-start-btn.animate {
-            animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
+            pointer-events: auto;
+            animation: press-start-appear 1.0s ease-out forwards, slow-blink-loop 2.8s infinite alternate ease-in-out 1.0s;
         }
 
         /* 마우스 호버 시 점멸 일시 정지 및 불투명도 100% 선명 고정 */
         .press-start-btn:hover {
-            animation-play-state: paused !important; /* 깜빡임 일시 정지 */
-            opacity: 1 !important; /* 선명하게 고정 */
+            animation-play-state: paused !important;
+            opacity: 1 !important;
             color: #ffffff;
             text-shadow: 0 0 15px rgba(255, 50, 50, 0.85), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
@@ -305,7 +307,17 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* PRESS TO START 회색 텍스트 느린 점멸 루프 */
+        /* PRESS TO START 부드러운 페이드인 */
+        @keyframes press-start-appear {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 0.85;
+            }
+        }
+
+        /* PRESS TO START 느린 점멸 루프 */
         @keyframes slow-blink-loop {
             0% {
                 opacity: 0.2;
@@ -376,7 +388,7 @@
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="volume-control-box">
             <span class="volume-label">BGM</span>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.4">
+            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
         </div>
         <footer class="watermark">Made by 사과사과</footer>
     </div>
@@ -410,7 +422,7 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. BGM 재생 설정: 초기 음량 40%(0.4) 지정 및 정확히 0.7초(700ms) 지연 재생
+            // 2. BGM 재생 설정: 초기 음량 20%(0.2) 지정 및 정확히 0.7초(700ms) 지연 재생
             if (bgm) {
                 bgm.volume = parseFloat(volumeSlider.value);
                 setTimeout(() => {
@@ -440,16 +452,16 @@
                 mainTitle.classList.add('animate');
             }, 2200);
 
-            // 7. 소제목, PRESS TO START, 워터마크 및 볼륨 조절기 순차 페이드인
+            // 7. 소제목, 워터마크 및 볼륨 조절기 페이드인 (2.8초)
             setTimeout(() => {
                 subTitle.classList.add('animate');
                 controlsGroup.classList.add('animate');
             }, 2800);
 
-            // 8. PRESS TO START 버튼 느린 점멸 루프 시작
+            // 8. PRESS TO START 버튼: 소제목 등장 약 2초 뒤(4.8초) 페이드인 및 점멸 작동
             setTimeout(() => {
                 pressStartBtn.classList.add('animate');
-            }, 3200);
+            }, 4800);
         });
     </script>
 </body>
