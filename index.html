@@ -66,7 +66,7 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 신규개념 획득 알림 모션 (0~50% 페이드인, 50~100% 페이드아웃, 끊김 없는 부드러운 이동) --- */
+        /* --- 신규개념 획득 알림 모션 --- */
         #acquireToastContainer {
             position: absolute;
             top: 30px;
@@ -131,6 +131,36 @@
             cursor: default !important;
             text-shadow: none !important;
             pointer-events: none !important;
+        }
+
+        /* --- 어록 속성 (연하게 일렁이는 흰색 글로우 & 클릭 시 0.5초 페이드아웃) --- */
+        .description-quote {
+            font-style: italic;
+            color: rgba(235, 225, 210, 0.9);
+            display: inline-block;
+            cursor: pointer;
+            user-select: none;
+            animation: quote-gentle-glow 2.5s infinite alternate ease-in-out;
+            transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.5s ease;
+        }
+
+        .description-quote:hover {
+            color: #ffffff;
+            transform: scale(1.02);
+        }
+
+        .description-quote.glow-fade-out {
+            animation: none !important;
+            text-shadow: none !important;
+        }
+
+        @keyframes quote-gentle-glow {
+            0% {
+                text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+            }
+            100% {
+                text-shadow: 0 0 14px rgba(255, 255, 255, 0.8), 0 0 22px rgba(255, 255, 255, 0.5);
+            }
         }
 
         /* --- 0. 최초 접속 화면 우측 하단 전체화면 안내 문구 --- */
@@ -213,7 +243,7 @@
             transform: translateY(-10px);
         }
 
-        /* 페이트 로고 감싸는 레이아웃 (붉은 계열 글로우 적용 및 사이즈 축소) */
+        /* 페이트 로고 감싸는 레이아웃 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -239,7 +269,7 @@
             margin: 0 auto;
         }
 
-        /* 소제목 (밝기 상향 및 흰색 글로우, 단일 확장 대시 적용) */
+        /* 소제목 */
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -466,21 +496,6 @@
             word-break: keep-all;
         }
 
-        .description-quote {
-            font-style: italic;
-            color: rgba(235, 225, 210, 0.9);
-            display: inline-block;
-            cursor: pointer;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
-            user-select: none;
-        }
-
-        .description-quote:hover {
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 8px rgba(255, 255, 255, 0.8);
-            transform: scale(1.02);
-        }
-
         .description-quote-author {
             font-style: normal;
             font-size: 1.15rem;
@@ -659,7 +674,7 @@
 </head>
 <body>
 
-    <!-- 신규개념 획득 토스트 알림 컨테이너 (column-reverse로 다중 알람 밀림/순간이동 방지) -->
+    <!-- 신규개념 획득 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
     <!-- BGM & SFX 레이어 -->
@@ -715,6 +730,7 @@
         <div class="detail-description-right">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
+                <!-- 어록 속성 영역 (클릭 유도 글로우 일렁임 & 최초 클릭 시 0.5초 글로우 페이드아웃) -->
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
@@ -823,7 +839,12 @@
                 });
             }
 
+            // 어록 클릭 시 음성 재생 및 0.5초 글로우 페이드아웃 처리
             kotomineTrigger.addEventListener('click', function() {
+                if (!this.classList.contains('glow-fade-out')) {
+                    this.classList.add('glow-fade-out');
+                }
+
                 if (kotomineSfx) {
                     kotomineSfx.volume = parseFloat(voiceSlider.value);
                     kotomineSfx.currentTime = 0;
@@ -1000,3 +1021,4 @@
     </script>
 </body>
 </html>
+
