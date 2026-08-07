@@ -140,7 +140,6 @@
             background: transparent !important;
             margin-bottom: 15px;
             opacity: 0;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .holy-grail-wrapper.animate {
@@ -177,7 +176,6 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .main-title.animate {
@@ -197,7 +195,6 @@
             padding: 0 15px;
             margin-bottom: 35px;
             opacity: 0;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .sub-title.animate {
@@ -208,7 +205,7 @@
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition: opacity 0.8s ease-out;
             transform: translateX(2px);
             position: relative;
         }
@@ -251,13 +248,10 @@
             pointer-events: none !important;
         }
 
-        /* --- 성배 및 제목 전용 은은한 페이드아웃 퇴장 클래스 (강제 트랜지션 적용) --- */
+        /* --- 성배 및 제목 전용 애니메이션 덮어쓰기 페이드아웃 클래스 --- */
         .slow-fade-out {
-            animation: none !important;
-            opacity: 0 !important;
-            transform: translateY(-8px) scale(0.96) !important;
+            animation: smooth-fade-out-down 1.2s ease-out forwards !important;
             pointer-events: none !important;
-            transition: opacity 1.2s ease-out, transform 1.2s ease-out !important;
         }
 
         /* --- 화면 좌측 하단 고정 레이아웃 ((화살표)뒤로가기 버튼) --- */
@@ -268,7 +262,7 @@
             z-index: 20;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.5s ease-out;
+            transition: opacity 0.6s ease-in-out;
         }
 
         /* 타이틀 요소 완파 후 좌측 하단 등장 */
@@ -390,6 +384,18 @@
         }
 
         /* --- 키프레임 애니메이션 정의 --- */
+
+        /* 타이틀 및 성배 전용 천천히 페이드아웃 애니메이션 */
+        @keyframes smooth-fade-out-down {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-8px) scale(0.96);
+            }
+        }
 
         /* 단순 발광 후 빠른 페이드아웃 모션 */
         @keyframes simple-flash-fade {
@@ -563,14 +569,14 @@
             // 2. 프투스 버튼 섬광 발광 후 빠른 소멸 (0.0초)
             pressStartWrapper.classList.add('flash-exit');
 
-            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들 부드럽게 페이드아웃 시작
+            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들 완벽한 페이드아웃 시작
             setTimeout(() => {
                 grailWrapper.classList.add('slow-fade-out');
                 mainTitle.classList.add('slow-fade-out');
                 subTitle.classList.add('slow-fade-out');
             }, 250);
 
-            // 4. 타이틀 페이드아웃 완파 시점(0.25s + 1.2s 트랜지션 = 1.45s 후), 좌측 하단 뒤로가기 등장
+            // 4. 타이틀 페이드아웃 완파 시점(0.25s + 1.2s = 1.45s 후), 좌측 하단 뒤로가기 등장
             setTimeout(() => {
                 backBtnWrapper.classList.add('show');
             }, 1450);
@@ -581,7 +587,7 @@
             // 1. 좌측 하단 뒤로가기 버튼 즉각 페이드아웃
             backBtnWrapper.classList.remove('show');
 
-            // 2. 성배 이미지, 본제목, 소제목 부드럽게 페이드인 복원 (0.2초 시점)
+            // 2. 성배 이미지, 본제목, 소제목 페이드인 복원 (0.2초 시점)
             setTimeout(() => {
                 grailWrapper.classList.remove('slow-fade-out');
                 mainTitle.classList.remove('slow-fade-out');
@@ -592,7 +598,6 @@
             setTimeout(() => {
                 pressStartWrapper.classList.remove('flash-exit');
                 pressStartWrapper.style.opacity = '0';
-                // 리플로우 강제 유발 후 opacity 1 복원
                 void pressStartWrapper.offsetWidth;
                 pressStartWrapper.style.opacity = '1';
                 pressStartWrapper.style.pointerEvents = 'auto';
