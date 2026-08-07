@@ -95,6 +95,30 @@
             opacity: 1;
         }
 
+        /* --- 신규개념 (노란색 하이라이트 키워드) 전용 스타일 --- */
+        .interactive-keyword {
+            color: #ffd700 !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+            user-select: none;
+            display: inline-block;
+        }
+
+        .interactive-keyword:hover {
+            color: #ffffff !important;
+            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
+        }
+
+        .interactive-keyword.clicked {
+            color: #d0c5b5 !important;
+            font-weight: 400 !important;
+            cursor: default !important;
+            text-shadow: none !important;
+            pointer-events: none !important;
+        }
+
         /* --- 0. 최초 접속 화면 우측 하단 전체화면 안내 문구 --- */
         .initial-notice-right {
             position: absolute;
@@ -470,29 +494,6 @@
             user-select: none;
         }
 
-        /* 클릭 가능한 노란색 하이라이트 키워드 스타일 */
-        .interactive-keyword {
-            color: #ffd700;
-            font-weight: 700;
-            cursor: pointer;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-            user-select: none;
-        }
-
-        .interactive-keyword:hover {
-            color: #ffffff;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
-        }
-
-        .interactive-keyword.clicked {
-            color: #d0c5b5 !important;
-            font-weight: 400 !important;
-            cursor: default !important;
-            text-shadow: none !important;
-            pointer-events: none !important;
-        }
-
         /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
         .bottom-left-controls {
             position: absolute;
@@ -754,224 +755,227 @@
     </div>
 
     <script>
-        const bgm = document.getElementById('bgm');
-        const pstSfx = document.getElementById('pstSfx');
-        const wordSfx = document.getElementById('wordSfx');
-        const kotomineSfx = document.getElementById('kotomineSfx');
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgm = document.getElementById('bgm');
+            const pstSfx = document.getElementById('pstSfx');
+            const wordSfx = document.getElementById('wordSfx');
+            const kotomineSfx = document.getElementById('kotomineSfx');
 
-        const volumeSlider = document.getElementById('volumeSlider');
-        const seSlider = document.getElementById('seSlider');
-        const voiceSlider = document.getElementById('voiceSlider');
+            const volumeSlider = document.getElementById('volumeSlider');
+            const seSlider = document.getElementById('seSlider');
+            const voiceSlider = document.getElementById('voiceSlider');
 
-        const startBtn = document.getElementById('startBtn');
-        const pressStartBtn = document.getElementById('pressStartBtn');
-        const centerGrailBtn = document.getElementById('centerGrailBtn');
-        const backBtn = document.getElementById('backBtn');
-        const kotomineTrigger = document.getElementById('kotomineTrigger');
-        const acquireToast = document.getElementById('acquireToast');
+            const startBtn = document.getElementById('startBtn');
+            const pressStartBtn = document.getElementById('pressStartBtn');
+            const centerGrailBtn = document.getElementById('centerGrailBtn');
+            const backBtn = document.getElementById('backBtn');
+            const kotomineTrigger = document.getElementById('kotomineTrigger');
+            const acquireToast = document.getElementById('acquireToast');
 
-        const initialNotice = document.getElementById('initialNotice');
-        const grailWrapper = document.getElementById('grailWrapper');
-        const mainTitle = document.getElementById('mainTitle');
-        const subTitle = document.getElementById('subTitle');
-        const pressStartWrapper = document.getElementById('pressStartWrapper');
-        const introNotice = document.getElementById('introNotice');
+            const initialNotice = document.getElementById('initialNotice');
+            const grailWrapper = document.getElementById('grailWrapper');
+            const mainTitle = document.getElementById('mainTitle');
+            const subTitle = document.getElementById('subTitle');
+            const pressStartWrapper = document.getElementById('pressStartWrapper');
+            const introNotice = document.getElementById('introNotice');
 
-        const centerGrailWrapper = document.getElementById('centerGrailWrapper');
-        const grailDetailView = document.getElementById('grailDetailView');
-        const backBtnWrapper = document.getElementById('backBtnWrapper');
+            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
+            const grailDetailView = document.getElementById('grailDetailView');
+            const backBtnWrapper = document.getElementById('backBtnWrapper');
 
-        let currentStage = 1;
-        let toastTimeout = null;
+            let currentStage = 1;
+            let toastTimeout = null;
 
-        // 볼륨 연동
-        volumeSlider.addEventListener('input', function() {
-            if (bgm) bgm.volume = parseFloat(this.value);
-        });
+            // 볼륨 연동
+            volumeSlider.addEventListener('input', function() {
+                if (bgm) bgm.volume = parseFloat(this.value);
+            });
 
-        seSlider.addEventListener('input', function() {
-            if (pstSfx) pstSfx.volume = parseFloat(this.value);
-            if (wordSfx) wordSfx.volume = parseFloat(this.value);
-        });
+            seSlider.addEventListener('input', function() {
+                if (pstSfx) pstSfx.volume = parseFloat(this.value);
+                if (wordSfx) wordSfx.volume = parseFloat(this.value);
+            });
 
-        voiceSlider.addEventListener('input', function() {
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
-        });
+            voiceSlider.addEventListener('input', function() {
+                if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
+            });
 
-        seSlider.addEventListener('change', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-        });
-
-        // 코토미네 보이스 4.4초 자동 정지 제어
-        if (kotomineSfx) {
-            kotomineSfx.addEventListener('timeupdate', function() {
-                if (this.currentTime >= 4.4) {
-                    this.pause();
-                    this.currentTime = 0;
+            seSlider.addEventListener('change', function() {
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
                 }
             });
-        }
 
-        kotomineTrigger.addEventListener('click', function() {
+            // 코토미네 보이스 4.4초 자동 정지 제어
             if (kotomineSfx) {
-                kotomineSfx.volume = parseFloat(voiceSlider.value);
-                kotomineSfx.currentTime = 0;
-                kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
-            }
-        });
-
-        // 단어 획득 알림 모션 함수
-        function showAcquireToast(wordText) {
-            acquireToast.innerText = `${wordText}를 획득했습니다.`;
-            acquireToast.classList.add('show');
-
-            if (toastTimeout) clearTimeout(toastTimeout);
-
-            toastTimeout = setTimeout(() => {
-                acquireToast.classList.remove('show');
-            }, 2500);
-        }
-
-        // 키워드 클릭 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
-        const keywords = document.querySelectorAll('.interactive-keyword');
-        
-        keywords.forEach(el => {
-            const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
-            
-            if (sessionStorage.getItem(key) === 'true') {
-                el.classList.add('clicked');
-            }
-
-            el.addEventListener('click', function() {
-                if (!this.classList.contains('clicked')) {
-                    this.classList.add('clicked');
-                    sessionStorage.setItem(key, 'true');
-
-                    // 1. 단어 획득 효과음 재생
-                    if (wordSfx) {
-                        wordSfx.volume = parseFloat(seSlider.value);
-                        wordSfx.currentTime = 0;
-                        wordSfx.play().catch(e => console.log(e));
+                kotomineSfx.addEventListener('timeupdate', function() {
+                    if (this.currentTime >= 4.4) {
+                        this.pause();
+                        this.currentTime = 0;
                     }
+                });
+            }
 
-                    // 2. 상단 드롭다운 알림 팝업 출현
-                    showAcquireToast(this.innerText.trim());
+            kotomineTrigger.addEventListener('click', function() {
+                if (kotomineSfx) {
+                    kotomineSfx.volume = parseFloat(voiceSlider.value);
+                    kotomineSfx.currentTime = 0;
+                    kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
                 }
             });
-        });
 
-        pressStartBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.volume = parseFloat(seSlider.value);
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
+            // 단어 획득 알림 모션 함수
+            function showAcquireToast(wordText) {
+                acquireToast.innerText = `${wordText}를 획득했습니다.`;
+                acquireToast.classList.add('show');
+
+                if (toastTimeout) clearTimeout(toastTimeout);
+
+                toastTimeout = setTimeout(() => {
+                    acquireToast.classList.remove('show');
+                }, 2500);
             }
 
-            pressStartWrapper.classList.add('flash-exit');
+            // 신규개념(노란색 키워드) 클릭 및 상태 관리 (sessionStorage 적용)
+            const keywords = document.querySelectorAll('.interactive-keyword');
+            
+            keywords.forEach(el => {
+                const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
+                
+                // 페이지 로드 시 기존 세션 이력이 있으면 비활성화
+                if (sessionStorage.getItem(key) === 'true') {
+                    el.classList.add('clicked');
+                }
 
-            setTimeout(() => {
-                grailWrapper.classList.add('slow-fade-out');
-                mainTitle.classList.add('slow-fade-out');
-                subTitle.classList.add('slow-fade-out');
-                introNotice.classList.add('slow-fade-out');
-            }, 250);
+                el.addEventListener('click', function() {
+                    if (!this.classList.contains('clicked')) {
+                        this.classList.add('clicked');
+                        sessionStorage.setItem(key, 'true');
 
-            setTimeout(() => {
-                centerGrailWrapper.classList.add('show');
-                backBtnWrapper.classList.add('show');
-                currentStage = 2;
-            }, 1450);
-        });
+                        // 1. 효과음 재생
+                        if (wordSfx) {
+                            wordSfx.volume = parseFloat(seSlider.value);
+                            wordSfx.currentTime = 0;
+                            wordSfx.play().catch(e => console.log(e));
+                        }
 
-        centerGrailBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
+                        // 2. 알림 팝업 출력
+                        showAcquireToast(this.innerText.trim());
+                    }
+                });
+            });
 
-            centerGrailWrapper.classList.add('move-top-left');
+            pressStartBtn.addEventListener('click', function() {
+                if (pstSfx) {
+                    pstSfx.volume = parseFloat(seSlider.value);
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
 
-            setTimeout(() => {
-                grailDetailView.classList.add('show');
-                currentStage = 3;
-            }, 300);
-        });
+                pressStartWrapper.classList.add('flash-exit');
 
-        backBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-
-            if (kotomineSfx) {
-                kotomineSfx.pause();
-                kotomineSfx.currentTime = 0;
-            }
-
-            if (currentStage === 3) {
-                grailDetailView.classList.remove('show');
                 setTimeout(() => {
-                    centerGrailWrapper.classList.remove('move-top-left');
+                    grailWrapper.classList.add('slow-fade-out');
+                    mainTitle.classList.add('slow-fade-out');
+                    subTitle.classList.add('slow-fade-out');
+                    introNotice.classList.add('slow-fade-out');
+                }, 250);
+
+                setTimeout(() => {
+                    centerGrailWrapper.classList.add('show');
+                    backBtnWrapper.classList.add('show');
                     currentStage = 2;
+                }, 1450);
+            });
+
+            centerGrailBtn.addEventListener('click', function() {
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                centerGrailWrapper.classList.add('move-top-left');
+
+                setTimeout(() => {
+                    grailDetailView.classList.add('show');
+                    currentStage = 3;
                 }, 300);
+            });
 
-            } else if (currentStage === 2) {
-                centerGrailWrapper.classList.remove('show');
-                backBtnWrapper.classList.remove('show');
+            backBtn.addEventListener('click', function() {
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                if (kotomineSfx) {
+                    kotomineSfx.pause();
+                    kotomineSfx.currentTime = 0;
+                }
+
+                if (currentStage === 3) {
+                    grailDetailView.classList.remove('show');
+                    setTimeout(() => {
+                        centerGrailWrapper.classList.remove('move-top-left');
+                        currentStage = 2;
+                    }, 300);
+
+                } else if (currentStage === 2) {
+                    centerGrailWrapper.classList.remove('show');
+                    backBtnWrapper.classList.remove('show');
+
+                    setTimeout(() => {
+                        grailWrapper.classList.remove('slow-fade-out');
+                        mainTitle.classList.remove('slow-fade-out');
+                        subTitle.classList.remove('slow-fade-out');
+                        introNotice.classList.remove('slow-fade-out');
+                    }, 300);
+
+                    setTimeout(() => {
+                        pressStartWrapper.classList.remove('flash-exit');
+                        pressStartWrapper.style.opacity = '0';
+                        void pressStartWrapper.offsetWidth;
+                        pressStartWrapper.style.opacity = '1';
+                        pressStartWrapper.style.pointerEvents = 'auto';
+                        currentStage = 1;
+                    }, 800);
+                }
+            });
+
+            startBtn.addEventListener('click', function() {
+                const btnContainer = document.getElementById('btnContainer');
+                const bgLayer = document.getElementById('bgLayer');
+                const dustEffect = document.getElementById('dustEffect');
+                const controlsGroup = document.getElementById('controlsGroup');
+
+                btnContainer.classList.add('hide');
+                initialNotice.classList.add('hide');
+
+                if (bgm) {
+                    bgm.volume = parseFloat(volumeSlider.value);
+                    setTimeout(() => {
+                        bgm.play().catch(e => console.log(e));
+                    }, 700);
+                }
+
+                if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
+                if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
+                if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
+
+                setTimeout(() => bgLayer.classList.add('active'), 300);
+                setTimeout(() => dustEffect.classList.add('active'), 500);
+                setTimeout(() => grailWrapper.classList.add('animate'), 1400);
+                setTimeout(() => mainTitle.classList.add('animate'), 2200);
 
                 setTimeout(() => {
-                    grailWrapper.classList.remove('slow-fade-out');
-                    mainTitle.classList.remove('slow-fade-out');
-                    subTitle.classList.remove('slow-fade-out');
-                    introNotice.classList.remove('slow-fade-out');
-                }, 300);
+                    subTitle.classList.add('animate');
+                    introNotice.classList.add('animate');
+                    controlsGroup.classList.add('animate');
+                }, 2800);
 
-                setTimeout(() => {
-                    pressStartWrapper.classList.remove('flash-exit');
-                    pressStartWrapper.style.opacity = '0';
-                    void pressStartWrapper.offsetWidth;
-                    pressStartWrapper.style.opacity = '1';
-                    pressStartWrapper.style.pointerEvents = 'auto';
-                    currentStage = 1;
-                }, 800);
-            }
-        });
-
-        startBtn.addEventListener('click', function() {
-            const btnContainer = document.getElementById('btnContainer');
-            const bgLayer = document.getElementById('bgLayer');
-            const dustEffect = document.getElementById('dustEffect');
-            const controlsGroup = document.getElementById('controlsGroup');
-
-            btnContainer.classList.add('hide');
-            initialNotice.classList.add('hide');
-
-            if (bgm) {
-                bgm.volume = parseFloat(volumeSlider.value);
-                setTimeout(() => {
-                    bgm.play().catch(e => console.log(e));
-                }, 700);
-            }
-
-            if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-            if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
-
-            setTimeout(() => bgLayer.classList.add('active'), 300);
-            setTimeout(() => dustEffect.classList.add('active'), 500);
-            setTimeout(() => grailWrapper.classList.add('animate'), 1400);
-            setTimeout(() => mainTitle.classList.add('animate'), 2200);
-
-            setTimeout(() => {
-                subTitle.classList.add('animate');
-                introNotice.classList.add('animate');
-                controlsGroup.classList.add('animate');
-            }, 2800);
-
-            setTimeout(() => pressStartWrapper.classList.add('animate'), 3500);
+                setTimeout(() => pressStartWrapper.classList.add('animate'), 3500);
+            });
         });
     </script>
 </body>
