@@ -140,7 +140,7 @@
             background: transparent !important;
             margin-bottom: 15px;
             opacity: 0;
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .holy-grail-wrapper.animate {
@@ -177,7 +177,7 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .main-title.animate {
@@ -197,7 +197,7 @@
             padding: 0 15px;
             margin-bottom: 35px;
             opacity: 0;
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+            transition: opacity 1.0s cubic-bezier(0.4, 0, 0.2, 1), transform 1.0s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sub-title.animate {
@@ -245,22 +245,62 @@
             transform: scale(1.08);
         }
 
-        /* --- 단순 섬광 후 빠른 페이드아웃 클래스 --- */
+        /* --- 프투스 전용 섬광 후 빠른 소멸 클래스 --- */
         .press-start-wrapper.flash-exit {
             animation: simple-flash-fade 0.25s ease-out forwards !important;
             pointer-events: none !important;
         }
 
-        /* --- 성배 및 제목 전용 신속한 페이드아웃 퇴장 클래스 --- */
-        .fade-out-exit {
+        /* --- 성배 및 제목 전용 천천히 페이드아웃 퇴장 클래스 --- */
+        .slow-fade-out {
             animation: none !important;
             opacity: 0 !important;
-            transform: translateY(-4px) scale(0.97) !important;
+            transform: translateY(-8px) scale(0.96) !important;
             pointer-events: none !important;
-            transition: opacity 0.45s ease-out, transform 0.45s ease-out !important;
         }
 
-        /* --- 우측 하단 컨트롤러 레이아웃 (SFX + BGM 조절기 + 워터마크) --- */
+        /* --- 화면 좌측 하단 고정 레이아웃 ((화살표)뒤로가기 버튼) --- */
+        .bottom-left-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 25px;
+            z-index: 20;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in;
+        }
+
+        /* 타이틀 요소 완파 후 좌측 하단 등장 */
+        .bottom-left-controls.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .fate-back-btn {
+            font-family: 'Song Myung', serif;
+            font-size: 1.0rem;
+            font-weight: 700;
+            color: #c0c0c8;
+            background: rgba(20, 0, 0, 0.6);
+            border: 1px solid rgba(160, 0, 0, 0.7);
+            padding: 8px 24px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 0 10px rgba(100, 0, 0, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .fate-back-btn:hover {
+            color: #ffffff;
+            background: rgba(50, 0, 0, 0.8);
+            border-color: #ff4444;
+            box-shadow: 0 0 18px rgba(255, 50, 50, 0.7);
+            transform: scale(1.03);
+        }
+
+        /* --- 화면 우측 하단 레이아웃 (SFX/BGM 조절기 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -448,6 +488,11 @@
         </div>
     </main>
 
+    <!-- 화면 좌측 하단 레이아웃 (타이틀 퇴장 후 등장하는 (화살표)뒤로가기 버튼) -->
+    <div class="bottom-left-controls" id="backBtnWrapper">
+        <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
+    </div>
+
     <!-- 화면 우측 하단 사운드 컨트롤러 레이어 (SFX/BGM 슬라이더 + 워터마크) -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
@@ -476,6 +521,8 @@
         const mainTitle = document.getElementById('mainTitle');
         const subTitle = document.getElementById('subTitle');
         const pressStartWrapper = document.getElementById('pressStartWrapper');
+        const backBtnWrapper = document.getElementById('backBtnWrapper');
+        const backBtn = document.getElementById('backBtn');
 
         // BGM 슬라이더 변경 시 즉시 BGM 볼륨 조절
         volumeSlider.addEventListener('input', function() {
@@ -501,7 +548,7 @@
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 발광 후 빠르게 소멸 -> 성배 및 제목 즉각 페이드아웃
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 발광 후 빠르게 소멸 -> 성배 및 제목 천천히 페이드아웃 -> 좌측 하단 뒤로가기 등장
         pressStartBtn.addEventListener('click', function() {
             // 1. 클릭 효과음 재생 (SFX 슬라이더 음량 반영)
             if (pstSfx) {
@@ -515,12 +562,24 @@
             // 2. 프투스 버튼 순백색 섬광 후 빠르게 소멸 (0.0초)
             pressStartWrapper.classList.add('flash-exit');
 
-            // 3. 섬광 직후(0.15초 뒤) 성배 이미지 및 제목들 즉각 부드럽게 페이드아웃
+            // 3. 프투스 소멸 후(0.4초 뒤), 성배 이미지 및 제목들이 천천히 페이드아웃 시작
             setTimeout(() => {
-                grailWrapper.classList.add('fade-out-exit');
-                mainTitle.classList.add('fade-out-exit');
-                subTitle.classList.add('fade-out-exit');
-            }, 150);
+                grailWrapper.classList.add('slow-fade-out');
+                mainTitle.classList.add('slow-fade-out');
+                subTitle.classList.add('slow-fade-out');
+            }, 400);
+
+            // 4. 타이틀 요소들이 완전히 천천히 다 사라진 시점(0.4s + 1.0s 트랜지션 = 1.4s 후), 좌측 하단 뒤로가기 버튼 등장
+            setTimeout(() => {
+                backBtnWrapper.classList.add('show');
+                console.log("모든 타이틀 요소가 사라지고 좌측 하단 뒤로가기 버튼이 활성화되었습니다.");
+            }, 1400);
+        });
+
+        // 뒤로가기 버튼 클릭 이벤트 (차후 구현)
+        backBtn.addEventListener('click', function() {
+            console.log("좌측 하단 뒤로가기 버튼이 클릭되었습니다. (차후 페이지 전환 로직 연결 가능)");
+            // 예: location.reload(); 또는 메인 로직 되돌리기 구현
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
