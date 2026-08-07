@@ -379,8 +379,7 @@
         .tab-item-wrapper {
             position: relative;
             display: inline-block;
-            transition: opacity 0.8s ease-in-out, filter 1.0s ease-in-out;
-            will-change: transform, opacity;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .tab-item-btn {
@@ -410,21 +409,44 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* FLIP을 가동하여 좌측 상단으로 고정시키는 클래스 */
-        .tab-item-wrapper.move-top-left-fixed {
-            position: fixed !important;
-            top: 7% !important;
-            left: 6% !important;
-            transform: translate(0, 0) scale(0.75) !important;
-            transform-origin: top left !important;
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
-            pointer-events: none !important;
-            z-index: 35 !important;
-        }
-
         .tab-item-wrapper.fade-out-stay {
             opacity: 0 !important;
             pointer-events: none !important;
+        }
+
+        .tab-item-wrapper.hidden-original {
+            visibility: hidden !important;
+        }
+
+        /* --- 클론 비행 텍스트 스타일 (자유 독립 뷰포트 레이어) --- */
+        .ghost-tab-clone {
+            position: fixed;
+            z-index: 99;
+            pointer-events: none;
+            font-family: 'Song Myung', serif;
+            font-weight: 700;
+            color: #fffdfa;
+            letter-spacing: 8px;
+            white-space: nowrap;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 40px rgba(255, 215, 0, 0.8);
+            transform-origin: top left;
+            transition: top 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
+                        left 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.0s cubic-bezier(0.16, 1, 0.3, 1),
+                        filter 1.0s ease-in-out;
+            will-change: top, left, transform;
+        }
+
+        .ghost-tab-clone.move-to-target {
+            top: 7vh !important;
+            left: 6vw !important;
+            transform: scale(0.75) !important;
+            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
         }
 
         /* --- 5. 상세 페이지 일반 레이아웃 --- */
@@ -797,6 +819,7 @@
             let currentStage = 1;
             let currentActiveTabId = null;
             let activeToastCount = 0;
+            let activeGhostClone = null; // 활성화된 클론 보관
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -916,7 +939,7 @@
                         btn.className = 'tab-item-btn';
                         btn.innerText = CONCEPT_REGISTRY[id].name;
                         btn.style.fontSize = fontSizeRem + 'rem';
-                        btn.addEventListener('click', (e) => openTabDetailView(id, wrapperDiv));
+                        btn.addEventListener('click', (e) => openTabDetailView(id, wrapperDiv, btn));
                         
                         wrapperDiv.appendChild(btn);
                         rowDiv.appendChild(wrapperDiv);
@@ -945,8 +968,8 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // ★ FLIP (First, Last, Invert, Play) 애니메이션 보정 엔진가동 ★
-            function openTabDetailView(selectedId, selectedWrapper) {
+            // ★ 클론 스왑(Ghost Clone) 이동 연산 엔진 ★
+            function openTabDetailView(selectedId, selectedWrapper, selectedBtn) {
                 history.pushState({ stage: 3, id: selectedId }, '', '');
 
                 if (pstSfx) {
@@ -956,10 +979,22 @@
 
                 currentActiveTabId = selectedId;
 
-                // 1. FIRST: 현재 화면상 실제 시작 위치 측정
-                const firstRect = selectedWrapper.getBoundingClientRect();
+                // 1. 클릭된 원래 탭의 뷰포트 절대 위치 측정
+                const rect = selectedBtn.getBoundingClientRect();
 
-                // 선택받지 못한 탭들은 즉시 페이드 아웃
+                // 2. 완벽히 동일한 독립 클론(Ghost Element) 생성
+                const ghostClone = document.createElement('div');
+                ghostClone.className = 'ghost-tab-clone';
+                ghostClone.innerText = selectedBtn.innerText;
+                ghostClone.style.fontSize = selectedBtn.style.fontSize;
+                ghostClone.style.top = rect.top + 'px';
+                ghostClone.style.left = rect.left + 'px';
+                document.body.appendChild(ghostClone);
+
+                activeGhostClone = ghostClone;
+
+                // 3. 원래 그리드 탭 숨김 및 나머지 탭 페이드 아웃
+                selectedWrapper.classList.add('hidden-original');
                 const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                 allWrappers.forEach(wrap => {
                     if (wrap !== selectedWrapper) {
@@ -967,30 +1002,9 @@
                     }
                 });
 
-                // 2. LAST: 최종 좌측 상단 위치 클래스 고정
-                selectedWrapper.classList.add('move-top-left-fixed');
-                const lastRect = selectedWrapper.getBoundingClientRect();
-
-                // 3. INVERT: 시작점과 끝점의 거리 오차(ΔX, ΔY) 연산
-                const deltaX = firstRect.left - lastRect.left;
-                const deltaY = firstRect.top - lastRect.top;
-                const deltaScale = firstRect.width / lastRect.width;
-
-                // 4. PLAY: Web Animations API를 가동해 순간이동 없이 수평/수직 곡선을 따라 스르륵 이동
-                selectedWrapper.animate([
-                    {
-                        transform: `translate(${deltaX}px, ${deltaY}px) scale(${deltaScale})`,
-                        filter: 'brightness(1)'
-                    },
-                    {
-                        transform: 'translate(0, 0) scale(0.75)',
-                        filter: 'brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9))'
-                    }
-                ], {
-                    duration: 1000,
-                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
-                    fill: 'forwards'
-                });
+                // 4. 클론 텍스트 자유 좌측 상단 비행 가동 (Reflow 트리거)
+                void ghostClone.offsetWidth;
+                ghostClone.classList.add('move-to-target');
 
                 const targetView = document.getElementById('tabDetail_' + selectedId);
                 setTimeout(() => {
@@ -1050,10 +1064,16 @@
                         if (activeView) activeView.classList.remove('show');
                     }
 
+                    // 뒤로가기 시 활성화된 클론 제거 및 원래 탭 원복
+                    if (activeGhostClone) {
+                        activeGhostClone.remove();
+                        activeGhostClone = null;
+                    }
+
                     setTimeout(() => {
                         const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                         allWrappers.forEach(wrap => {
-                            wrap.classList.remove('move-top-left-fixed');
+                            wrap.classList.remove('hidden-original');
                             wrap.classList.remove('fade-out-stay');
                         });
                         
