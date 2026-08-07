@@ -186,7 +186,7 @@
             line-height: 1.6;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 15px rgba(0, 0, 0, 0.9);
             padding: 0 15px;
-            margin-bottom: 35px; /* 아래 PRESS TO START와의 간격 확보 */
+            margin-bottom: 35px;
             opacity: 0;
         }
 
@@ -209,16 +209,19 @@
             user-select: none;
             opacity: 0;
             pointer-events: auto;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
         }
 
         .press-start-btn.animate {
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
 
+        /* 마우스 호버 시 점멸 일시 정지 및 불투명도 100% 선명 고정 */
         .press-start-btn:hover {
+            animation-play-state: paused !important; /* 깜빡임 일시 정지 */
+            opacity: 1 !important; /* 선명하게 고정 */
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 0 0 8px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.85), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
         }
 
@@ -392,7 +395,6 @@
 
         // PRESS TO START 클릭 시 동작 이벤트 핸들러
         pressStartBtn.addEventListener('click', function() {
-            // 여기에 차후 전환할 화면/게임 로직이나 콘솔 이벤트 연동 가능
             console.log("PRESS TO START 버튼이 클릭되었습니다.");
         });
 
