@@ -363,40 +363,44 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 동적 생성되는 선택지 버튼 스타일 (일반) */
+        /* 동적 생성되는 단어 선택지 버튼 스타일 */
         .dynamic-choice-btn {
             font-family: 'Song Myung', serif;
-            font-size: 2rem;
+            font-size: 3.2rem;
             font-weight: 700;
-            color: #ffd700;
-            background: rgba(20, 0, 0, 0.85);
-            border: 2px solid #900000;
-            padding: 10px 30px;
-            letter-spacing: 4px;
-            cursor: pointer;
+            color: #fffdfa;
+            letter-spacing: 10px;
+            background: transparent;
+            border: none;
             outline: none;
-            box-shadow: 0 0 12px rgba(140, 0, 0, 0.6);
-            transition: all 0.3s ease;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            cursor: pointer;
+            user-select: none;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 40px rgba(255, 215, 0, 0.8);
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease, filter 0.3s ease;
         }
 
         .dynamic-choice-btn:hover {
             color: #ffffff;
-            background: rgba(60, 0, 0, 0.95);
-            border-color: #ff2222;
-            transform: scale(1.05);
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9);
+            transform: scale(1.08);
+            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 4개 모두 획득 시 진행 완료 후 돌아온 선택지 버튼들의 회색빛 비활성화 스타일 */
+        /* 4개 모두 획득 시 선택지 버튼들이 빛을 잃고 회색빛을 띠나, 선택(클릭)은 가능하도록 설정 */
         .dynamic-choice-btn.completed-gray {
-            color: rgba(160, 160, 160, 0.7) !important;
-            background: rgba(15, 15, 15, 0.7) !important;
-            border-color: rgba(80, 80, 80, 0.5) !important;
-            cursor: default !important;
-            text-shadow: none !important;
-            box-shadow: none !important;
-            pointer-events: none !important;
+            color: rgba(140, 140, 140, 0.7) !important;
+            text-shadow: 2px 2px 0px #300000 !important;
+            filter: grayscale(100%);
+        }
+
+        .dynamic-choice-btn.completed-gray:hover {
+            color: #ffffff !important;
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(200, 200, 200, 0.8) !important;
         }
 
         .center-grail-text-container.move-top-left {
@@ -743,10 +747,9 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 및 동적 선택지 추가 영역 -->
+    <!-- 2단계: 중앙 성배 및 획득한 단어들이 선택지로 추가되는 컨테이너 -->
     <div class="center-grail-text-container" id="centerGrailWrapper">
         <button class="center-grail-btn" id="centerGrailBtn">성배</button>
-        <!-- 획득한 단어들이 선택지로 추가되는 공간 -->
         <div id="dynamicChoicesContainer" style="display: flex; flex-direction: column; gap: 15px; align-items: center;"></div>
     </div>
 
@@ -871,7 +874,7 @@
         function showAcquireToast(wordText) {
             acquireToast.innerText = `${wordText}를 획득했습니다.`;
             acquireToast.classList.remove('animate-float');
-            void acquireToast.offsetWidth; // 리플로우 강제 초기화
+            void acquireToast.offsetWidth;
             acquireToast.classList.add('animate-float');
 
             if (toastTimeout) clearTimeout(toastTimeout);
@@ -880,7 +883,7 @@
             }, 3000);
         }
 
-        // 동적 선택지 렌더링 및 진행도 체크 함수
+        // 획득한 단어 선택지 생성 및 회색빛 상태 시각 효과 설정
         function renderDynamicChoices() {
             dynamicChoicesContainer.innerHTML = '';
             const allKeys = ['magician', 'master', 'reiju', 'servant'];
@@ -904,21 +907,23 @@
                 choiceBtn.className = 'dynamic-choice-btn';
                 choiceBtn.innerText = w;
 
+                // 4개 모두 획득한 경우 회색빛 스타일만 추가하며 클릭은 계속 가능하도록 유지
                 if (isAllCompleted) {
                     choiceBtn.classList.add('completed-gray');
-                } else {
-                    choiceBtn.addEventListener('click', function() {
-                        if (pstSfx) {
-                            pstSfx.currentTime = 0;
-                            pstSfx.play().catch(e => console.log(e));
-                        }
-                        centerGrailWrapper.classList.add('move-top-left');
-                        setTimeout(() => {
-                            grailDetailView.classList.add('show');
-                            currentStage = 3;
-                        }, 300);
-                    });
                 }
+
+                choiceBtn.addEventListener('click', function() {
+                    if (pstSfx) {
+                        pstSfx.currentTime = 0;
+                        pstSfx.play().catch(e => console.log(e));
+                    }
+                    centerGrailWrapper.classList.add('move-top-left');
+                    setTimeout(() => {
+                        grailDetailView.classList.add('show');
+                        currentStage = 3;
+                    }, 300);
+                });
+
                 dynamicChoicesContainer.appendChild(choiceBtn);
             });
         }
@@ -938,7 +943,6 @@
                     this.classList.add('clicked');
                     sessionStorage.setItem(key, 'true');
 
-                    // 단어 획득 효과음 (30% 증폭 반영)
                     if (wordSfx) {
                         const baseVol = parseFloat(seSlider.value);
                         wordSfx.volume = Math.min(1.0, baseVol * 1.3);
