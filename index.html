@@ -331,7 +331,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
+        /* --- 4. 메인 선택지 레이아웃 (성배 및 가로 수평 배열 신규개념 선택지) --- */
         .center-grail-text-container {
             position: absolute;
             z-index: 30;
@@ -341,6 +341,10 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
         }
 
         .center-grail-text-container.show {
@@ -372,6 +376,55 @@
             color: #ffffff;
             transform: scale(1.08);
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 가로(수평) 배열 선택지 컨테이너 */
+        .horizontal-choices-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .dynamic-choice-btn {
+            font-family: 'Song Myung', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #fffdfa;
+            letter-spacing: 6px;
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            user-select: none;
+            text-shadow: 
+                2px 2px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 25px rgba(255, 215, 0, 0.8);
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease, filter 0.3s ease;
+        }
+
+        .dynamic-choice-btn:hover {
+            color: #ffffff;
+            transform: scale(1.08);
+            text-shadow: 0 0 35px rgba(255, 230, 100, 1), 0 0 15px rgba(255, 255, 255, 0.9);
+        }
+
+        /* 4개 모두 획득 시 선택지 버튼들이 빛을 잃고 회색빛을 띠나 클릭은 가능 */
+        .dynamic-choice-btn.completed-gray {
+            color: rgba(140, 140, 140, 0.7) !important;
+            text-shadow: 2px 2px 0px #300000 !important;
+            filter: grayscale(100%);
+        }
+
+        .dynamic-choice-btn.completed-gray:hover {
+            color: #ffffff !important;
+            transform: scale(1.05);
+            text-shadow: 0 0 20px rgba(200, 200, 200, 0.8) !important;
         }
 
         .center-grail-text-container.move-top-left {
@@ -718,29 +771,22 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
+    <!-- 2단계: 중앙 성배 및 가로 수평 선택지 컨테이너 -->
     <div class="center-grail-text-container" id="centerGrailWrapper">
         <button class="center-grail-btn" id="centerGrailBtn">성배</button>
+        <div class="horizontal-choices-wrapper" id="horizontalChoicesWrapper"></div>
     </div>
 
-    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
+    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 동적 설명 상자) -->
     <section class="grail-detail-view" id="grailDetailView">
         <div class="detail-grail-left">
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
-            <span class="grail-sub-label">소(小)성배</span>
+            <span class="grail-sub-label" id="grailSubLabel">소(小)성배</span>
         </div>
         <div class="detail-description-right">
-            <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
-            <div class="description-content">
-                <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
-                <span class="description-quote-author">- 코토미네 키레이</span>
-
-                <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <p style="margin-top: 10px;">
-                    성배가 7명의 <span class="interactive-keyword" data-key="magician">마술사</span>를 <span class="interactive-keyword" data-key="master">마스터</span>로 지정해<br>
-                    <span class="interactive-keyword" data-key="reiju">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant">서번트</span> 소환 자격을 얻고<br>
-                    7명의 마술사가 모두 서번트 소환에 성공하면 성배전쟁은 시작된다.
-                </p>
+            <h2 class="description-title" id="detailTitle">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
+            <div class="description-content" id="detailContent">
+                <!-- 페이지 내용 동적 로드 구역 -->
             </div>
         </div>
     </section>
@@ -770,6 +816,44 @@
     </div>
 
     <script>
+        // 고유 상세 페이지 데이터 구조 정의
+        const pageData = {
+            grail: {
+                title: "어떤 소원이라도 이루어주는 원망기(願望器)",
+                subLabel: "소(小)성배",
+                content: `
+                    <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
+                    <span class="description-quote-author">- 코토미네 키레이</span>
+                    <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
+                    <p style="margin-top: 10px;">
+                        성배가 7명의 <span class="interactive-keyword" data-key="magician" data-word="마술사">마술사</span>를 <span class="interactive-keyword" data-key="master" data-word="마스터">마스터</span>로 지정해<br>
+                        <span class="interactive-keyword" data-key="reiju" data-word="령주(令呪)">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant" data-word="서번트">서번트</span> 소환 자격을 얻고<br>
+                        7명의 마술사가 모두 서번트 소환에 성공하면 성배전쟁은 시작된다.
+                    </p>
+                `
+            },
+            magician: {
+                title: "마술사 (Magician)",
+                subLabel: "마술의 탐구자",
+                content: `<p>마술사란 신비(마술)를 다루고 세습하며 세상의 진리를 탐구하는 자들이다.</p>`
+            },
+            master: {
+                title: "마스터 (Master)",
+                subLabel: "령주의 소유자",
+                content: `<p>마스터란 성배에 의해 선택받아 령주를 부여받고 서번트와 계약을 맺은 성배전쟁의 참가자이다.</p>`
+            },
+            reiju: {
+                title: "령주 (令呪)",
+                subLabel: "마스터의 절대명령권",
+                content: `<p>령주란 마스터의 신체에 나타나는 3획의 신성한 절대 명령 권한이자 강대한 마력 덩어리이다.</p>`
+            },
+            servant: {
+                title: "서번트 (Servant)",
+                subLabel: "영령의 분신",
+                content: `<p>서번트란 역사, 신화, 전설 속의 영웅이 마술 사역마의 형태로 현대에 召喚(소환)된 개체이다.</p>`
+            }
+        };
+
         const bgm = document.getElementById('bgm');
         const pstSfx = document.getElementById('pstSfx');
         const wordSfx = document.getElementById('wordSfx');
@@ -783,8 +867,8 @@
         const pressStartBtn = document.getElementById('pressStartBtn');
         const centerGrailBtn = document.getElementById('centerGrailBtn');
         const backBtn = document.getElementById('backBtn');
-        const kotomineTrigger = document.getElementById('kotomineTrigger');
         const acquireToastContainer = document.getElementById('acquireToastContainer');
+        const horizontalChoicesWrapper = document.getElementById('horizontalChoicesWrapper');
 
         const initialNotice = document.getElementById('initialNotice');
         const grailWrapper = document.getElementById('grailWrapper');
@@ -797,27 +881,22 @@
         const grailDetailView = document.getElementById('grailDetailView');
         const backBtnWrapper = document.getElementById('backBtnWrapper');
 
+        const detailTitle = document.getElementById('detailTitle');
+        const grailSubLabel = document.getElementById('grailSubLabel');
+        const detailContent = document.getElementById('detailContent');
+
         let currentStage = 1;
 
         // 볼륨 연동
-        volumeSlider.addEventListener('input', function() {
-            if (bgm) bgm.volume = parseFloat(this.value);
-        });
-
+        volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
         seSlider.addEventListener('input', function() {
             if (pstSfx) pstSfx.volume = parseFloat(this.value);
             if (wordSfx) wordSfx.volume = Math.min(1.0, parseFloat(this.value) * 1.3); // 30% 증폭
         });
-
-        voiceSlider.addEventListener('input', function() {
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
-        });
+        voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
 
         seSlider.addEventListener('change', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
+            if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(e => console.log(e)); }
         });
 
         // 코토미네 보이스 4.4초 자동 정지 제어
@@ -830,14 +909,6 @@
             });
         }
 
-        kotomineTrigger.addEventListener('click', function() {
-            if (kotomineSfx) {
-                kotomineSfx.volume = parseFloat(voiceSlider.value);
-                kotomineSfx.currentTime = 0;
-                kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
-            }
-        });
-
         // 흰색 대형 텍스트 페이드 인/아웃 연속 알림 팝업 함수
         function spawnAcquireToast(wordText) {
             const toastEl = document.createElement('div');
@@ -846,7 +917,6 @@
 
             acquireToastContainer.appendChild(toastEl);
 
-            // 애니메이션 종료(3초) 후 요소 자동 제거
             setTimeout(() => {
                 if (toastEl && toastEl.parentNode) {
                     toastEl.parentNode.removeChild(toastEl);
@@ -854,32 +924,109 @@
             }, 3000);
         }
 
-        // 신규개념 클릭 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
-        const keywords = document.querySelectorAll('.interactive-keyword');
-        
-        keywords.forEach(el => {
-            const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
-            
-            if (sessionStorage.getItem(key) === 'true') {
-                el.classList.add('clicked');
+        // 고유 상세 페이지 로드 및 신규개념 인터랙션 연결 함수
+        function loadPageContent(targetKey) {
+            const data = pageData[targetKey] || pageData['grail'];
+            detailTitle.innerText = data.title;
+            grailSubLabel.innerText = data.subLabel;
+            detailContent.innerHTML = data.content;
+
+            const kotomineTrigger = document.getElementById('kotomineTrigger');
+            if (kotomineTrigger) {
+                kotomineTrigger.addEventListener('click', function() {
+                    if (kotomineSfx) {
+                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        kotomineSfx.currentTime = 0;
+                        kotomineSfx.play().catch(e => console.log(e));
+                    }
+                });
             }
 
-            el.addEventListener('click', function() {
-                if (!this.classList.contains('clicked')) {
-                    this.classList.add('clicked');
-                    sessionStorage.setItem(key, 'true');
+            // 신규개념(노란색 키워드) 이벤트 재바인딩
+            const keywords = detailContent.querySelectorAll('.interactive-keyword');
+            keywords.forEach(el => {
+                const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
+                if (sessionStorage.getItem(key) === 'true') {
+                    el.classList.add('clicked');
+                }
 
-                    // 1. 단어 획득 효과음 재생 (볼륨 30% 증폭)
-                    if (wordSfx) {
-                        wordSfx.volume = Math.min(1.0, parseFloat(seSlider.value) * 1.3);
-                        wordSfx.currentTime = 0;
-                        wordSfx.play().catch(e => console.log(e));
+                el.addEventListener('click', function() {
+                    if (!this.classList.contains('clicked')) {
+                        this.classList.add('clicked');
+                        sessionStorage.setItem(key, 'true');
+
+                        if (wordSfx) {
+                            const baseVol = parseFloat(seSlider.value);
+                            wordSfx.volume = Math.min(1.0, baseVol * 1.3); // 30% 증폭
+                            wordSfx.currentTime = 0;
+                            wordSfx.play().catch(e => console.log(e));
+                        }
+
+                        spawnAcquireToast(this.getAttribute('data-word'));
                     }
+                });
+            });
+        }
 
-                    // 2. 하단에서 상승하는 흰색 페이드 인/아웃 알림 출현 (독립 팝업 생성)
-                    spawnAcquireToast(this.innerText.trim());
+        // 획득한 신규개념 가로 수평 선택지 렌더링 함수
+        function renderHorizontalChoices() {
+            horizontalChoicesWrapper.innerHTML = '';
+            const choiceList = [
+                { key: 'magician', name: '마술사' },
+                { key: 'master', name: '마스터' },
+                { key: 'reiju', name: '령주(令呪)' },
+                { key: 'servant', name: '서번트' }
+            ];
+
+            let acquiredCount = 0;
+            choiceList.forEach(item => {
+                if (sessionStorage.getItem('fate_kw_clicked_' + item.key) === 'true') {
+                    acquiredCount++;
                 }
             });
+
+            const isAllCompleted = (acquiredCount === choiceList.length);
+
+            choiceList.forEach(item => {
+                if (sessionStorage.getItem('fate_kw_clicked_' + item.key) === 'true') {
+                    const btn = document.createElement('button');
+                    btn.className = 'dynamic-choice-btn';
+                    btn.innerText = item.name;
+
+                    if (isAllCompleted) {
+                        btn.classList.add('completed-gray');
+                    }
+
+                    btn.addEventListener('click', function() {
+                        if (pstSfx) {
+                            pstSfx.currentTime = 0;
+                            pstSfx.play().catch(e => console.log(e));
+                        }
+                        loadPageContent(item.key);
+                        centerGrailWrapper.classList.add('move-top-left');
+                        setTimeout(() => {
+                            grailDetailView.classList.add('show');
+                            currentStage = 3;
+                        }, 300);
+                    });
+
+                    horizontalChoicesWrapper.appendChild(btn);
+                }
+            });
+        }
+
+        // 기본 성배 버튼 클릭 이벤트
+        centerGrailBtn.addEventListener('click', function() {
+            if (pstSfx) {
+                pstSfx.currentTime = 0;
+                pstSfx.play().catch(e => console.log(e));
+            }
+            loadPageContent('grail');
+            centerGrailWrapper.classList.add('move-top-left');
+            setTimeout(() => {
+                grailDetailView.classList.add('show');
+                currentStage = 3;
+            }, 300);
         });
 
         pressStartBtn.addEventListener('click', function() {
@@ -901,22 +1048,9 @@
             setTimeout(() => {
                 centerGrailWrapper.classList.add('show');
                 backBtnWrapper.classList.add('show');
+                renderHorizontalChoices();
                 currentStage = 2;
             }, 1450);
-        });
-
-        centerGrailBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-
-            centerGrailWrapper.classList.add('move-top-left');
-
-            setTimeout(() => {
-                grailDetailView.classList.add('show');
-                currentStage = 3;
-            }, 300);
         });
 
         backBtn.addEventListener('click', function() {
@@ -934,6 +1068,7 @@
                 grailDetailView.classList.remove('show');
                 setTimeout(() => {
                     centerGrailWrapper.classList.remove('move-top-left');
+                    renderHorizontalChoices(); // 가로 선택지 갱신
                     currentStage = 2;
                 }, 300);
 
