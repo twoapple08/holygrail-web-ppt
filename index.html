@@ -244,13 +244,22 @@
             transform: scale(1.08);
         }
 
-        /* --- 공통 요소 페이드아웃 퇴장 클래스 (PRESS TO START 클릭 시 활성화) --- */
+        /* --- 프투스 버튼 전용 빠른 '푱' 사라짐 클래스 --- */
+        .press-start-pop-exit {
+            animation: none !important;
+            opacity: 0 !important;
+            transform: translateX(2px) scale(0.85) !important;
+            pointer-events: none !important;
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out !important;
+        }
+
+        /* --- 성배 및 제목 전용 후속 부드러운 페이드아웃 퇴장 클래스 --- */
         .fade-out-exit {
-            animation: none !important; /* 기존 등장/점멸 애니메이션 차단 */
+            animation: none !important;
             opacity: 0 !important;
             transform: translateY(-5px) scale(0.96) !important;
             pointer-events: none !important;
-            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
         /* --- 우측 하단 컨트롤러 레이아웃 (워터마크 + 볼륨 조절기) --- */
@@ -380,6 +389,9 @@
 
     <!-- BGM 오디오 레이어 (무한 반복) -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
+    
+    <!-- 프투스 클릭 시 효과음 레이어 -->
+    <audio id="pstSfx" src="pst.mp3" preload="auto"></audio>
 
     <!-- 1. 메인 배경 이미지 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
@@ -420,6 +432,7 @@
 
     <script>
         const bgm = document.getElementById('bgm');
+        const pstSfx = document.getElementById('pstSfx');
         const volumeSlider = document.getElementById('volumeSlider');
         const pressStartBtn = document.getElementById('pressStartBtn');
 
@@ -435,19 +448,25 @@
             }
         });
 
-        // PRESS TO START 클릭 시: 성배, 메인제목, 소제목, 버튼 본체 페이드아웃 퇴장
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> 프투스 먼저 '푱' 퇴장 -> 성배와 제목들 후속 페이드아웃
         pressStartBtn.addEventListener('click', function() {
-            grailWrapper.classList.add('fade-out-exit');
-            mainTitle.classList.add('fade-out-exit');
-            subTitle.classList.add('fade-out-exit');
-            pressStartWrapper.classList.add('fade-out-exit');
+            // 1. 클릭 효과음 재생
+            if (pstSfx) {
+                pstSfx.currentTime = 0;
+                pstSfx.play().catch(error => {
+                    console.log("pst.mp3 재생 예외 발생:", error);
+                });
+            }
 
-            console.log("메인 타이틀 요소들이 페이드아웃 되었습니다.");
-            
-            // 0.6초 후 페이드아웃 완료 시점 연출 (다음 페이지/텍스트 스태깅 용도)
+            // 2. 프투스 버튼 먼저 '푱' 하고 사라짐 (0.0초)
+            pressStartWrapper.classList.add('press-start-pop-exit');
+
+            // 3. 그 뒤(0.3초 후) 성배 이미지 및 제목들이 부드럽게 페이드아웃
             setTimeout(() => {
-                // 필요 시 추가 연출 구현 위치
-            }, 600);
+                grailWrapper.classList.add('fade-out-exit');
+                mainTitle.classList.add('fade-out-exit');
+                subTitle.classList.add('fade-out-exit');
+            }, 300);
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
