@@ -21,37 +21,12 @@
             align-items: center;
             overflow: hidden;
             position: relative;
+            /* 원본 배경 이미지 선명하게 적용 (어둡게 만드는 오버레이 전면 제거) */
             background-image: url('first-background.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             background-color: #000000;
-        }
-
-        /* 배경 마력 오라 레이어 */
-        .background-aura {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 50% 50%, rgba(80, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.6) 80%);
-            z-index: 1;
-            animation: pulse-aura 4s infinite alternate ease-in-out;
-            pointer-events: none;
-        }
-
-        /* 화면 아래 붉은 먼지 안개 */
-        .red-dust-effect {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 55%;
-            background: linear-gradient(to top, rgba(140, 10, 10, 0.45) 0%, rgba(80, 0, 0, 0.2) 50%, transparent 100%);
-            z-index: 2;
-            pointer-events: none;
-            animation: dust-fade 6s infinite alternate ease-in-out;
         }
 
         /* 컨텐츠 컨테이너 */
@@ -69,7 +44,7 @@
             margin: 0 auto;
         }
 
-        /* 성배 이미지 래퍼: 영상 스타일의 정갈한 스르륵 페이드인 등장 연출 */
+        /* 성배 이미지 래퍼: 정갈한 스르륵 페이드인 등장 연출 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -118,7 +93,7 @@
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
-            color: #b5b5c2;
+            color: #ffffff;
             letter-spacing: 1px;
             line-height: 1.6;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
@@ -133,7 +108,7 @@
             bottom: 20px;
             right: 25px;
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.4);
             letter-spacing: 1.5px;
             z-index: 20;
             pointer-events: none;
@@ -143,7 +118,6 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 성배 영상 참고: 부드럽고 스르륵 나타나는 페이드인 */
         @keyframes grail-smooth-fadein {
             0% {
                 opacity: 0;
@@ -164,26 +138,6 @@
             }
         }
 
-        @keyframes pulse-aura {
-            0% {
-                opacity: 0.4;
-                transform: scale(0.98);
-            }
-            100% {
-                opacity: 0.8;
-                transform: scale(1.02);
-            }
-        }
-
-        @keyframes dust-fade {
-            0% {
-                opacity: 0.7;
-            }
-            100% {
-                opacity: 1;
-            }
-        }
-
         @keyframes fade-in {
             0% {
                 opacity: 0;
@@ -195,10 +149,6 @@
     </style>
 </head>
 <body>
-
-    <div class="background-aura"></div>
-
-    <div class="red-dust-effect"></div>
 
     <main class="content-container">
         <div class="holy-grail-wrapper">
