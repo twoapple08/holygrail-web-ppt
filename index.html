@@ -250,7 +250,7 @@
             transform: translate(-50%, -50%);
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out;
+            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
         }
 
         .center-grail-text-container.show {
@@ -262,7 +262,7 @@
             font-family: 'Song Myung', serif;
             font-size: 4.5rem;
             font-weight: 700;
-            color: #f5f0e6;
+            color: #fffdfa;
             letter-spacing: 12px;
             background: transparent;
             border: none;
@@ -284,11 +284,12 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 성배 텍스트 좌측 상단으로 축소 이동 */
+        /* 성배 텍스트 좌측 상단으로 이동 시: 스케일 확장(0.55 -> 0.75) 및 밝기 증대 효과 */
         .center-grail-text-container.move-top-left {
-            top: 10%;
-            left: 8%;
-            transform: translate(0, 0) scale(0.55);
+            top: 7%;
+            left: 6%;
+            transform: translate(0, 0) scale(0.75);
+            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
             pointer-events: none;
         }
 
@@ -304,7 +305,7 @@
             justify-content: flex-start;
             align-items: center;
             padding-left: 18%;
-            gap: 16%; /* 설명 박스를 오른쪽으로 밀기 위해 간격 확장 (기존 10% -> 16%) */
+            gap: 16%;
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.0s ease-in-out;
