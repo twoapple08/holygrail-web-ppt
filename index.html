@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
+    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
@@ -72,7 +73,7 @@
             top: 30px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 100;
+            z-index: 9999;
             pointer-events: none;
             width: 100%;
             display: flex;
@@ -127,7 +128,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (밝기 감쇄 디자인 및 클릭 최우선권 유지) --- */
+        /* --- 어록 속성 (최우선 클릭권 확보) --- */
         .description-quote {
             font-style: italic;
             color: rgba(200, 190, 175, 0.75);
@@ -350,24 +351,84 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 중앙 [성배] 탭 선택창 (단일 구조) --- */
-        .center-grail-text-container {
+        /* --- 4. 마력 회로 캔버스 영역 --- */
+        .tab-selection-container {
             position: absolute;
             z-index: 30;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
+            transition: opacity 0.6s ease-in-out;
         }
 
-        .center-grail-text-container.show {
+        .tab-selection-container.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .center-grail-btn {
+        /* 마력 회로 SVG */
+        .magic-circuit-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 31;
+        }
+
+        .circuit-line {
+            stroke: #ff2222;
+            stroke-width: 3.5px;
+            fill: none;
+            filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 16px rgba(255, 30, 30, 0.9));
+            transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        /* 샤방 섬광 이펙트 */
+        .circuit-flash-glow {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #ffea70 0%, rgba(255,34,34,0.8) 50%, transparent 80%);
+            box-shadow: 0 0 40px rgba(255, 234, 112, 1), 0 0 80px rgba(255, 34, 34, 0.9);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 35;
+        }
+
+        .circuit-flash-glow.spark {
+            animation: flash-sparkle 0.5s ease-out forwards;
+        }
+
+        @keyframes flash-sparkle {
+            0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(2.5); opacity: 1; filter: brightness(2.5); }
+            100% { transform: translate(-50%, -50%) scale(1.0); opacity: 0; }
+        }
+
+        /* 탭 버튼 래퍼 */
+        .circuit-node-box {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 34;
+            opacity: 1;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .circuit-node-box.hidden-node {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .tab-item-btn {
             font-family: 'Song Myung', serif;
             font-size: 4.5rem;
             font-weight: 700;
@@ -378,6 +439,7 @@
             outline: none;
             cursor: pointer;
             user-select: none;
+            white-space: nowrap;
             text-shadow: 
                 3px 3px 0px #700000, 
                 -1px -1px 0px #700000, 
@@ -387,22 +449,46 @@
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        .center-grail-btn:hover {
+        .tab-item-btn:hover {
             color: #ffffff;
             transform: scale(1.08);
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        .center-grail-text-container.move-top-left {
-            top: 7%;
-            left: 6%;
-            transform: translate(0, 0) scale(0.75);
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
+        /* 클론 비행 객체 */
+        .ghost-tab-clone {
+            position: fixed;
+            z-index: 999;
             pointer-events: none;
+            font-family: 'Song Myung', serif;
+            font-weight: 700;
+            color: #fffdfa;
+            letter-spacing: 12px;
+            white-space: nowrap;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 40px rgba(255, 215, 0, 0.8);
+            transform-origin: top left;
+            transition: top 1.0s cubic-bezier(0.25, 1, 0.25, 1), 
+                        left 1.0s cubic-bezier(0.25, 1, 0.25, 1), 
+                        transform 1.0s cubic-bezier(0.25, 1, 0.25, 1),
+                        filter 1.0s ease-in-out;
+            will-change: top, left, transform;
         }
 
-        /* --- 5. 상세 페이지 (성배 탭) --- */
-        .grail-detail-view {
+        /* 상세 뷰 진입 시 좌측상단 비행 타겟 */
+        .ghost-tab-clone.move-to-target {
+            top: 7vh !important;
+            left: 6vw !important;
+            transform: scale(0.75) !important;
+            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
+        }
+
+        /* --- 5. 상세 페이지 레이아웃 --- */
+        .tab-detail-view {
             position: absolute;
             top: 0;
             left: 0;
@@ -416,22 +502,23 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
 
-        .grail-detail-view.show {
+        .tab-detail-view.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .detail-grail-left {
+        .detail-left-box {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-width: 280px;
         }
 
-        .detail-grail-img {
+        .detail-img {
             width: 280px;
             max-width: 100%;
             height: auto;
@@ -439,7 +526,7 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        .grail-sub-label {
+        .detail-sub-label {
             margin-top: 15px;
             font-size: 0.95rem;
             font-weight: 400;
@@ -449,7 +536,7 @@
             text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
         }
 
-        .detail-description-right {
+        .detail-right-box {
             flex: 1;
             max-width: 650px;
             background: rgba(15, 0, 0, 0.75);
@@ -460,6 +547,7 @@
             backdrop-filter: blur(4px);
             position: relative;
             z-index: 5;
+            pointer-events: auto;
         }
 
         .description-title {
@@ -618,7 +706,7 @@
             margin-top: 2px;
         }
 
-        /* --- 키프레임 애니메이션 --- */
+        /* --- 키프레임 --- */
         @keyframes pure-fade-out { 0% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes simple-flash-fade {
             0% { opacity: 1; filter: brightness(1); color: #ffffff; }
@@ -656,9 +744,7 @@
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
         </div>
-
         <p class="sub-title" id="subTitle">성배와 영령<span class="extended-dash">—</span>그리고 운명의 이야기</p>
-
         <div class="press-start-wrapper" id="pressStartWrapper">
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
         </div>
@@ -668,25 +754,33 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <div class="center-grail-text-container" id="centerGrailWrapper">
-        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
+    <!-- 마력 회로 전용 탭 캔버스 -->
+    <div class="tab-selection-container" id="tabSelectionContainer">
+        <svg class="magic-circuit-svg" id="circuitSvg">
+            <path id="circuitPath" class="circuit-line" d="M 0 0 L 0 0"></path>
+        </svg>
+        <div id="flashGlow" class="circuit-flash-glow"></div>
+        <div id="circuitNodesBox"></div>
     </div>
 
-    <section class="grail-detail-view" id="grailDetailView">
-        <div class="detail-grail-left">
-            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
-            <span class="grail-sub-label">소(小)성배</span>
+    <!-- 기본 성배 상세 뷰 -->
+    <section class="tab-detail-view" id="tabDetail_sung">
+        <div class="detail-left-box">
+            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-img">
+            <span class="detail-sub-label">소(小)성배</span>
         </div>
-        <div class="detail-description-right">
+        <div class="detail-right-box">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
-
                 <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
+
+    <!-- 동적 탭 보관소 -->
+    <div id="dynamicTabDetailViews"></div>
 
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
@@ -711,9 +805,32 @@
     </div>
 
     <script>
+        const CONCEPT_REGISTRY = {
+            'sung': { name: '성배', builtIn: true },
+            'sungbwar': { name: '성배전쟁', builtIn: false }
+        };
+
+        (function checkReloadAndReset() {
+            const navEntries = performance.getEntriesByType('navigation');
+            const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
+                             (performance.navigation && performance.navigation.type === 1);
+            if (isReload) {
+                Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
+                sessionStorage.removeItem('fate_concept_order');
+                sessionStorage.removeItem('fate_revealed_sungbwar');
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             if (!history.state || history.state.stage !== 1) {
                 history.replaceState({ stage: 1 }, '', '');
+            }
+
+            sessionStorage.setItem('fate_concept_sung', 'true');
+            let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+            if (!conceptOrder.includes('sung')) {
+                conceptOrder.push('sung');
+                sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder));
             }
 
             const bgm = document.getElementById('bgm');
@@ -728,9 +845,7 @@
 
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
-            const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
-            const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
 
             const grailWrapper = document.getElementById('grailWrapper');
@@ -738,12 +853,17 @@
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
 
-            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
-            const grailDetailView = document.getElementById('grailDetailView');
+            const tabSelectionContainer = document.getElementById('tabSelectionContainer');
+            const circuitNodesBox = document.getElementById('circuitNodesBox');
+            const circuitPath = document.getElementById('circuitPath');
+            const flashGlow = document.getElementById('flashGlow');
+            const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
+            let currentActiveTabId = null;
             let activeToastCount = 0;
+            let activeGhostClone = null;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -754,7 +874,7 @@
             voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
 
             seSlider.addEventListener('change', function() {
-                if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(e => console.log(e)); }
+                if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
             });
 
             if (kotomineSfx) {
@@ -763,16 +883,22 @@
                 });
             }
 
-            // ★ 어록 상호작용 확실 연동 ★
-            kotomineTrigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                if (!this.classList.contains('glow-fade-out')) this.classList.add('glow-fade-out');
-                if (kotomineSfx) {
-                    kotomineSfx.volume = parseFloat(voiceSlider.value);
-                    kotomineSfx.currentTime = 0;
-                    kotomineSfx.play().catch(err => console.log("보이스 재생 오류:", err));
+            // ★ 최상위 전역 위임: 어록 보이스 100% 재생 엔진 ★
+            document.addEventListener('click', function(e) {
+                const quoteTarget = e.target.closest('#kotomineTrigger');
+                if (quoteTarget) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (!quoteTarget.classList.contains('glow-fade-out')) {
+                        quoteTarget.classList.add('glow-fade-out');
+                    }
+                    if (kotomineSfx) {
+                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        kotomineSfx.currentTime = 0;
+                        kotomineSfx.play().catch(err => console.log("보이스 재생 오류:", err));
+                    }
                 }
-            });
+            }, true); // 캡처링 단계에서 최우선 가로챔
 
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
@@ -787,51 +913,154 @@
                 }, 1800);
             }
 
-            // 신규개념 키워드 처리
-            const keywords = document.querySelectorAll('.interactive-keyword');
-            keywords.forEach(el => {
-                const id = el.getAttribute('data-key');
-                if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
-                    el.classList.add('clicked');
-                }
-
-                el.addEventListener('click', function(e) {
+            // ★ 최상위 전역 위임: 신규개념 키워드 100% 반응 엔진 ★
+            document.addEventListener('click', function(e) {
+                const keyTarget = e.target.closest('.interactive-keyword');
+                if (keyTarget) {
+                    e.preventDefault();
                     e.stopPropagation();
+                    
                     if (activeToastCount > 0) {
                         if (noshinSfx) {
                             noshinSfx.volume = parseFloat(seSlider.value);
                             noshinSfx.currentTime = 0;
-                            noshinSfx.play().catch(err => console.log(err));
+                            noshinSfx.play().catch(()=>{});
                         }
                         return;
                     }
 
-                    if (!this.classList.contains('clicked')) {
-                        this.classList.add('clicked');
+                    if (!keyTarget.classList.contains('clicked')) {
+                        keyTarget.classList.add('clicked');
+                        const id = keyTarget.getAttribute('data-key');
                         sessionStorage.setItem('fate_concept_' + id, 'true');
+
+                        let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+                        if (!orderList.includes(id)) {
+                            orderList.push(id);
+                            sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
+                        }
 
                         if (wordSfx) {
                             wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                             wordSfx.currentTime = 0;
-                            wordSfx.play().catch(err => console.log(err));
+                            wordSfx.play().catch(()=>{});
                         }
-
-                        spawnAcquireToast(this.innerText.trim());
+                        spawnAcquireToast(keyTarget.innerText.trim());
                     }
-                });
-            });
+                }
+            }, true);
+
+            // 마력 회로 캔버스 노드 렌더링
+            function renderCircuitCanvas(hideAll = false) {
+                circuitNodesBox.innerHTML = '';
+                circuitPath.setAttribute('d', 'M 0 0 L 0 0');
+                circuitPath.style.strokeDasharray = '0';
+                circuitPath.style.strokeDashoffset = '0';
+                
+                const hasSungbwar = (sessionStorage.getItem('fate_concept_sungbwar') === 'true');
+                const isWarRevealed = (sessionStorage.getItem('fate_revealed_sungbwar') === 'true');
+
+                // 1. 성배 노드
+                const sungBox = document.createElement('div');
+                sungBox.className = 'circuit-node-box';
+                sungBox.id = 'circuitNode_sung';
+                sungBox.style.top = (hasSungbwar || isWarRevealed) ? '38%' : '50%';
+                sungBox.style.left = '50%';
+                sungBox.style.transform = 'translate(-50%, -50%)';
+                if (hideAll) sungBox.classList.add('hidden-node');
+
+                const sungBtn = document.createElement('button');
+                sungBtn.className = 'tab-item-btn';
+                sungBtn.innerText = '성배';
+                sungBtn.addEventListener('click', () => openTabDetailView('sung', sungBox, sungBtn));
+                sungBox.appendChild(sungBtn);
+                circuitNodesBox.appendChild(sungBox);
+
+                // 2. 성배전쟁 노드
+                if (hasSungbwar || isWarRevealed) {
+                    const warBox = document.createElement('div');
+                    warBox.className = 'circuit-node-box hidden-node'; // 기본은 무조건 숨김
+                    warBox.id = 'circuitNode_sungbwar';
+                    warBox.style.top = '65%';
+                    warBox.style.left = '50%';
+                    warBox.style.transform = 'translate(-50%, -50%)';
+                    if (!hideAll && isWarRevealed) {
+                        warBox.classList.remove('hidden-node');
+                    }
+
+                    const warBtn = document.createElement('button');
+                    warBtn.className = 'tab-item-btn';
+                    warBtn.style.fontSize = '3.8rem';
+                    warBtn.innerText = '성배전쟁';
+                    warBtn.addEventListener('click', () => openTabDetailView('sungbwar', warBox, warBtn));
+                    warBox.appendChild(warBtn);
+                    circuitNodesBox.appendChild(warBox);
+
+                    if (!document.getElementById('tabDetail_sungbwar')) {
+                        createPlaceholderTabDetailView('sungbwar');
+                    }
+                }
+            }
+
+            function createPlaceholderTabDetailView(id) {
+                const viewSection = document.createElement('section');
+                viewSection.className = 'tab-detail-view';
+                viewSection.id = 'tabDetail_' + id;
+                viewSection.innerHTML = `
+                    <div class="detail-left-box"></div>
+                    <div class="detail-right-box">
+                        <h2 class="description-title">${CONCEPT_REGISTRY[id].name}란?</h2>
+                        <div class="description-content"></div>
+                    </div>
+                `;
+                dynamicTabDetailViews.appendChild(viewSection);
+            }
+
+            // 탭 선택 후 상세 뷰 진입 비행
+            function openTabDetailView(selectedId, selectedBox, selectedBtn) {
+                history.pushState({ stage: 3, id: selectedId }, '', '');
+
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(()=>{});
+                }
+
+                currentActiveTabId = selectedId;
+                const rect = selectedBtn.getBoundingClientRect(); // 절대 좌표 추출
+
+                const ghostClone = document.createElement('div');
+                ghostClone.className = 'ghost-tab-clone';
+                ghostClone.innerText = selectedBtn.innerText;
+                ghostClone.style.fontSize = selectedBtn.style.fontSize || '4.5rem';
+                ghostClone.style.top = rect.top + 'px';
+                ghostClone.style.left = rect.left + 'px';
+                document.body.appendChild(ghostClone);
+
+                activeGhostClone = ghostClone;
+
+                // 캔버스 내 노드 일체 투명화
+                const allNodes = document.querySelectorAll('.circuit-node-box');
+                allNodes.forEach(node => node.classList.add('hidden-node'));
+
+                void ghostClone.offsetWidth; // Reflow
+                ghostClone.classList.add('move-to-target');
+
+                const targetView = document.getElementById('tabDetail_' + selectedId);
+                setTimeout(() => {
+                    if (targetView) targetView.classList.add('show');
+                    currentStage = 3;
+                }, 1000);
+            }
 
             pressStartBtn.addEventListener('click', function() {
                 history.pushState({ stage: 2 }, '', '');
-
                 if (pstSfx) {
                     pstSfx.volume = parseFloat(seSlider.value);
                     pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
+                    pstSfx.play().catch(()=>{});
                 }
 
                 pressStartWrapper.classList.add('flash-exit');
-
                 setTimeout(() => {
                     grailWrapper.classList.add('slow-fade-out');
                     subTitle.classList.add('slow-fade-out');
@@ -839,56 +1068,134 @@
                 }, 250);
 
                 setTimeout(() => {
-                    centerGrailWrapper.classList.add('show');
+                    renderCircuitCanvas(false);
+                    tabSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
                 }, 1450);
             });
 
-            centerGrailBtn.addEventListener('click', function() {
-                history.pushState({ stage: 3 }, '', '');
+            backBtn.addEventListener('click', function() { history.back(); });
 
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-
-                centerGrailWrapper.classList.add('move-top-left');
-
-                setTimeout(() => {
-                    grailDetailView.classList.add('show');
-                    currentStage = 3;
-                }, 300);
-            });
-
-            backBtn.addEventListener('click', function() {
-                history.back();
-            });
-
+            // ★ 단일 큐 동기화 방식: 무결점 마력 회로 타임라인 연산 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
-
                 if (targetStage >= currentStage) return;
 
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-                if (kotomineSfx) {
-                    kotomineSfx.pause();
-                    kotomineSfx.currentTime = 0;
-                }
+                if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
+                if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
                     currentStage = targetStage;
-                    grailDetailView.classList.remove('show');
+                    const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
+                    if (activeView) activeView.classList.remove('show');
+
+                    if (targetStage === 2) {
+                        // 노드 전체를 숨긴 채 렌더링하여 정확한 목표 좌표만 추출
+                        renderCircuitCanvas(true);
+                        tabSelectionContainer.classList.add('show');
+                    }
+
+                    const targetBox = document.getElementById('circuitNode_' + currentActiveTabId);
+                    let targetRect = null;
+                    if (targetBox) {
+                        const targetBtn = targetBox.querySelector('.tab-item-btn');
+                        if (targetBtn) targetRect = targetBtn.getBoundingClientRect(); // 새로운 절대 좌표 재측정
+                    }
+
+                    // 1단계: 100% 일치 좌표로 착륙 복귀
+                    if (activeGhostClone && targetRect) {
+                        activeGhostClone.classList.remove('move-to-target');
+                        activeGhostClone.style.top = targetRect.top + 'px';
+                        activeGhostClone.style.left = targetRect.left + 'px';
+                        activeGhostClone.style.transform = 'scale(1)';
+                        activeGhostClone.style.filter = 'brightness(1)';
+                    }
+
+                    // 착륙이 완벽히 끝나는 시간(1.0초)까지 절대 대기
                     setTimeout(() => {
-                        centerGrailWrapper.classList.remove('move-top-left');
-                        currentStage = 2;
-                    }, 300);
+                        if (activeGhostClone) {
+                            activeGhostClone.remove(); // 깜빡임 없이 클론 즉각 소멸
+                            activeGhostClone = null;
+                        }
+
+                        const sungNode = document.getElementById('circuitNode_sung');
+                        if (sungNode) sungNode.classList.remove('hidden-node'); // 복귀 탭 등장
+
+                        const hasSungbwar = (sessionStorage.getItem('fate_concept_sungbwar') === 'true');
+                        const isWarRevealed = (sessionStorage.getItem('fate_revealed_sungbwar') === 'true');
+
+                        // 신규개념 획득 시 타임라인 체인 가동
+                        if (hasSungbwar && !isWarRevealed && targetStage === 2) {
+                            sessionStorage.setItem('fate_revealed_sungbwar', 'true');
+
+                            const warNode = document.getElementById('circuitNode_sungbwar');
+                            const sungBtn = sungNode.querySelector('.tab-item-btn');
+                            const warBtn = warNode ? warNode.querySelector('.tab-item-btn') : null;
+
+                            if (sungBtn && warBtn) {
+                                // SVG 절대 좌표 매핑
+                                const containerRect = tabSelectionContainer.getBoundingClientRect();
+                                const sRect = sungBtn.getBoundingClientRect();
+                                const wRect = warBtn.getBoundingClientRect();
+
+                                const startX = (sRect.left + sRect.width / 2) - containerRect.left;
+                                const startY = sRect.bottom - containerRect.top;
+                                const endX = (wRect.left + wRect.width / 2) - containerRect.left;
+                                const endY = wRect.top - containerRect.top;
+
+                                const pathLength = Math.hypot(endX - startX, endY - startY);
+
+                                circuitPath.setAttribute('d', `M ${startX} ${startY} L ${endX} ${endY}`);
+                                circuitPath.style.strokeDasharray = pathLength;
+                                circuitPath.style.strokeDashoffset = pathLength;
+                                void circuitPath.offsetWidth; // Reflow
+
+                                // 2단계: 마력 회로 전개 (0.8초 소요)
+                                circuitPath.style.strokeDashoffset = '0';
+                                if (wordSfx) {
+                                    wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 3.5);
+                                    wordSfx.currentTime = 0;
+                                    wordSfx.play().catch(()=>{});
+                                }
+
+                                // 3단계: 샤방 섬광 발동 (0.8초 대기 후)
+                                setTimeout(() => {
+                                    flashGlow.style.left = endX + 'px';
+                                    flashGlow.style.top = endY + 'px';
+                                    flashGlow.classList.add('spark');
+
+                                    // 4단계: 신규 탭 소환 (0.3초 대기 후)
+                                    setTimeout(() => {
+                                        if (warNode) warNode.classList.remove('hidden-node');
+                                        setTimeout(() => { flashGlow.classList.remove('spark'); }, 200);
+                                    }, 300);
+                                }, 800);
+                            }
+                        } else {
+                            // 신규 개념이 없거나 이미 공개된 경우 모든 노드 일제히 등장
+                            const allNodes = document.querySelectorAll('.circuit-node-box');
+                            allNodes.forEach(node => node.classList.remove('hidden-node'));
+                        }
+
+                        // 1단계로 복귀 시 UI 클리어 연산
+                        if (targetStage === 1) {
+                            tabSelectionContainer.classList.remove('show');
+                            backBtnWrapper.classList.remove('show');
+                            grailWrapper.classList.remove('slow-fade-out');
+                            subTitle.classList.remove('slow-fade-out');
+                            introNotice.classList.remove('slow-fade-out');
+                            pressStartWrapper.classList.remove('flash-exit');
+                            pressStartWrapper.style.opacity = '1';
+                            pressStartWrapper.style.pointerEvents = 'auto';
+                        }
+                        currentActiveTabId = null;
+
+                    }, 1000); // 1.0초 비행 완착 동기화
+
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
-                    centerGrailWrapper.classList.remove('show');
+                    tabSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
@@ -917,7 +1224,7 @@
 
                 if (bgm) {
                     bgm.volume = parseFloat(volumeSlider.value);
-                    setTimeout(() => { bgm.play().catch(e => console.log(e)); }, 700);
+                    setTimeout(() => { bgm.play().catch(()=>{}); }, 700);
                 }
 
                 if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
