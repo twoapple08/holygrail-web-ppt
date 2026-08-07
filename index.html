@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성배전쟁 - Fate/stay night 테마</title>
+    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
@@ -194,7 +195,19 @@
             animation: fade-in 1.0s ease-out forwards;
         }
 
-        /* --- 느리게 깜빡이는 PRESS TO START 버튼 --- */
+        /* --- PRESS TO START 버튼 감싸는 페이드인 래퍼 --- */
+        .press-start-wrapper {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-out;
+        }
+
+        .press-start-wrapper.animate {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* --- 느리게 깜빡이는 PRESS TO START 본체 --- */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -207,15 +220,10 @@
             outline: none;
             cursor: pointer;
             user-select: none;
-            opacity: 0;
-            pointer-events: none;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
-        }
-
-        /* 페이드인 후 느린 점멸 연출 가동 */
-        .press-start-btn.animate {
-            pointer-events: auto;
-            animation: press-start-appear 1.0s ease-out forwards, slow-blink-loop 2.8s infinite alternate ease-in-out 1.0s;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
+            
+            /* 등장 시점부터 점멸 끊김 없이 연속 실행 */
+            animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
 
         /* 마우스 호버 시 점멸 일시 정지 및 불투명도 100% 선명 고정 */
@@ -307,16 +315,6 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* PRESS TO START 부드러운 페이드인 */
-        @keyframes press-start-appear {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 0.85;
-            }
-        }
-
         /* PRESS TO START 느린 점멸 루프 */
         @keyframes slow-blink-loop {
             0% {
@@ -363,16 +361,21 @@
 </head>
 <body>
 
+    <!-- BGM 오디오 레이어 (무한 반복) -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
 
+    <!-- 1. 메인 배경 이미지 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
 
+    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
     <div class="red-dust-effect" id="dustEffect"></div>
 
+    <!-- 3. 페스나 스타일 [시작하기] UI 버튼 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
     </div>
 
+    <!-- 4. 컨텐츠 레이어 (성배 및 타이틀 Y축 중앙 정렬) -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
@@ -382,10 +385,15 @@
 
         <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
 
-        <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
+        <!-- 소제목 아래 위치한 회색 PRESS TO START 버튼 (페이드인 래퍼) -->
+        <div class="press-start-wrapper" id="pressStartWrapper">
+            <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
+        </div>
     </main>
 
+    <!-- 화면 우측 하단 컨트롤러 레이어 (볼륨 조절기 + 워터마크) -->
     <div class="bottom-right-controls" id="controlsGroup">
+        <!-- 워터마크 바로 위에 위치한 볼륨 조절기 (초기값 0.2 설정) -->
         <div class="volume-control-box">
             <span class="volume-label">BGM</span>
             <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
@@ -417,6 +425,7 @@
             const grailWrapper = document.getElementById('grailWrapper');
             const mainTitle = document.getElementById('mainTitle');
             const subTitle = document.getElementById('subTitle');
+            const pressStartWrapper = document.getElementById('pressStartWrapper');
             const controlsGroup = document.getElementById('controlsGroup');
 
             // 1. 시작 버튼 사라짐
@@ -458,9 +467,9 @@
                 controlsGroup.classList.add('animate');
             }, 2800);
 
-            // 8. PRESS TO START 버튼: 소제목 등장 약 2초 뒤(4.8초) 페이드인 및 점멸 작동
+            // 8. PRESS TO START: 소제목 등장 약 2초 뒤(4.8초) 끊김 없이 자연스럽게 페이드인되며 등장
             setTimeout(() => {
-                pressStartBtn.classList.add('animate');
+                pressStartWrapper.classList.add('animate');
             }, 4800);
         });
     </script>
