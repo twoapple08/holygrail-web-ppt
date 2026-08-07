@@ -418,7 +418,7 @@
             visibility: hidden !important;
         }
 
-        /* --- 클론 비행 텍스트 스타일 (가속/감속 이징 곡선 적용) --- */
+        /* --- 클론 비행 텍스트 스타일 --- */
         .ghost-tab-clone {
             position: fixed;
             z-index: 99;
@@ -435,7 +435,6 @@
                 -1px 1px 0px #700000,
                 0 0 40px rgba(255, 215, 0, 0.8);
             transform-origin: top left;
-            /* 1.3초 동안 가속 후 묵직하게 감속하는 고품격 비행 모션 */
             transition: top 1.3s cubic-bezier(0.25, 1, 0.25, 1), 
                         left 1.3s cubic-bezier(0.25, 1, 0.25, 1), 
                         transform 1.3s cubic-bezier(0.25, 1, 0.25, 1),
@@ -465,7 +464,7 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .tab-detail-view.show {
@@ -765,7 +764,7 @@
             'sungbwar': { name: '성배전쟁', builtIn: false }
         };
 
-        // 새로고침 시 세션 초기화
+        // 모바일/PC 새로고침 시 세션 초기화
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -819,7 +818,6 @@
             let currentActiveTabId = null;
             let activeToastCount = 0;
             let activeGhostClone = null;
-            let originalTabRect = null;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -839,23 +837,20 @@
                 });
             }
 
-            // ★ 어록 보이스 이벤트 상시 감시 및 바인딩 ★
-            function bindQuoteTrigger() {
-                const kotomineTrigger = document.getElementById('kotomineTrigger');
-                if (kotomineTrigger) {
-                    // 기존 이벤트 중복 방지 후 신규 등록
-                    kotomineTrigger.replaceWith(kotomineTrigger.cloneNode(true));
-                    const newTrigger = document.getElementById('kotomineTrigger');
-                    newTrigger.addEventListener('click', function() {
-                        if (!this.classList.contains('glow-fade-out')) this.classList.add('glow-fade-out');
-                        if (kotomineSfx) {
-                            kotomineSfx.volume = parseFloat(voiceSlider.value);
-                            kotomineSfx.currentTime = 0;
-                            kotomineSfx.play().catch(e => console.log("보이스 예외:", e));
-                        }
-                    });
+            // ★ 이벤트 위임 기반 어록 클릭 감시 엔진 (유실 문제 해결) ★
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('#kotomineTrigger');
+                if (target) {
+                    if (!target.classList.contains('glow-fade-out')) {
+                        target.classList.add('glow-fade-out');
+                    }
+                    if (kotomineSfx) {
+                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        kotomineSfx.currentTime = 0;
+                        kotomineSfx.play().catch(err => console.log("보이스 재생 오류:", err));
+                    }
                 }
-            }
+            });
 
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
@@ -870,51 +865,54 @@
                 }, 1800);
             }
 
-            // ★ 신규개념 키워드 바인딩 ★
-            function bindKeywordEvents() {
-                const keywords = document.querySelectorAll('.interactive-keyword');
-                keywords.forEach(el => {
-                    const id = el.getAttribute('data-key');
-                    if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
-                        el.classList.add('clicked');
+            // ★ 이벤트 위임 기반 신규개념 키워드 상호작용 ★
+            document.addEventListener('click', function(e) {
+                const target = e.target.closest('.interactive-keyword');
+                if (target) {
+                    const id = target.getAttribute('data-key');
+                    
+                    if (activeToastCount > 0) {
+                        if (noshinSfx) {
+                            noshinSfx.volume = parseFloat(seSlider.value);
+                            noshinSfx.currentTime = 0;
+                            noshinSfx.play().catch(err => console.log(err));
+                        }
+                        return;
                     }
 
-                    el.addEventListener('click', function() {
-                        if (activeToastCount > 0) {
-                            if (noshinSfx) {
-                                noshinSfx.volume = parseFloat(seSlider.value);
-                                noshinSfx.currentTime = 0;
-                                noshinSfx.play().catch(e => console.log(e));
-                            }
-                            return;
+                    if (!target.classList.contains('clicked')) {
+                        target.classList.add('clicked');
+                        sessionStorage.setItem('fate_concept_' + id, 'true');
+
+                        let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+                        if (!orderList.includes(id)) {
+                            orderList.push(id);
+                            sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
                         }
 
-                        if (!this.classList.contains('clicked')) {
-                            this.classList.add('clicked');
-                            sessionStorage.setItem('fate_concept_' + id, 'true');
-
-                            let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-                            if (!orderList.includes(id)) {
-                                orderList.push(id);
-                                sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
-                            }
-
-                            if (wordSfx) {
-                                wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
-                                wordSfx.currentTime = 0;
-                                wordSfx.play().catch(e => console.log(e));
-                            }
-
-                            spawnAcquireToast(this.innerText.trim());
+                        if (wordSfx) {
+                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
+                            wordSfx.currentTime = 0;
+                            wordSfx.play().catch(err => console.log(err));
                         }
-                    });
-                });
-            }
 
+                        spawnAcquireToast(target.innerText.trim());
+                    }
+                }
+            });
+
+            // 탭 선택창 동적 구성 (중복 방지 강화)
             function renderTabSelectionWindow() {
                 tabSelectionContainer.innerHTML = '';
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-                const possessedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
+                
+                // 소지 중이며 중복 없는 유효 ID 필터링
+                const possessedIds = [];
+                orderList.forEach(id => {
+                    if (sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id] && !possessedIds.includes(id)) {
+                        possessedIds.push(id);
+                    }
+                });
 
                 if (possessedIds.length === 0) return;
 
@@ -947,7 +945,7 @@
 
                         const btn = document.createElement('button');
                         btn.className = 'tab-item-btn';
-                        btn.innerText = CONCEPT_REGISTRY[id].name;
+                        btn.innerText = CONCEPT_REGISTRY[id].name; // 깔끔하게 이름만 출력
                         btn.style.fontSize = fontSizeRem + 'rem';
                         btn.addEventListener('click', (e) => openTabDetailView(id, wrapperDiv, btn));
                         
@@ -988,9 +986,7 @@
 
                 currentActiveTabId = selectedId;
 
-                // 클론 생성을 위해 현재 위치 정밀 기록
                 const rect = selectedBtn.getBoundingClientRect();
-                originalTabRect = { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
 
                 const ghostClone = document.createElement('div');
                 ghostClone.className = 'ghost-tab-clone';
@@ -1010,14 +1006,12 @@
                     }
                 });
 
-                void ghostClone.offsetWidth; // Reflow 트리거
+                void ghostClone.offsetWidth;
                 ghostClone.classList.add('move-to-target');
 
                 const targetView = document.getElementById('tabDetail_' + selectedId);
                 setTimeout(() => {
                     if (targetView) targetView.classList.add('show');
-                    bindQuoteTrigger(); // 어록 이벤트 재연결
-                    bindKeywordEvents(); // 키워드 이벤트 재연결
                     currentStage = 3;
                 }, 1000);
             }
@@ -1051,7 +1045,7 @@
                 history.back();
             });
 
-            // ★ 모바일/브라우저 뒤로가기 및 3단계 -> 2단계 즉시 복귀 스택 관리 ★
+            // ★ 복귀 좌표 실시간 재측정 및 스무스 비행 엔진 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
 
@@ -1074,29 +1068,41 @@
                         if (activeView) activeView.classList.remove('show');
                     }
 
-                    // 1. 역방향 묵직한 감속 비행 모션 실행
-                    if (activeGhostClone && originalTabRect) {
+                    // 1. 2단계로 복귀 시 신규 탭을 먼저 재렌더링하여 최신 위치 생성
+                    if (targetStage === 2) {
+                        renderTabSelectionWindow();
+                        tabSelectionContainer.classList.add('show');
+                    }
+
+                    // 2. 바뀐 탭의 최신 복귀 목표 좌표를 실시간 재측정
+                    const targetWrapper = document.getElementById('tabWrapper_' + currentActiveTabId);
+                    let targetRect = null;
+                    if (targetWrapper) {
+                        const targetBtn = targetWrapper.querySelector('.tab-item-btn');
+                        if (targetBtn) {
+                            targetWrapper.classList.add('hidden-original');
+                            targetRect = targetBtn.getBoundingClientRect();
+                        }
+                    }
+
+                    // 3. 재측정된 최신 좌표를 향해 역방향 묵직한 감속 비행 가동
+                    if (activeGhostClone && targetRect) {
                         activeGhostClone.classList.remove('move-to-target');
-                        activeGhostClone.style.top = originalTabRect.top + 'px';
-                        activeGhostClone.style.left = originalTabRect.left + 'px';
+                        activeGhostClone.style.top = targetRect.top + 'px';
+                        activeGhostClone.style.left = targetRect.left + 'px';
                         activeGhostClone.style.transform = 'scale(1)';
                         activeGhostClone.style.filter = 'brightness(1)';
                     }
 
-                    // 2. 탭 선택창 최신 상태로 재렌더링 (획득한 신규 선택지 즉시 반영)
-                    if (targetStage === 2) {
-                        renderTabSelectionWindow();
-                    }
-
-                    // 3. 다른 탭들 페이드인
+                    // 4. 숨겨진 다른 탭들 페이드인
                     setTimeout(() => {
                         const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                         allWrappers.forEach(wrap => {
                             wrap.classList.remove('fade-out-stay');
                         });
-                    }, 100);
+                    }, 150);
 
-                    // 4. 비행 종료 후 클론 제거 및 화면 정돈
+                    // 5. 비행 종료 후 정리
                     setTimeout(() => {
                         if (activeGhostClone) {
                             activeGhostClone.remove();
@@ -1107,9 +1113,7 @@
                             wrap.classList.remove('hidden-original');
                         });
                         
-                        if (targetStage === 2) {
-                            tabSelectionContainer.classList.add('show');
-                        } else if (targetStage === 1) {
+                        if (targetStage === 1) {
                             tabSelectionContainer.classList.remove('show');
                             backBtnWrapper.classList.remove('show');
                             grailWrapper.classList.remove('slow-fade-out');
