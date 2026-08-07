@@ -55,38 +55,37 @@
             animation: dust-fade 6s infinite alternate ease-in-out;
         }
 
-        /* --- 비네트 & 순백 덮침 레이어 타임라인 교정 --- */
+        /* --- 외각 테두리부터 중심부까지 퍼지는 붉은 이펙트 --- */
 
-        /* 비네트: 흰색 화면이 뒤덮을 때까지 100% 농도를 완전 유지한 후 뒤에서 제거됨 */
-        .vignette-deep-charge {
+        .vignette-inward-spread {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            box-shadow: inset 0 0 650px rgba(230, 0, 20, 1), inset 0 0 280px rgba(70, 0, 0, 1);
             z-index: 22;
             pointer-events: none;
             opacity: 0;
-            will-change: opacity;
-            /* 1.15초 동안 흰색이 완벽히 가릴 때까지 비네트를 유지 */
-            animation: vignette-hold-until-covered 1.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            will-change: opacity, background;
+            /* 테두리에서 중심으로 붉은 마력이 퍼져나가는 애니메이션 */
+            animation: red-spread-center 1.1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* 순백 덮침: 비네트가 절정일 때 화면 전체를 완전히 가린 후 빠르게 페이드아웃 */
+        /* --- 순백 덮침 & 빠른 페이드아웃 오버레이 (복구 및 상위 z-index 지정) --- */
+
         .white-flash-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: #ffffff;
-            z-index: 30;
+            background-color: #ffffff !important;
+            z-index: 999; /* 최상단 레이어 보장 */
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            /* 비네트 절정 타이밍(0.95초)에 가리기 시작하여 1.35초에 페이드아웃 완료 */
-            animation: white-cover-fast-fade 0.4초지연_수정 0.4s ease-out 0.95s forwards;
+            /* 붉은 마력이 중심으로 모여든 후(0.9s) 순백으로 화면을 가렸다가 싹 사라짐 */
+            animation: white-cover-fast-fade 0.45s ease-out 0.9s forwards;
         }
 
         /* 컨텐츠 컨테이너 */
@@ -104,7 +103,7 @@
             margin: 0 auto;
         }
 
-        /* 성배 이미지: 순백 장막으로 가려진 타이밍(1.05초)에 즉시 배치 */
+        /* 성배 이미지: 순백 오버레이로 완전히 가려지는 시점(1.0s)에 딜레이 없이 설치 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -115,7 +114,7 @@
             margin-bottom: 20px;
             opacity: 0;
             will-change: opacity;
-            animation: instant-appear 0.01s linear 1.05s forwards;
+            animation: instant-appear 0.01s linear 1.0s forwards;
         }
 
         .holy-grail-img {
@@ -131,7 +130,7 @@
             margin: 0 auto;
         }
 
-        /* 본제목: 페이드아웃 완료 직후 등장 */
+        /* 본제목: 페이드아웃이 진행되는 시점(1.25s)에 순차 등장 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -147,7 +146,7 @@
             text-transform: uppercase;
             opacity: 0;
             will-change: opacity;
-            animation: fade-in 0.4s ease-out 1.35s forwards;
+            animation: fade-in 0.4s ease-out 1.25s forwards;
         }
 
         /* 소제목 */
@@ -160,7 +159,7 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
             opacity: 0;
-            animation: fade-in 0.6s ease-out 1.55s forwards;
+            animation: fade-in 0.6s ease-out 1.45s forwards;
         }
 
         /* 화면 우측 하단 워터마크 */
@@ -174,27 +173,28 @@
             z-index: 20;
             pointer-events: none;
             opacity: 0;
-            animation: fade-in 0.8s ease-out 1.75s forwards;
+            animation: fade-in 0.8s ease-out 1.65s forwards;
         }
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 비네트가 100% 농도로 하얀 화면에 가려질 때까지 절대 끊기지 않고 유지됨 */
-        @keyframes vignette-hold-until-covered {
+        /* 테두리 외각에서 시작되어 화면 정중앙 바로 앞까지 붉게 덮여오는 연출 */
+        @keyframes red-spread-center {
             0% {
                 opacity: 0;
-                box-shadow: inset 0 0 100px rgba(220, 0, 20, 0);
+                background: radial-gradient(circle at 50% 50%, transparent 90%, rgba(255, 10, 30, 0.9) 100%);
             }
-            80%, 95% {
+            50% {
+                opacity: 0.8;
+                background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(220, 0, 20, 0.95) 75%, rgba(80, 0, 0, 1) 100%);
+            }
+            85%, 100% {
                 opacity: 1;
-                box-shadow: inset 0 0 700px rgba(255, 10, 30, 1);
-            }
-            100% {
-                opacity: 0; /* 완전 가려진 후 비가시화 */
+                background: radial-gradient(circle at 50% 50%, transparent 10%, rgba(200, 0, 20, 1) 50%, rgba(50, 0, 0, 1) 100%);
             }
         }
 
-        /* 순백의 화면 덮침 및 빠른 페이드아웃 */
+        /* 순백의 완전 덮침 및 빠르게 사라지는 연출 */
         @keyframes white-cover-fast-fade {
             0% {
                 opacity: 0;
@@ -241,8 +241,10 @@
     <!-- 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
     <div class="red-dust-effect"></div>
 
-    <!-- 비네트 충전 및 순백 페이드 오버레이 레이어 -->
-    <div class="vignette-deep-charge"></div>
+    <!-- 테두리에서 중심으로 수축하며 퍼지는 붉은 이펙트 레이어 -->
+    <div class="vignette-inward-spread"></div>
+
+    <!-- 최상단 순백 덮침 및 페이드 오버레이 레이어 -->
     <div class="white-flash-overlay"></div>
 
     <!-- 컨텐츠 레이어 -->
