@@ -68,7 +68,7 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- Fate/stay night 스타일 시작하기 버튼 (중심축 정밀 교정) --- */
+        /* --- Fate/stay night 스타일 시작하기 버튼 --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -76,7 +76,7 @@
             justify-content: center;
             align-items: center;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-            transform: translateX(2px); /* 시각적 중심축 정밀 우측 보정 */
+            transform: translateX(2px);
         }
 
         .fate-start-btn {
@@ -88,7 +88,7 @@
             border: 2px solid #900000;
             padding: 16px 48px;
             letter-spacing: 6px;
-            margin-right: -6px; /* letter-spacing 자간으로 인한 우측 쏠림 완전히 상쇄 */
+            margin-right: -6px;
             cursor: pointer;
             outline: none;
             position: relative;
@@ -140,6 +140,7 @@
             background: transparent !important;
             margin-bottom: 15px;
             opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
         .holy-grail-wrapper.animate {
@@ -176,6 +177,7 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
         .main-title.animate {
@@ -195,6 +197,7 @@
             padding: 0 15px;
             margin-bottom: 35px;
             opacity: 0;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
         }
 
         .sub-title.animate {
@@ -205,7 +208,7 @@
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.2s ease-out;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
             transform: translateX(2px);
         }
 
@@ -239,6 +242,15 @@
             color: #ffffff;
             text-shadow: 0 0 15px rgba(255, 50, 50, 0.85), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
+        }
+
+        /* --- 공통 요소 페이드아웃 퇴장 클래스 (PRESS TO START 클릭 시 활성화) --- */
+        .fade-out-exit {
+            animation: none !important; /* 기존 등장/점멸 애니메이션 차단 */
+            opacity: 0 !important;
+            transform: translateY(-5px) scale(0.96) !important;
+            pointer-events: none !important;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
         /* --- 우측 하단 컨트롤러 레이아웃 (워터마크 + 볼륨 조절기) --- */
@@ -411,6 +423,11 @@
         const volumeSlider = document.getElementById('volumeSlider');
         const pressStartBtn = document.getElementById('pressStartBtn');
 
+        const grailWrapper = document.getElementById('grailWrapper');
+        const mainTitle = document.getElementById('mainTitle');
+        const subTitle = document.getElementById('subTitle');
+        const pressStartWrapper = document.getElementById('pressStartWrapper');
+
         // 슬라이더 변경 시 즉시 BGM 볼륨 조절
         volumeSlider.addEventListener('input', function() {
             if (bgm) {
@@ -418,19 +435,25 @@
             }
         });
 
-        // PRESS TO START 클릭 시 동작 이벤트 핸들러
+        // PRESS TO START 클릭 시: 성배, 메인제목, 소제목, 버튼 본체 페이드아웃 퇴장
         pressStartBtn.addEventListener('click', function() {
-            console.log("PRESS TO START 버튼이 클릭되었습니다.");
+            grailWrapper.classList.add('fade-out-exit');
+            mainTitle.classList.add('fade-out-exit');
+            subTitle.classList.add('fade-out-exit');
+            pressStartWrapper.classList.add('fade-out-exit');
+
+            console.log("메인 타이틀 요소들이 페이드아웃 되었습니다.");
+            
+            // 0.6초 후 페이드아웃 완료 시점 연출 (다음 페이지/텍스트 스태깅 용도)
+            setTimeout(() => {
+                // 필요 시 추가 연출 구현 위치
+            }, 600);
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
             const btnContainer = document.getElementById('btnContainer');
             const bgLayer = document.getElementById('bgLayer');
             const dustEffect = document.getElementById('dustEffect');
-            const grailWrapper = document.getElementById('grailWrapper');
-            const mainTitle = document.getElementById('mainTitle');
-            const subTitle = document.getElementById('subTitle');
-            const pressStartWrapper = document.getElementById('pressStartWrapper');
             const controlsGroup = document.getElementById('controlsGroup');
 
             // 1. 시작 버튼 사라짐
