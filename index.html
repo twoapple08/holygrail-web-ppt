@@ -66,7 +66,7 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 신규개념 획득 알림 모션 (화면 위쪽에서 생성, 아래에서 위로 상승) --- */
+        /* --- 신규개념 획득 알림 모션 (화면 위쪽에서 생성, 아래에서 위로 상승, 빠르게 소멸) --- */
         #acquireToastContainer {
             position: absolute;
             top: 30px;
@@ -87,7 +87,7 @@
             letter-spacing: 2px;
             margin-bottom: 10px;
             opacity: 0;
-            animation: float-fade-top 3.5s forwards cubic-bezier(0.25, 0.1, 0.25, 1);
+            animation: float-fade-top 2.2s forwards cubic-bezier(0.25, 0.1, 0.25, 1);
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6);
             user-select: none;
             white-space: nowrap;
@@ -98,10 +98,10 @@
                 transform: translateY(40px);
                 opacity: 0;
             }
-            20% {
+            15% {
                 opacity: 1;
             }
-            80% {
+            75% {
                 opacity: 1;
             }
             100% {
@@ -214,7 +214,7 @@
             transform: translateY(-10px);
         }
 
-        /* 페이트 로고 감싸는 레이아웃 (붉은 계열 글로우 적용) */
+        /* 페이트 로고 감싸는 레이아웃 (붉은 계열 글로우 적용 및 사이즈 축소) */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -231,7 +231,7 @@
         }
 
         .fate-logo-img {
-            width: 320px;
+            width: 270px;
             max-width: 100%;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
@@ -240,7 +240,7 @@
             margin: 0 auto;
         }
 
-        /* 소제목 (밝기 상향 및 흰색 글로우, 대시 자간 축소) */
+        /* 소제목 (밝기 상향 및 흰색 글로우, 단일 확장 대시 적용) */
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -258,8 +258,9 @@
             animation: fade-in 1.0s ease-out forwards;
         }
 
-        .connected-dash {
-            letter-spacing: -3px;
+        .extended-dash {
+            letter-spacing: 4px;
+            margin: 0 2px;
         }
 
         /* PRESS TO START 버튼 */
@@ -688,7 +689,7 @@
             <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
         </div>
 
-        <p class="sub-title" id="subTitle">성배와 영령<span class="connected-dash">——</span>그리고 운명의 이야기</p>
+        <p class="sub-title" id="subTitle">성배와 영령<span class="extended-dash">—</span>그리고 운명의 이야기</p>
 
         <div class="press-start-wrapper" id="pressStartWrapper">
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
@@ -832,7 +833,7 @@
                 }
             });
 
-            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승, 지정 양식 적용)
+            // 신규개념 획득 토스트 알림 생성 함수 (화면 위쪽에서 아래에서 위로 상승, 2.2초 빠르게 소멸)
             function spawnAcquireToast(wordText) {
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
@@ -844,7 +845,7 @@
                     if (toastEl && toastEl.parentNode) {
                         toastEl.parentNode.removeChild(toastEl);
                     }
-                }, 3500);
+                }, 2200);
             }
 
             // 신규개념(노란색 키워드) 클릭 및 상태 관리
