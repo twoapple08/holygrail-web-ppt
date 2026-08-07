@@ -140,7 +140,7 @@
             background: transparent !important;
             margin-bottom: 15px;
             opacity: 0;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .holy-grail-wrapper.animate {
@@ -177,7 +177,7 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .main-title.animate {
@@ -197,7 +197,7 @@
             padding: 0 15px;
             margin-bottom: 35px;
             opacity: 0;
-            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out;
         }
 
         .sub-title.animate {
@@ -208,7 +208,7 @@
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
             transform: translateX(2px);
             position: relative;
         }
@@ -251,12 +251,13 @@
             pointer-events: none !important;
         }
 
-        /* --- 성배 및 제목 전용 천천히 페이드아웃 퇴장 클래스 --- */
+        /* --- 성배 및 제목 전용 은은한 페이드아웃 퇴장 클래스 (강제 트랜지션 적용) --- */
         .slow-fade-out {
             animation: none !important;
             opacity: 0 !important;
             transform: translateY(-8px) scale(0.96) !important;
             pointer-events: none !important;
+            transition: opacity 1.2s ease-out, transform 1.2s ease-out !important;
         }
 
         /* --- 화면 좌측 하단 고정 레이아웃 ((화살표)뒤로가기 버튼) --- */
@@ -548,7 +549,7 @@
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 발광 후 빠르게 소멸 -> 성배 및 제목 천천히 페이드아웃 -> 좌측 하단 뒤로가기 등장
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> 백색 섬광 소멸 -> 성배 및 제목 은은한 페이드아웃 -> 좌측 하단 뒤로가기 등장
         pressStartBtn.addEventListener('click', function() {
             // 1. 클릭 효과음 재생 (SFX 슬라이더 음량 반영)
             if (pstSfx) {
@@ -559,39 +560,43 @@
                 });
             }
 
-            // 2. 프투스 버튼 순백색 섬광 후 빠르게 소멸 (0.0초)
+            // 2. 프투스 버튼 섬광 발광 후 빠른 소멸 (0.0초)
             pressStartWrapper.classList.add('flash-exit');
 
-            // 3. 프투스 소멸 후(0.4초 뒤), 성배 이미지 및 제목들이 천천히 페이드아웃 시작
+            // 3. 프투스 소멸 직후(0.25초 뒤), 성배 이미지 및 제목들 부드럽게 페이드아웃 시작
             setTimeout(() => {
                 grailWrapper.classList.add('slow-fade-out');
                 mainTitle.classList.add('slow-fade-out');
                 subTitle.classList.add('slow-fade-out');
-            }, 400);
+            }, 250);
 
-            // 4. 타이틀 요소들이 완전히 천천히 다 사라진 시점(0.4s + 0.8s 트랜지션 = 1.2s 후), 좌측 하단 뒤로가기 버튼 등장
+            // 4. 타이틀 페이드아웃 완파 시점(0.25s + 1.2s 트랜지션 = 1.45s 후), 좌측 하단 뒤로가기 등장
             setTimeout(() => {
                 backBtnWrapper.classList.add('show');
-                console.log("모든 타이틀 요소가 사라지고 좌측 하단 뒤로가기 버튼이 활성화되었습니다.");
-            }, 1200);
+            }, 1450);
         });
 
-        // 뒤로가기 버튼 클릭 시 역재생 상호작용 연출
+        // 뒤로가기 버튼 클릭 시 부드러운 복원(역재생) 상호작용
         backBtn.addEventListener('click', function() {
-            // 1. 뒤로가기 버튼 자체 페이드아웃
+            // 1. 좌측 하단 뒤로가기 버튼 즉각 페이드아웃
             backBtnWrapper.classList.remove('show');
 
-            // 2. 성배 이미지, 본제목, 소제목 페이드인 복원 (0.2초 시점)
+            // 2. 성배 이미지, 본제목, 소제목 부드럽게 페이드인 복원 (0.2초 시점)
             setTimeout(() => {
                 grailWrapper.classList.remove('slow-fade-out');
                 mainTitle.classList.remove('slow-fade-out');
                 subTitle.classList.remove('slow-fade-out');
             }, 200);
 
-            // 3. 프투스 버튼 섬광 퇴장 클래스 제거하여 재생성 및 점멸 활성화 (1.0초 시점)
+            // 3. 프투스 버튼 섬광 클래스 제거 및 은은한 페이드인 복원 (0.7초 시점)
             setTimeout(() => {
                 pressStartWrapper.classList.remove('flash-exit');
-            }, 1000);
+                pressStartWrapper.style.opacity = '0';
+                // 리플로우 강제 유발 후 opacity 1 복원
+                void pressStartWrapper.offsetWidth;
+                pressStartWrapper.style.opacity = '1';
+                pressStartWrapper.style.pointerEvents = 'auto';
+            }, 700);
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
