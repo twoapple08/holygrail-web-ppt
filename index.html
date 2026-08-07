@@ -260,7 +260,7 @@
             transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
 
-        /* --- 우측 하단 컨트롤러 레이아웃 (워터마크 + 볼륨 조절기) --- */
+        /* --- 우측 하단 컨트롤러 레이아웃 (SFX + BGM 조절기 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -268,7 +268,7 @@
             display: flex;
             flex-direction: column;
             align-items: flex-end;
-            gap: 10px;
+            gap: 8px;
             z-index: 20;
             opacity: 0;
             pointer-events: none;
@@ -279,25 +279,34 @@
             animation: fade-in 1.2s ease-out forwards;
         }
 
-        /* Fate 테마 볼륨 조절 스파이크 슬라이더 UI */
+        /* Fate 테마 볼륨 조절 스파이크 패널 */
+        .sound-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: rgba(15, 0, 0, 0.7);
+            border: 1px solid rgba(140, 0, 0, 0.8);
+            padding: 8px 12px;
+            border-radius: 4px;
+            box-shadow: 0 0 12px rgba(80, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+        }
+
         .volume-control-box {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(15, 0, 0, 0.65);
-            border: 1px solid rgba(140, 0, 0, 0.8);
-            padding: 6px 12px;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(80, 0, 0, 0.5);
-            backdrop-filter: blur(2px);
+            justify-content: space-between;
+            gap: 10px;
         }
 
         .volume-label {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #d0c5b5;
             letter-spacing: 1px;
             font-weight: 700;
             user-select: none;
+            min-width: 30px;
+            text-align: left;
         }
 
         /* 커스텀 볼륨 range 슬라이더 */
@@ -332,10 +341,11 @@
 
         /* 화면 우측 하단 워터마크 */
         .watermark {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: rgba(255, 255, 255, 0.4);
             letter-spacing: 1.5px;
             user-select: none;
+            margin-top: 2px;
         }
 
         /* --- 키프레임 애니메이션 정의 --- */
@@ -449,12 +459,19 @@
         </div>
     </main>
 
-    <!-- 화면 우측 하단 컨트롤러 레이어 (볼륨 조절기 + 워터마크) -->
+    <!-- 화면 우측 하단 사운드 컨트롤러 레이어 (SFX/BGM 슬라이더 + 워터마크) -->
     <div class="bottom-right-controls" id="controlsGroup">
-        <!-- 워터마크 바로 위에 위치한 볼륨 조절기 (초기값 0.2 설정) -->
-        <div class="volume-control-box">
-            <span class="volume-label">BGM</span>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.2">
+        <div class="sound-panel">
+            <!-- 효과음(SFX) 볼륨 조절 슬라이더 (기본값 10%) -->
+            <div class="volume-control-box">
+                <span class="volume-label">SFX</span>
+                <input type="range" id="seSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
+            </div>
+            <!-- 배경음(BGM) 볼륨 조절 슬라이더 (기본값 10%) -->
+            <div class="volume-control-box">
+                <span class="volume-label">BGM</span>
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
+            </div>
         </div>
         <footer class="watermark">Made by 사과사과</footer>
     </div>
@@ -463,6 +480,7 @@
         const bgm = document.getElementById('bgm');
         const pstSfx = document.getElementById('pstSfx');
         const volumeSlider = document.getElementById('volumeSlider');
+        const seSlider = document.getElementById('seSlider');
         const pressStartBtn = document.getElementById('pressStartBtn');
 
         const grailWrapper = document.getElementById('grailWrapper');
@@ -470,17 +488,35 @@
         const subTitle = document.getElementById('subTitle');
         const pressStartWrapper = document.getElementById('pressStartWrapper');
 
-        // 슬라이더 변경 시 즉시 BGM 볼륨 조절
+        // BGM 슬라이더 변경 시 즉시 BGM 볼륨 조절
         volumeSlider.addEventListener('input', function() {
             if (bgm) {
                 bgm.volume = parseFloat(this.value);
             }
         });
 
+        // SFX 슬라이더 변경 시 즉시 효과음 볼륨 조절
+        seSlider.addEventListener('input', function() {
+            if (pstSfx) {
+                pstSfx.volume = parseFloat(this.value);
+            }
+        });
+
+        // SFX 슬라이더 조작 완료(드래그 종료) 시 볼륨 샘플 체감 재생
+        seSlider.addEventListener('change', function() {
+            if (pstSfx) {
+                pstSfx.currentTime = 0;
+                pstSfx.play().catch(error => {
+                    console.log("SFX 샘플 재생 예외 발생:", error);
+                });
+            }
+        });
+
         // 프투스 클릭 시 연출: pst.mp3 재생 -> 푸른 고전압 전기 이펙트로 번쩍이며 프투스 소멸 -> 성배 및 제목 페이드아웃
         pressStartBtn.addEventListener('click', function() {
-            // 1. 클릭 효과음 즉시 재생
+            // 1. 클릭 효과음 재생 (SFX 슬라이더 음량 반영)
             if (pstSfx) {
+                pstSfx.volume = parseFloat(seSlider.value);
                 pstSfx.currentTime = 0;
                 pstSfx.play().catch(error => {
                     console.log("pst.mp3 재생 예외 발생:", error);
@@ -507,7 +543,7 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. BGM 재생 설정: 초기 음량 20%(0.2) 지정 및 정확히 0.7초(700ms) 지연 재생
+            // 2. BGM & SFX 초기 음량 할당(10%) 및 BGM 0.7초(700ms) 지연 재생
             if (bgm) {
                 bgm.volume = parseFloat(volumeSlider.value);
                 setTimeout(() => {
@@ -515,6 +551,10 @@
                         console.log("BGM 재생 예외 발생:", error);
                     });
                 }, 700);
+            }
+
+            if (pstSfx) {
+                pstSfx.volume = parseFloat(seSlider.value);
             }
 
             // 3. 배경 이미지 페이드인
@@ -537,7 +577,7 @@
                 mainTitle.classList.add('animate');
             }, 2200);
 
-            // 7. 소제목, 워터마크 및 볼륨 조절기 페이드인 (2.8초)
+            // 7. 소제목, 워터마크 및 사운드 컨트롤러 페이드인 (2.8초)
             setTimeout(() => {
                 subTitle.classList.add('animate');
                 controlsGroup.classList.add('animate');
