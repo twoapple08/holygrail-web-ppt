@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fate/series - 성배전쟁</title>
+    <title>Fate/series</title>
     <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
@@ -199,6 +199,7 @@
             transform: translateY(-10px);
         }
 
+        /* 페이트 로고 전용 감싸는 레이아웃 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -206,7 +207,7 @@
             align-items: center;
             padding: 10px;
             background: transparent !important;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             opacity: 0;
         }
 
@@ -214,44 +215,22 @@
             animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        .holy-grail-img {
-            width: 170px;
+        /* 페이트 로고 이미지 스타일 */
+        .fate-logo-img {
+            width: 320px;
             max-width: 100%;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
-            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7));
             display: block;
             margin: 0 auto;
         }
 
-        .main-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: 7px;
-            margin-right: -7px;
-            transform: translateX(2px);
-            margin-bottom: 12px;
-            color: #f5f0e6;
-            text-shadow: 
-                3px 3px 0px #700000, 
-                -1px -1px 0px #700000, 
-                1px -1px 0px #700000, 
-                -1px 1px 0px #700000,
-                0 0 35px rgba(255, 50, 50, 0.7);
-            text-transform: uppercase;
-            opacity: 0;
-        }
-
-        .main-title.animate {
-            animation: fade-in 1.0s ease-out forwards;
-        }
-
         .sub-title {
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             font-weight: 400;
-            color: rgba(215, 215, 225, 0.85);
-            letter-spacing: 1px;
-            margin-right: -1px;
+            color: rgba(215, 215, 225, 0.9);
+            letter-spacing: 1.5px;
             transform: translateX(2px);
             line-height: 1.6;
             text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 15px rgba(0, 0, 0, 0.9);
@@ -687,11 +666,10 @@
     <!-- 1단계 메인 타이틀 컨텐츠 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
-            <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
+            <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
         </div>
 
-        <h1 class="main-title" id="mainTitle">성배전쟁</h1>
-        <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
+        <p class="sub-title" id="subTitle">성배와 영령——그리고 운명의 이야기</p>
 
         <div class="press-start-wrapper" id="pressStartWrapper">
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
@@ -787,7 +765,6 @@
 
             const initialNotice = document.getElementById('initialNotice');
             const grailWrapper = document.getElementById('grailWrapper');
-            const mainTitle = document.getElementById('mainTitle');
             const subTitle = document.getElementById('subTitle');
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
@@ -856,7 +833,6 @@
             keywords.forEach(el => {
                 const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
                 
-                // 세션 데이터가 있는 경우에만 클릭 상태 부여
                 if (sessionStorage.getItem(key) === 'true') {
                     el.classList.add('clicked');
                 } else {
@@ -892,7 +868,6 @@
 
                 setTimeout(() => {
                     grailWrapper.classList.add('slow-fade-out');
-                    mainTitle.classList.add('slow-fade-out');
                     subTitle.classList.add('slow-fade-out');
                     introNotice.classList.add('slow-fade-out');
                 }, 250);
@@ -942,7 +917,6 @@
 
                     setTimeout(() => {
                         grailWrapper.classList.remove('slow-fade-out');
-                        mainTitle.classList.remove('slow-fade-out');
                         subTitle.classList.remove('slow-fade-out');
                         introNotice.classList.remove('slow-fade-out');
                     }, 300);
@@ -981,15 +955,14 @@
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
                 setTimeout(() => grailWrapper.classList.add('animate'), 1400);
-                setTimeout(() => mainTitle.classList.add('animate'), 2200);
 
                 setTimeout(() => {
                     subTitle.classList.add('animate');
                     introNotice.classList.add('animate');
                     controlsGroup.classList.add('animate');
-                }, 2800);
+                }, 2200);
 
-                setTimeout(() => pressStartWrapper.classList.add('animate'), 3500);
+                setTimeout(() => pressStartWrapper.classList.add('animate'), 3000);
             });
         });
     </script>
