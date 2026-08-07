@@ -199,7 +199,7 @@
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.5s ease-out;
+            transition: opacity 1.2s ease-out;
         }
 
         .press-start-wrapper.animate {
@@ -467,10 +467,10 @@
                 controlsGroup.classList.add('animate');
             }, 2800);
 
-            // 8. PRESS TO START: 소제목 등장 약 2초 뒤(4.8초) 끊김 없이 자연스럽게 페이드인되며 등장
+            // 8. PRESS TO START: 소제목 등장 0.7초 뒤(3.5초) 부드럽게 등장
             setTimeout(() => {
                 pressStartWrapper.classList.add('animate');
-            }, 4800);
+            }, 3500);
         });
     </script>
 </body>
