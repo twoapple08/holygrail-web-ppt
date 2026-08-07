@@ -666,6 +666,7 @@
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
+    <audio id="noshinSfx" src="noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
     <!-- 메인 배경 & 안개 -->
@@ -768,6 +769,7 @@
             const bgm = document.getElementById('bgm');
             const pstSfx = document.getElementById('pstSfx');
             const wordSfx = document.getElementById('wordSfx');
+            const noshinSfx = document.getElementById('noshinSfx');
             const kotomineSfx = document.getElementById('kotomineSfx');
 
             const volumeSlider = document.getElementById('volumeSlider');
@@ -792,6 +794,7 @@
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
+            let activeToastCount = 0; // 현재 화면에 유지 중인 알람 개수 카운트
 
             // 볼륨 연동
             volumeSlider.addEventListener('input', function() {
@@ -801,6 +804,7 @@
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = parseFloat(this.value);
+                if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
             });
 
             voiceSlider.addEventListener('input', function() {
@@ -832,8 +836,9 @@
                 }
             });
 
-            // 신규개념 획득 토스트 알림 생성 함수 (1.8초 지속, 0~50% 페이드인 / 50~100% 페이드아웃)
+            // 신규개념 획득 토스트 알림 생성 함수 (1.8초 지속)
             function spawnAcquireToast(wordText) {
+                activeToastCount++;
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
                 toastEl.innerText = `—${wordText}을(를) 획득했습니다—`;
@@ -844,6 +849,7 @@
                     if (toastEl && toastEl.parentNode) {
                         toastEl.parentNode.removeChild(toastEl);
                     }
+                    activeToastCount = Math.max(0, activeToastCount - 1);
                 }, 1800);
             }
 
@@ -860,6 +866,16 @@
                 }
 
                 el.addEventListener('click', function() {
+                    // 알람이 유지되는 동안(activeToastCount > 0)에는 획득 차단 및 noshin.mp3 재생
+                    if (activeToastCount > 0) {
+                        if (noshinSfx) {
+                            noshinSfx.volume = parseFloat(seSlider.value);
+                            noshinSfx.currentTime = 0;
+                            noshinSfx.play().catch(e => console.log(e));
+                        }
+                        return;
+                    }
+
                     if (!this.classList.contains('clicked')) {
                         this.classList.add('clicked');
                         sessionStorage.setItem(key, 'true');
@@ -970,6 +986,7 @@
 
                 if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
                 if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
+                if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
