@@ -365,17 +365,14 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 (성배, 성배전쟁 등 다중 탭) --- */
+        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 탭 (절대 좌표 기반 트랜지션 구조) --- */
         .center-tab-group-container {
             position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 30;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease-out;
@@ -387,8 +384,25 @@
         }
 
         .tab-item-wrapper {
-            position: relative;
-            transition: opacity 0.6s ease-in-out, transform 0.8s ease-in-out, top 0.8s ease-in-out, left 0.8s ease-in-out, filter 0.8s ease-in-out;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            transition: top 0.9s cubic-bezier(0.25, 1, 0.5, 1), 
+                        left 0.9s cubic-bezier(0.25, 1, 0.5, 1), 
+                        transform 0.9s cubic-bezier(0.25, 1, 0.5, 1), 
+                        opacity 0.6s ease-in-out, 
+                        filter 0.9s ease-in-out;
+            will-change: top, left, transform, opacity;
+        }
+
+        /* 중앙 기본 배치 좌표 */
+        #tabWrapper_grail {
+            top: 45%;
+        }
+
+        #tabWrapper_sung {
+            top: 57%;
         }
 
         /* 동적 버튼 공통 스타일 */
@@ -410,6 +424,7 @@
                 -1px 1px 0px #700000,
                 0 0 40px rgba(255, 215, 0, 0.8);
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+            display: inline-block;
         }
 
         .center-grail-btn:hover {
@@ -418,12 +433,11 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 선택된 탭이 좌측 상단으로 이동할 때 스타일 */
+        /* 선택된 탭이 좌측 상단으로 부드럽게 이동하는 모션 */
         .tab-item-wrapper.move-top-left {
-            position: fixed;
-            top: 7%;
-            left: 6%;
-            transform: translate(0, 0) scale(0.75);
+            top: 7% !important;
+            left: 6% !important;
+            transform: translate(0, 0) scale(0.75) !important;
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
             pointer-events: none;
             z-index: 35;
@@ -734,7 +748,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 인터랙션 탭 그룹 (동적 탭 추가 가능 구조) -->
+    <!-- 2단계: 중앙 인터랙션 탭 그룹 (절대 좌표 트랜지션 적용) -->
     <div class="center-tab-group-container" id="centerTabGroup">
         <!-- 기본 성배 탭 -->
         <div class="tab-item-wrapper" id="tabWrapper_grail">
@@ -954,12 +968,17 @@
                 });
             });
 
-            // 고유번호 획득 여부에 따른 동적 탭 업데이트 함수
+            // 고유번호 획득 여부에 따른 동적 탭 업데이트 및 정렬 위치 조정 함수
             function refreshDynamicTabs() {
-                if (sessionStorage.getItem('fate_kw_clicked_sung') === 'true') {
+                const hasSung = sessionStorage.getItem('fate_kw_clicked_sung') === 'true';
+                
+                if (hasSung) {
                     tabWrappers.sung.style.display = 'block';
+                    tabWrappers.grail.style.top = '40%';
+                    tabWrappers.sung.style.top = '54%';
                 } else {
                     tabWrappers.sung.style.display = 'none';
+                    tabWrappers.grail.style.top = '48%';
                 }
             }
 
@@ -972,7 +991,7 @@
 
                 currentActiveTabKey = selectedKey;
 
-                // 선택된 탭은 좌측 상단으로 이동, 선택받지 못한 탭은 제자리에서 페이드아웃
+                // 선택된 탭은 좌측 상단으로 부드럽게 이동, 선택받지 못한 탭은 제자리에서 페이드아웃
                 Object.keys(tabWrappers).forEach(k => {
                     const wrap = tabWrappers[k];
                     if (k === selectedKey) {
@@ -1011,7 +1030,7 @@
                 }, 250);
 
                 setTimeout(() => {
-                    refreshDynamicTabs(); // 동적 탭 갱신
+                    refreshDynamicTabs(); // 동적 탭 위치/노출 갱신
                     centerTabGroup.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
@@ -1041,7 +1060,7 @@
                             tabWrappers[k].classList.remove('move-top-left');
                             tabWrappers[k].classList.remove('fade-out-stay');
                         });
-                        refreshDynamicTabs(); // 획득 상태 재점검
+                        refreshDynamicTabs(); // 획득 상태 재점검 및 좌표 원복
                         currentStage = 2;
                         currentActiveTabKey = null;
                     }, 300);
