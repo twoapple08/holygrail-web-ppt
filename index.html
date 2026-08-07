@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성배전쟁 - Fate/stay night 테마</title>
+    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
@@ -21,15 +22,32 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-            /* 원본 배경 이미지 선명하게 유지 */
+            background-color: #000000; /* 초기 검은색 배경 */
+        }
+
+        /* 메인 배경 이미지 (초기 숨김, 클릭 후 페이드인) */
+        .main-background-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background-image: url('first-background.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            background-color: #000000;
+            z-index: 1;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.5s ease-in-out;
         }
 
-        /* 화면 아래쪽 전체에 깔리는 붉은 먼지/안개 이펙트 레이어 (복구 완료) */
+        /* 클릭 후 배경 활성화 클래스 */
+        .main-background-layer.active {
+            opacity: 1;
+        }
+
+        /* 화면 아래 붉은 먼지/안개 이펙트 (초기 숨김) */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -39,10 +57,59 @@
             background: linear-gradient(to top, rgba(140, 10, 10, 0.45) 0%, rgba(80, 0, 0, 0.2) 50%, transparent 100%);
             z-index: 2;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.0s ease-in-out;
+        }
+
+        /* 붉은 안개 활성화 클래스 */
+        .red-dust-effect.active {
+            opacity: 1;
             animation: dust-fade 6s infinite alternate ease-in-out;
         }
 
-        /* 컨텐츠 컨테이너 */
+        /* --- Fate/stay night 스타일 시작하기 버튼 --- */
+        .start-btn-container {
+            position: absolute;
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fate-start-btn {
+            font-family: 'Song Myung', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f5f0e6;
+            background: rgba(20, 0, 0, 0.85);
+            border: 2px solid #900000;
+            padding: 16px 48px;
+            letter-spacing: 6px;
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .fate-start-btn:hover {
+            color: #ffffff;
+            background: rgba(60, 0, 0, 0.95);
+            border-color: #ff2222;
+            box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8);
+            transform: scale(1.05);
+        }
+
+        /* 버튼 퇴장 클래스 */
+        .start-btn-container.hide {
+            opacity: 0;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        /* 컨텐츠 컨테이너 (성배 및 타이틀) */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -55,9 +122,10 @@
             z-index: 10;
             background: transparent;
             margin: 0 auto;
+            pointer-events: none;
         }
 
-        /* 성배 이미지 래퍼: 정갈한 스르륵 페이드인 등장 연출 */
+        /* 성배 이미지 래퍼 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -67,10 +135,12 @@
             background: transparent !important;
             margin-bottom: 20px;
             opacity: 0;
-            animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) 0.3s forwards;
         }
 
-        /* 성배 본체 (등장 후 은은한 위아래 부유 모션) */
+        .holy-grail-wrapper.animate {
+            animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
@@ -84,7 +154,7 @@
             margin: 0 auto;
         }
 
-        /* 본제목: 성배 등장 후 부드럽게 페이드인 */
+        /* 본제목 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
@@ -99,10 +169,13 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            animation: fade-in 1.0s ease-out 1.2s forwards;
         }
 
-        /* 소제목: 본제목 등장 직후 연달아 노출 */
+        .main-title.animate {
+            animation: fade-in 1.0s ease-out forwards;
+        }
+
+        /* 소제목 */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -112,7 +185,10 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
             opacity: 0;
-            animation: fade-in 1.0s ease-out 1.6s forwards;
+        }
+
+        .sub-title.animate {
+            animation: fade-in 1.0s ease-out forwards;
         }
 
         /* 화면 우측 하단 워터마크 */
@@ -126,7 +202,10 @@
             z-index: 20;
             pointer-events: none;
             opacity: 0;
-            animation: fade-in 1.2s ease-out 2.0s forwards;
+        }
+
+        .watermark.animate {
+            animation: fade-in 1.2s ease-out forwards;
         }
 
         /* --- 키프레임 애니메이션 정의 --- */
@@ -152,39 +231,82 @@
         }
 
         @keyframes dust-fade {
-            0% {
-                opacity: 0.7;
-            }
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0.7; }
+            100% { opacity: 1; }
         }
 
         @keyframes fade-in {
-            0% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 1;
-            }
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-    <div class="red-dust-effect"></div>
+    <!-- 1. 메인 배경 이미지 레이어 -->
+    <div class="main-background-layer" id="bgLayer"></div>
 
+    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 -->
+    <div class="red-dust-effect" id="dustEffect"></div>
+
+    <!-- 3. 페스나 스타일 [시작하기] UI 버튼 컨테이너 -->
+    <div class="start-btn-container" id="btnContainer">
+        <button class="fate-start-btn" id="startBtn">시작하기</button>
+    </div>
+
+    <!-- 4. 컨텐츠 레이어 (성배 및 타이틀) -->
     <main class="content-container">
-        <div class="holy-grail-wrapper">
+        <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
 
-        <h1 class="main-title">성배전쟁</h1>
+        <h1 class="main-title" id="mainTitle">성배전쟁</h1>
 
-        <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
+        <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
-    <footer class="watermark">Made by 사과사과</footer>
+    <!-- 화면 우측 하단 워터마크 -->
+    <footer class="watermark" id="watermark">Made by 사과사과</footer>
 
+    <script>
+        document.getElementById('startBtn').addEventListener('click', function() {
+            const btnContainer = document.getElementById('btnContainer');
+            const bgLayer = document.getElementById('bgLayer');
+            const dustEffect = document.getElementById('dustEffect');
+            const grailWrapper = document.getElementById('grailWrapper');
+            const mainTitle = document.getElementById('mainTitle');
+            const subTitle = document.getElementById('subTitle');
+            const watermark = document.getElementById('watermark');
+
+            // 1. 시작 버튼 사라짐
+            btnContainer.classList.add('hide');
+
+            // 2. 붉은 이펙트 먼지 등장
+            setTimeout(() => {
+                dustEffect.classList.add('active');
+            }, 300);
+
+            // 3. 배경 이미지 페이드인
+            setTimeout(() => {
+                bgLayer.classList.add('active');
+            }, 600);
+
+            // 4. 성배 이미지 페이드인
+            setTimeout(() => {
+                grailWrapper.classList.add('animate');
+            }, 1400);
+
+            // 5. 본제목 페이드인
+            setTimeout(() => {
+                mainTitle.classList.add('animate');
+            }, 2200);
+
+            // 6. 소제목 및 워터마크 페이드인
+            setTimeout(() => {
+                subTitle.classList.add('animate');
+                watermark.classList.add('animate');
+            }, 2800);
+        });
+    </script>
 </body>
 </html>
