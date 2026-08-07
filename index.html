@@ -133,7 +133,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (연하게 일렁이는 흰색 글로우 & 마우스 올렸을 때 밝은 글로우 극대화) --- */
+        /* --- 어록 속성 --- */
         .description-quote {
             font-style: italic;
             color: rgba(235, 225, 210, 0.9);
@@ -815,7 +815,7 @@
 
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
-                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 2.0); // 200% (2.0배) 볼륨 설정
+                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0); // 400% (4.0배) 볼륨 설정
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
             });
 
@@ -897,9 +897,9 @@
                         this.classList.add('clicked');
                         sessionStorage.setItem(key, 'true');
 
-                        // 1. 효과음 재생 (200% 증폭 적용: 최대 1 제한)
+                        // 1. 효과음 재생 (400% 증폭 적용: 최대 1 제한)
                         if (wordSfx) {
-                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.0);
+                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                             wordSfx.currentTime = 0;
                             wordSfx.play().catch(e => console.log(e));
                         }
@@ -1002,7 +1002,7 @@
                 }
 
                 if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.0); // 200% (2.0배)
+                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0); // 400% (4.0배)
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
