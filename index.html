@@ -181,16 +181,45 @@
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
-            color: #ffffff;
+            color: rgba(215, 215, 225, 0.85);
             letter-spacing: 1px;
             line-height: 1.6;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 1), 0 0 15px rgba(0, 0, 0, 0.9);
             padding: 0 15px;
+            margin-bottom: 35px; /* 아래 PRESS TO START와의 간격 확보 */
             opacity: 0;
         }
 
         .sub-title.animate {
             animation: fade-in 1.0s ease-out forwards;
+        }
+
+        /* --- 느리게 깜빡이는 PRESS TO START 버튼 --- */
+        .press-start-btn {
+            font-family: 'Song Myung', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #a0a0aa; /* 회색조 텍스트 */
+            letter-spacing: 5px;
+            text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5);
+            background: transparent;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            user-select: none;
+            opacity: 0;
+            pointer-events: auto;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
+        }
+
+        .press-start-btn.animate {
+            animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
+        }
+
+        .press-start-btn:hover {
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 50, 50, 0.8), 0 0 8px rgba(255, 255, 255, 0.9);
+            transform: scale(1.08);
         }
 
         /* --- 우측 하단 컨트롤러 레이아웃 (워터마크 + 볼륨 조절기) --- */
@@ -273,6 +302,19 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
+        /* PRESS TO START 회색 텍스트 느린 점멸 루프 */
+        @keyframes slow-blink-loop {
+            0% {
+                opacity: 0.2;
+            }
+            50% {
+                opacity: 0.85;
+            }
+            100% {
+                opacity: 0.2;
+            }
+        }
+
         @keyframes grail-smooth-fadein {
             0% {
                 opacity: 0;
@@ -324,6 +366,8 @@
         <h1 class="main-title" id="mainTitle">성배전쟁</h1>
 
         <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
+
+        <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
     </main>
 
     <div class="bottom-right-controls" id="controlsGroup">
@@ -337,12 +381,19 @@
     <script>
         const bgm = document.getElementById('bgm');
         const volumeSlider = document.getElementById('volumeSlider');
+        const pressStartBtn = document.getElementById('pressStartBtn');
 
         // 슬라이더 변경 시 즉시 BGM 볼륨 조절
         volumeSlider.addEventListener('input', function() {
             if (bgm) {
                 bgm.volume = parseFloat(this.value);
             }
+        });
+
+        // PRESS TO START 클릭 시 동작 이벤트 핸들러
+        pressStartBtn.addEventListener('click', function() {
+            // 여기에 차후 전환할 화면/게임 로직이나 콘솔 이벤트 연동 가능
+            console.log("PRESS TO START 버튼이 클릭되었습니다.");
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
@@ -387,11 +438,16 @@
                 mainTitle.classList.add('animate');
             }, 2200);
 
-            // 7. 소제목, 워터마크 및 볼륨 조절기 페이드인
+            // 7. 소제목, PRESS TO START, 워터마크 및 볼륨 조절기 순차 페이드인
             setTimeout(() => {
                 subTitle.classList.add('animate');
                 controlsGroup.classList.add('animate');
             }, 2800);
+
+            // 8. PRESS TO START 버튼 느린 점멸 루프 시작
+            setTimeout(() => {
+                pressStartBtn.classList.add('animate');
+            }, 3200);
         });
     </script>
 </body>
