@@ -369,7 +369,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 탭 --- */
+        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 --- */
         .center-tab-group-container {
             position: absolute;
             top: 0;
@@ -402,7 +402,7 @@
         }
 
         #tabWrapper_grail {
-            top: 45%;
+            top: 48%;
         }
 
         #tabWrapper_sung {
@@ -429,6 +429,8 @@
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
             display: inline-block;
             pointer-events: auto !important;
+            position: relative;
+            z-index: 32;
         }
 
         .center-grail-btn:hover {
@@ -837,7 +839,7 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
-            // 접속 시 성배(sungbae) 고유번호 기본 소지 설정 (알림 없이 세션 등록)
+            // 성배(sungbae) 고유번호 기본 소지 세션 등록
             sessionStorage.setItem('fate_kw_clicked_sungbae', 'true');
 
             const bgm = document.getElementById('bgm');
@@ -1004,7 +1006,10 @@
 
             // 탭 클릭 및 고유 페이지(Stage 3) 진입 공통 함수
             function openTabDetail(selectedKey, event) {
-                if (event) event.stopPropagation();
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
 
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
@@ -1030,12 +1035,16 @@
                 }, 1100);
             }
 
-            // 탭 버튼 클릭 이벤트 바인딩 보완
+            // 탭 버튼 클릭 이벤트 강제 보완
             if (tabBtns.grail) {
-                tabBtns.grail.addEventListener('click', (e) => openTabDetail('grail', e));
+                tabBtns.grail.onclick = function(e) {
+                    openTabDetail('grail', e);
+                };
             }
             if (tabBtns.sung) {
-                tabBtns.sung.addEventListener('click', (e) => openTabDetail('sung', e));
+                tabBtns.sung.onclick = function(e) {
+                    openTabDetail('sung', e);
+                };
             }
 
             pressStartBtn.addEventListener('click', function() {
