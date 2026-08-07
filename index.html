@@ -2,15 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fate/series</title>
-    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -24,6 +24,7 @@
             position: relative;
             background-color: #000000;
             user-select: none;
+            touch-action: none;
         }
 
         /* 메인 배경 이미지 */
@@ -125,7 +126,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (밝기 낮춘 디자인 유지) --- */
+        /* --- 어록 속성 (밝기를 낮춘 상태 유지) --- */
         .description-quote {
             font-style: italic;
             color: rgba(200, 190, 175, 0.75);
@@ -345,7 +346,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 나무뿌리(계층형 마인드맵) 캔버스 시스템 --- */
+        /* --- 4. 나무뿌리 뷰포트 및 캔버스 (PC/모바일 공용) --- */
         .tree-viewport {
             position: absolute;
             top: 0;
@@ -372,8 +373,8 @@
             position: absolute;
             top: 0;
             left: 0;
-            width: 3000px;
-            height: 3000px;
+            width: 2000px;
+            height: 2000px;
             transform-origin: 0 0;
             will-change: transform;
         }
@@ -399,8 +400,8 @@
             position: absolute;
             z-index: 2;
             transform: translate(-50%, -50%);
-            transition: opacity 0.8s ease-in-out, filter 1.2s ease-in-out;
-            will-change: transform, opacity;
+            transition: opacity 0.8s ease-in-out, filter 1.0s ease-in-out;
+            will-change: top, left, transform, opacity;
         }
 
         .tree-node-btn {
@@ -428,15 +429,15 @@
             text-shadow: 0 0 40px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 탭 선택 시 좌측 상단으로 부드럽게 이동하는 모션 */
+        /* 클릭 시 순간이동 없이 좌측 상단으로 미끄러지듯 이동하는 애니메이션 */
         .tree-node-wrapper.moving-to-top-left {
             position: fixed !important;
             z-index: 35 !important;
             pointer-events: none !important;
-            transition: top 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                        left 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                        filter 1.2s ease-in-out !important;
+            transition: top 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
+                        left 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
+                        filter 1.0s ease-in-out !important;
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
         }
 
@@ -445,7 +446,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 5. 상세 페이지 (성배 탭) --- */
+        /* --- 5. 상세 페이지 일반 레이아웃 --- */
         .tab-detail-view {
             position: absolute;
             top: 0;
@@ -460,7 +461,7 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .tab-detail-view.show {
@@ -473,6 +474,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-width: 280px;
         }
 
         .detail-img {
@@ -676,21 +678,17 @@
 </head>
 <body>
 
-    <!-- 신규개념 획득 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
-    <!-- BGM & SFX 레이어 -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
-    <!-- 메인 배경 & 안개 -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- 1단계: [시작하기] UI 버튼 및 안내 문구 그룹 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
@@ -698,7 +696,6 @@
         </div>
     </div>
 
-    <!-- 1단계: 메인 화면 컨텐츠 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
@@ -711,12 +708,10 @@
         </div>
     </main>
 
-    <!-- 메인 화면 좌측 하단 유입자 안내 문구 -->
     <div class="intro-notice-left" id="introNotice">
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 나무뿌리(계층형 마인드맵) 뷰포트 및 캔버스 -->
     <div class="tree-viewport" id="treeViewport">
         <div class="tree-canvas" id="treeCanvas">
             <svg class="tree-svg-lines" id="treeSvgLines"></svg>
@@ -724,7 +719,6 @@
         </div>
     </div>
 
-    <!-- 3단계: 상세뷰 (성배 탭) -->
     <section class="tab-detail-view" id="tabDetail_sung">
         <div class="detail-left-box">
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-img">
@@ -736,21 +730,17 @@
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <!-- '성배전쟁' 신규개념 고유 ID sungbwar 부여 완료 -->
                 <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
 
-    <!-- 동적으로 추가될 다른 탭 상세 뷰 보관소 -->
     <div id="dynamicTabDetailViews"></div>
 
-    <!-- 화면 좌측 하단 뒤로가기 버튼 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- 화면 우측 하단 컨트롤러 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -770,7 +760,7 @@
     </div>
 
     <script>
-        // 전역 개념 정의 및 나무뿌리 계층 구조 (부모-자식 관계)
+        // 마스터 신규개념 레지스트리 및 계층 트리 구조
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, fontSize: '4.5rem' },
             'sungbwar': { name: '성배전쟁', parent: 'sung', fontSize: '3.2rem' },
@@ -798,7 +788,7 @@
                 history.replaceState({ stage: 1 }, '', '');
             }
 
-            // 기본 소지: '성배' 및 '성배전쟁' 사전 활성화 (마스터의 획득 및 테스트 편의를 위해 함께 소지 상태로 연동)
+            // 기본 개념 등록
             sessionStorage.setItem('fate_concept_sung', 'true');
             sessionStorage.setItem('fate_concept_sungbwar', 'true');
             sessionStorage.setItem('fate_concept_master', 'true');
@@ -843,29 +833,28 @@
             let currentActiveTabId = null;
             let activeToastCount = 0;
 
-            // 캔버스 자유 조작(Panning & Zooming) 상태 변수 및 스냅샷 저장소
+            // PC/모바일 자유 조작(Panning & Zooming) 변수
             let canvasX = 0;
             let canvasY = 0;
             let canvasScale = 1;
             let isDragging = false;
             let startMouseX = 0;
             let startMouseY = 0;
-            let lastSnapshot = { x: 0, y: 0, scale: 1 };
+            let touchStartDist = 0;
 
             function updateCanvasTransform() {
                 treeCanvas.style.transform = `translate(${canvasX}px, ${canvasY}px) scale(${canvasScale})`;
             }
 
-            // 초기 캔버스 중앙 정렬 연산
             function initTreeCanvasCenter() {
-                canvasX = window.innerWidth / 2;
-                canvasY = window.innerHeight / 2;
+                canvasX = window.innerWidth / 2 - 1000 * canvasScale;
+                canvasY = window.innerHeight / 2 - 300 * canvasScale;
                 canvasScale = 1;
                 updateCanvasTransform();
                 renderTreeGraph();
             }
 
-            // 캔버스 드래그 (Pan) 이벤트
+            // PC 마우스 드래그 이벤트
             treeViewport.addEventListener('mousedown', (e) => {
                 if (currentStage !== 2) return;
                 isDragging = true;
@@ -882,14 +871,14 @@
 
             window.addEventListener('mouseup', () => { isDragging = false; });
 
-            // 캔버스 마우스 휠 확대/축소 (Zoom) 이벤트
+            // PC 마우스 휠 줌 이벤트
             treeViewport.addEventListener('wheel', (e) => {
                 if (currentStage !== 2) return;
                 e.preventDefault();
 
                 const zoomFactor = 1.1;
                 let newScale = e.deltaY < 0 ? canvasScale * zoomFactor : canvasScale / zoomFactor;
-                newScale = Math.max(0.3, Math.min(3.0, newScale));
+                newScale = Math.max(0.3, Math.min(2.5, newScale));
 
                 const rect = treeViewport.getBoundingClientRect();
                 const mouseX = e.clientX - rect.left;
@@ -902,31 +891,66 @@
                 updateCanvasTransform();
             }, { passive: false });
 
-            // 나무뿌리 노드 및 연결선 렌더링 연산
-            const nodePositions = {};
+            // ★ 모바일 터치 (Panning & Pinch Zoom) 연산 ★
+            treeViewport.addEventListener('touchstart', (e) => {
+                if (currentStage !== 2) return;
+                if (e.touches.length === 1) {
+                    isDragging = true;
+                    startMouseX = e.touches[0].clientX - canvasX;
+                    startMouseY = e.touches[0].clientY - canvasY;
+                } else if (e.touches.length === 2) {
+                    isDragging = false;
+                    touchStartDist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                }
+            }, { passive: true });
+
+            treeViewport.addEventListener('touchmove', (e) => {
+                if (currentStage !== 2) return;
+                if (isDragging && e.touches.length === 1) {
+                    canvasX = e.touches[0].clientX - startMouseX;
+                    canvasY = e.touches[0].clientY - startMouseY;
+                    updateCanvasTransform();
+                } else if (e.touches.length === 2) {
+                    const dist = Math.hypot(
+                        e.touches[0].clientX - e.touches[1].clientX,
+                        e.touches[0].clientY - e.touches[1].clientY
+                    );
+                    if (touchStartDist > 0) {
+                        const factor = dist / touchStartDist;
+                        canvasScale = Math.max(0.3, Math.min(2.5, canvasScale * factor));
+                        updateCanvasTransform();
+                        touchStartDist = dist;
+                    }
+                }
+            }, { passive: true });
+
+            treeViewport.addEventListener('touchend', () => { isDragging = false; touchStartDist = 0; });
+
+            // 나무뿌리 노드 및 곡선 연결선 렌더링
+            const nodePositions = {
+                'sung': { x: 1000, y: 300 },
+                'sungbwar': { x: 1000, y: 650 },
+                'master': { x: 600, y: 1000 },
+                'servant': { x: 1000, y: 1000 },
+                '令呪': { x: 1400, y: 1000 }
+            };
 
             function renderTreeGraph() {
                 treeNodesContainer.innerHTML = '';
                 treeSvgLines.innerHTML = '';
-
-                // 노드 좌표 계산 (계층형 트리 배치 알고리즘)
-                nodePositions['sung'] = { x: 0, y: 0 };
-                nodePositions['sungbwar'] = { x: 0, y: 350 };
-                nodePositions['master'] = { x: -400, y: 700 };
-                nodePositions['servant'] = { x: 0, y: 700 };
-                nodePositions['令呪'] = { x: 400, y: 700 };
 
                 Object.keys(CONCEPT_REGISTRY).forEach(id => {
                     const info = CONCEPT_REGISTRY[id];
                     const pos = nodePositions[id];
                     if (!pos) return;
 
-                    // 1. SVG 연결선 생성 (부모가 있는 경우)
                     if (info.parent && nodePositions[info.parent]) {
                         const parentPos = nodePositions[info.parent];
                         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                         
-                        // 부드러운 곡선(Bezier Curve) 경로 계산
                         const midY = (parentPos.y + pos.y) / 2;
                         const d = `M ${parentPos.x} ${parentPos.y} C ${parentPos.x} ${midY}, ${pos.x} ${midY}, ${pos.x} ${pos.y}`;
                         path.setAttribute('d', d);
@@ -934,7 +958,6 @@
                         treeSvgLines.appendChild(path);
                     }
 
-                    // 2. 노드 버튼 래퍼 생성
                     const wrapper = document.createElement('div');
                     wrapper.className = 'tree-node-wrapper';
                     wrapper.id = 'treeNodeWrapper_' + id;
@@ -945,13 +968,15 @@
                     btn.className = 'tree-node-btn';
                     btn.innerText = info.name;
                     btn.style.fontSize = info.fontSize;
-                    btn.addEventListener('click', () => openTabDetailView(id, wrapper));
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openTabDetailView(id, wrapper);
+                    });
 
                     wrapper.appendChild(btn);
                     treeNodesContainer.appendChild(wrapper);
 
-                    // 각 탭 상세 뷰 미리 생성
-                    if (!document.getElementById('tabDetail_' + id)) {
+                    if (id !== 'sung' && !document.getElementById('tabDetail_' + id)) {
                         createPlaceholderTabDetailView(id);
                     }
                 });
@@ -977,11 +1002,9 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // 탭 선택 시 조작 스냅샷 저장 후 좌측 상단으로 이동하는 연산
+            // ★ 탭 클릭 시 순간이동 정정: Viewport 기준 좌표 정밀 연산 및 스무스 이동 ★
             function openTabDetailView(selectedId, selectedWrapper) {
-                // 현재 캔버스 위치 및 줌 상태 스냅샷 저장 (뒤로가기 시 복원용)
-                lastSnapshot = { x: canvasX, y: canvasY, scale: canvasScale };
-                history.pushState({ stage: 3, id: selectedId, snapshot: lastSnapshot }, '', '');
+                history.pushState({ stage: 3, id: selectedId, snapshot: { x: canvasX, y: canvasY, scale: canvasScale } }, '', '');
 
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
@@ -990,20 +1013,20 @@
 
                 currentActiveTabId = selectedId;
 
-                // 클릭된 노드의 캔버스 내 절대 위치를 뷰포트 기준 좌표로 변환하여 fixed 고정
+                // 클릭된 노드의 뷰포트 절대 위치 계산
                 const rect = selectedWrapper.getBoundingClientRect();
+                
                 selectedWrapper.style.position = 'fixed';
                 selectedWrapper.style.top = rect.top + 'px';
                 selectedWrapper.style.left = rect.left + 'px';
-                selectedWrapper.style.transform = 'translate(-50%, -50%)';
-                selectedWrapper.offsetHeight; // Reflow 트리거
+                selectedWrapper.style.transform = 'translate(0, 0)';
+                void selectedWrapper.offsetHeight; // Force Reflow
 
                 selectedWrapper.classList.add('moving-to-top-left');
-                selectedWrapper.style.top = '7vh';
-                selectedWrapper.style.left = '6vw';
+                selectedWrapper.style.top = '6vh';
+                selectedWrapper.style.left = '5vw';
                 selectedWrapper.style.transform = 'scale(0.75)';
 
-                // 나머지 노드들은 페이드 아웃
                 const allWrappers = document.querySelectorAll('.tree-node-wrapper');
                 allWrappers.forEach(wrap => {
                     if (wrap !== selectedWrapper) {
@@ -1015,10 +1038,10 @@
                 setTimeout(() => {
                     if (targetView) targetView.classList.add('show');
                     currentStage = 3;
-                }, 1100);
+                }, 1000);
             }
 
-            // 볼륨 조절
+            // 볼륨 제어 연동
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
@@ -1059,7 +1082,7 @@
                 }, 1800);
             }
 
-            // 신규개념 획득 연동 로직
+            // 키워드 상호작용
             const keywords = document.querySelectorAll('.interactive-keyword');
             keywords.forEach(el => {
                 const id = el.getAttribute('data-key');
@@ -1093,7 +1116,7 @@
             });
 
             pressStartBtn.addEventListener('click', function() {
-                history.pushState({ stage: 2, snapshot: { x: window.innerWidth/2, y: window.innerHeight/2, scale: 1 } }, '', '');
+                history.pushState({ stage: 2, snapshot: { x: window.innerWidth/2 - 1000, y: window.innerHeight/2 - 300, scale: 1 } }, '', '');
 
                 if (pstSfx) {
                     pstSfx.volume = parseFloat(seSlider.value);
@@ -1121,10 +1144,10 @@
                 history.back();
             });
 
-            // 뒤로가기 시 선택 전 마지막 위치 및 스냅샷 복원 연산
+            // ★ 뒤로가기 시 원래 위치 스냅샷 정밀 복원 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
-                const snapshot = (event.state && event.state.snapshot) ? event.state.snapshot : { x: window.innerWidth/2, y: window.innerHeight/2, scale: 1 };
+                const snapshot = (event.state && event.state.snapshot) ? event.state.snapshot : { x: window.innerWidth/2 - 1000, y: window.innerHeight/2 - 300, scale: 1 };
 
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
@@ -1154,7 +1177,7 @@
                             wrap.style.transform = '';
                         });
 
-                        // 저장해둔 마지막 캔버스 위치 및 줌 상태로 재정렬 복원
+                        // 캔버스 이동/확대 비율 원래 위치로 정밀 재정렬
                         canvasX = snapshot.x;
                         canvasY = snapshot.y;
                         canvasScale = snapshot.scale;
