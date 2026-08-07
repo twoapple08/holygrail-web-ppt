@@ -22,15 +22,15 @@
             align-items: center;
             overflow-x: hidden;
             
-            /* 신비로운 마력 회로/안개 느낌의 다중 그라데이션 및 패턴 배경 */
+            /* 화려한 마력 안개 및 다중 그라데이션 패턴 배경 */
             background-color: #050508;
             background-image: 
-                radial-gradient(circle at 50% 30%, rgba(110, 10, 20, 0.45) 0%, rgba(25, 10, 40, 0.3) 40%, transparent 70%),
-                radial-gradient(circle at 20% 80%, rgba(80, 0, 80, 0.25) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(140, 20, 20, 0.2) 0%, transparent 50%),
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 60px 60px, 60px 60px;
+                radial-gradient(circle at 50% 35%, rgba(120, 10, 25, 0.5) 0%, rgba(30, 10, 45, 0.35) 45%, transparent 75%),
+                radial-gradient(circle at 15% 85%, rgba(90, 0, 90, 0.3) 0%, transparent 55%),
+                radial-gradient(circle at 85% 85%, rgba(150, 20, 20, 0.25) 0%, transparent 55%),
+                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 100% 100%, 50px 50px, 50px 50px;
             background-position: center;
         }
 
@@ -46,23 +46,23 @@
             z-index: 2;
         }
 
+        /* 검은 박스 배경을 제거하고 순수 마력 후광 효과만 남김 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 45px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(200, 20, 20, 0.35) 0%, rgba(100, 0, 50, 0.15) 50%, rgba(0, 0, 0, 0) 75%);
-            box-shadow: 0 0 70px rgba(220, 20, 60, 0.3);
-            margin-bottom: 30px;
+            padding: 20px;
+            background: transparent;
+            margin-bottom: 25px;
         }
 
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
             height: auto;
-            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 40px rgba(200, 0, 0, 0.9));
+            /* 성배 뒤로 은은하게 퍼지는 마력 광채 효과 */
+            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.75)) drop-shadow(0 0 50px rgba(210, 20, 40, 0.85));
         }
 
         .main-title {
@@ -105,4 +105,3 @@
 
 </body>
 </html>
-```》
