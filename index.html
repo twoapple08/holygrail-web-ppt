@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성배전쟁 - Fate/stay night 테마</title>
-    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
@@ -47,26 +46,25 @@
             opacity: 1;
         }
 
-        /* 화면 아래 붉은 먼지/안개 이펙트 (은은한 투명도로 하향 교정) */
+        /* 화면 아래 붉은 먼지/안개 이펙트 (확실한 선명도 보장) */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 55%;
-            /* 초기 농도를 기존 0.45에서 0.25 수준으로 대폭 낮추어 은은함 보장 */
-            background: linear-gradient(to top, rgba(140, 10, 10, 0.25) 0%, rgba(80, 0, 0, 0.1) 50%, transparent 100%);
+            background: linear-gradient(to top, rgba(160, 10, 10, 0.45) 0%, rgba(90, 0, 0, 0.2) 50%, transparent 100%);
             z-index: 2;
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            transition: opacity 1.5s ease-in-out;
+            transition: opacity 1.2s ease-in-out;
         }
 
-        /* 붉은 안개 활성화 및 은은한 점멸 루프 연결 */
+        /* 붉은 안개 활성화 및 부드러운 일렁임 루프 연동 */
         .red-dust-effect.active {
-            opacity: 0.6; /* 튀지 않는 최적 투명도 고정 */
-            animation: dust-fade-gentle 6s infinite alternate ease-in-out 1.5s;
+            opacity: 0.85;
+            animation: dust-fade-visible 5s infinite alternate ease-in-out 1.2s;
         }
 
         /* --- Fate/stay night 스타일 시작하기 버튼 --- */
@@ -232,10 +230,10 @@
             }
         }
 
-        /* 은은하게 일렁이는 부드러운 안개 수축 애니메이션 */
-        @keyframes dust-fade-gentle {
-            0% { opacity: 0.4; }
-            100% { opacity: 0.75; }
+        /* 선명하게 잘 보이는 붉은 먼지 안개 루프 */
+        @keyframes dust-fade-visible {
+            0% { opacity: 0.65; }
+            100% { opacity: 0.95; }
         }
 
         @keyframes fade-in {
@@ -246,18 +244,14 @@
 </head>
 <body>
 
-    <!-- 1. 메인 배경 이미지 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
 
-    <!-- 2. 화면 아래쪽 붉은 먼지/안개 이펙트 레이어 (은은한 투명도 교정) -->
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- 3. 페스나 스타일 [시작하기] UI 버튼 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
     </div>
 
-    <!-- 4. 컨텐츠 레이어 (성배 및 타이틀) -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
@@ -268,7 +262,6 @@
         <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
-    <!-- 화면 우측 하단 워터마크 -->
     <footer class="watermark" id="watermark">Made by 사과사과</footer>
 
     <script>
@@ -284,7 +277,7 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. 은은한 붉은 안개 이펙트 페이드인
+            // 2. 붉은 이펙트 먼지 페이드인 시작
             setTimeout(() => {
                 dustEffect.classList.add('active');
             }, 300);
