@@ -2,15 +2,15 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
+    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -23,8 +23,6 @@
             overflow: hidden;
             position: relative;
             background-color: #000000;
-            user-select: none;
-            touch-action: none;
         }
 
         /* 메인 배경 이미지 */
@@ -126,7 +124,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (밝기를 낮춘 상태 유지) --- */
+        /* --- 어록 속성 (밝기를 낮춘 디자인 유지) --- */
         .description-quote {
             font-style: italic;
             color: rgba(200, 190, 175, 0.75);
@@ -153,7 +151,7 @@
             100% { text-shadow: 0 0 10px rgba(220, 210, 195, 0.5), 0 0 16px rgba(200, 190, 175, 0.3); }
         }
 
-        /* --- 1. [시작하기] UI 컨테이너 --- */
+        /* --- 1. [시작하기] UI 컨테이너 (시작하기 창 버튼 & 참고 사항 그룹화) --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -346,108 +344,59 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 나무뿌리 뷰포트 및 캔버스 (PC/모바일 공용) --- */
-        .tree-viewport {
+        /* --- 4. 중앙 [성배] 탭 선택창 (단일 구조 원본) --- */
+        .center-grail-text-container {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
             z-index: 30;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             opacity: 0;
             pointer-events: none;
-            overflow: hidden;
-            cursor: grab;
+            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
         }
 
-        .tree-viewport.show {
+        .center-grail-text-container.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .tree-viewport:active {
-            cursor: grabbing;
-        }
-
-        .tree-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 2000px;
-            height: 2000px;
-            transform-origin: 0 0;
-            will-change: transform;
-        }
-
-        .tree-svg-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .tree-line {
-            stroke: rgba(160, 0, 0, 0.6);
-            stroke-width: 3px;
-            fill: none;
-            filter: drop-shadow(0 0 6px rgba(255, 0, 0, 0.4));
-        }
-
-        .tree-node-wrapper {
-            position: absolute;
-            z-index: 2;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.8s ease-in-out, filter 1.0s ease-in-out;
-            will-change: top, left, transform, opacity;
-        }
-
-        .tree-node-btn {
+        .center-grail-btn {
             font-family: 'Song Myung', serif;
+            font-size: 4.5rem;
             font-weight: 700;
             color: #fffdfa;
+            letter-spacing: 12px;
             background: transparent;
             border: none;
             outline: none;
             cursor: pointer;
             user-select: none;
-            white-space: nowrap;
             text-shadow: 
                 3px 3px 0px #700000, 
                 -1px -1px 0px #700000, 
                 1px -1px 0px #700000, 
                 -1px 1px 0px #700000,
-                0 0 30px rgba(255, 215, 0, 0.7);
+                0 0 40px rgba(255, 215, 0, 0.8);
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        .tree-node-btn:hover {
+        .center-grail-btn:hover {
             color: #ffffff;
             transform: scale(1.08);
-            text-shadow: 0 0 40px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
+            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        /* 클릭 시 순간이동 없이 좌측 상단으로 미끄러지듯 이동하는 애니메이션 */
-        .tree-node-wrapper.moving-to-top-left {
-            position: fixed !important;
-            z-index: 35 !important;
-            pointer-events: none !important;
-            transition: top 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
-                        left 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 1.0s cubic-bezier(0.16, 1, 0.3, 1), 
-                        filter 1.0s ease-in-out !important;
+        .center-grail-text-container.move-top-left {
+            top: 7%;
+            left: 6%;
+            transform: translate(0, 0) scale(0.75);
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
+            pointer-events: none;
         }
 
-        .tree-node-wrapper.fade-out-stay {
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        /* --- 5. 상세 페이지 일반 레이아웃 --- */
-        .tab-detail-view {
+        /* --- 5. 상세 페이지 (성배 탭) --- */
+        .grail-detail-view {
             position: absolute;
             top: 0;
             left: 0;
@@ -461,23 +410,22 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.8s ease-in-out;
+            transition: opacity 1.0s ease-in-out;
         }
 
-        .tab-detail-view.show {
+        .grail-detail-view.show {
             opacity: 1;
             pointer-events: auto;
         }
 
-        .detail-left-box {
+        .detail-grail-left {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-width: 280px;
         }
 
-        .detail-img {
+        .detail-grail-img {
             width: 280px;
             max-width: 100%;
             height: auto;
@@ -485,7 +433,7 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        .detail-sub-label {
+        .grail-sub-label {
             margin-top: 15px;
             font-size: 0.95rem;
             font-weight: 400;
@@ -495,23 +443,24 @@
             text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
         }
 
-        .detail-right-box {
+        .detail-description-right {
             flex: 1;
             max-width: 650px;
             background: rgba(15, 0, 0, 0.75);
             border: 2px solid rgba(160, 0, 0, 0.8);
             border-radius: 8px;
-            padding: 30px 35px 40px 35px;
+            padding: 30px 35px 40px 35px; /* 상단 패딩을 줄여서 타이틀을 위로 당김 */
             box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
             backdrop-filter: blur(4px);
         }
 
+        /* --- 설명 창 제목 (성배란?) 상단 여백 및 테두리 정렬 보정 --- */
         .description-title {
             font-size: 2.2rem;
             font-weight: 700;
             color: #f5f0e6;
             letter-spacing: 2px;
-            margin-top: -6px;
+            margin-top: -6px; /* 박스 위쪽 테두리와 상단 구분선 사이의 정확한 중앙으로 배치 */
             margin-bottom: 20px;
             border-bottom: 1px solid rgba(180, 0, 0, 0.6);
             padding-bottom: 12px;
@@ -678,17 +627,21 @@
 </head>
 <body>
 
+    <!-- 신규개념 획득 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
+    <!-- BGM & SFX 레이어 -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
+    <!-- 메인 배경 & 안개 -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
+    <!-- 1단계: [시작하기] UI 버튼 및 안내 문구 그룹 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
@@ -696,6 +649,7 @@
         </div>
     </div>
 
+    <!-- 1단계: 메인 화면 컨텐츠 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
@@ -708,23 +662,23 @@
         </div>
     </main>
 
+    <!-- 메인 화면 좌측 하단 유입자 안내 문구 -->
     <div class="intro-notice-left" id="introNotice">
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <div class="tree-viewport" id="treeViewport">
-        <div class="tree-canvas" id="treeCanvas">
-            <svg class="tree-svg-lines" id="treeSvgLines"></svg>
-            <div id="treeNodesContainer"></div>
-        </div>
+    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
+    <div class="center-grail-text-container" id="centerGrailWrapper">
+        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
     </div>
 
-    <section class="tab-detail-view" id="tabDetail_sung">
-        <div class="detail-left-box">
-            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-img">
-            <span class="detail-sub-label">소(小)성배</span>
+    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
+    <section class="grail-detail-view" id="grailDetailView">
+        <div class="detail-grail-left">
+            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
+            <span class="grail-sub-label">소(小)성배</span>
         </div>
-        <div class="detail-right-box">
+        <div class="detail-description-right">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
@@ -735,12 +689,12 @@
         </div>
     </section>
 
-    <div id="dynamicTabDetailViews"></div>
-
+    <!-- 화면 좌측 하단 뒤로가기 버튼 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
+    <!-- 화면 우측 하단 컨트롤러 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -760,46 +714,10 @@
     </div>
 
     <script>
-        // 마스터 신규개념 레지스트리 및 계층 트리 구조
-        const CONCEPT_REGISTRY = {
-            'sung': { name: '성배', parent: null, fontSize: '4.5rem' },
-            'sungbwar': { name: '성배전쟁', parent: 'sung', fontSize: '3.2rem' },
-            'master': { name: '마스터', parent: 'sungbwar', fontSize: '2.2rem' },
-            'servant': { name: '서번트', parent: 'sungbwar', fontSize: '2.2rem' },
-            '令呪': { name: '영주', parent: 'sungbwar', fontSize: '2.2rem' }
-        };
-
-        // 새로고침 시 세션 초기화
-        (function checkReloadAndReset() {
-            const navEntries = performance.getEntriesByType('navigation');
-            const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
-                             (performance.navigation && performance.navigation.type === 1);
-            
-            if (isReload) {
-                Object.keys(CONCEPT_REGISTRY).forEach(id => {
-                    sessionStorage.removeItem('fate_concept_' + id);
-                });
-                sessionStorage.removeItem('fate_concept_order');
-            }
-        })();
-
         document.addEventListener('DOMContentLoaded', function() {
             if (!history.state || history.state.stage !== 1) {
                 history.replaceState({ stage: 1 }, '', '');
             }
-
-            // 기본 개념 등록
-            sessionStorage.setItem('fate_concept_sung', 'true');
-            sessionStorage.setItem('fate_concept_sungbwar', 'true');
-            sessionStorage.setItem('fate_concept_master', 'true');
-            sessionStorage.setItem('fate_concept_servant', 'true');
-            sessionStorage.setItem('fate_concept_令呪', 'true');
-
-            let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-            ['sung', 'sungbwar', 'master', 'servant', '令呪'].forEach(id => {
-                if (!conceptOrder.includes(id)) conceptOrder.push(id);
-            });
-            sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder));
 
             const bgm = document.getElementById('bgm');
             const pstSfx = document.getElementById('pstSfx');
@@ -813,6 +731,7 @@
 
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
+            const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
@@ -822,226 +741,13 @@
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
 
-            const treeViewport = document.getElementById('treeViewport');
-            const treeCanvas = document.getElementById('treeCanvas');
-            const treeNodesContainer = document.getElementById('treeNodesContainer');
-            const treeSvgLines = document.getElementById('treeSvgLines');
-            const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
+            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
+            const grailDetailView = document.getElementById('grailDetailView');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
-            let currentActiveTabId = null;
             let activeToastCount = 0;
 
-            // PC/모바일 자유 조작(Panning & Zooming) 변수
-            let canvasX = 0;
-            let canvasY = 0;
-            let canvasScale = 1;
-            let isDragging = false;
-            let startMouseX = 0;
-            let startMouseY = 0;
-            let touchStartDist = 0;
-
-            function updateCanvasTransform() {
-                treeCanvas.style.transform = `translate(${canvasX}px, ${canvasY}px) scale(${canvasScale})`;
-            }
-
-            function initTreeCanvasCenter() {
-                canvasX = window.innerWidth / 2 - 1000 * canvasScale;
-                canvasY = window.innerHeight / 2 - 300 * canvasScale;
-                canvasScale = 1;
-                updateCanvasTransform();
-                renderTreeGraph();
-            }
-
-            // PC 마우스 드래그 이벤트
-            treeViewport.addEventListener('mousedown', (e) => {
-                if (currentStage !== 2) return;
-                isDragging = true;
-                startMouseX = e.clientX - canvasX;
-                startMouseY = e.clientY - canvasY;
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (!isDragging || currentStage !== 2) return;
-                canvasX = e.clientX - startMouseX;
-                canvasY = e.clientY - startMouseY;
-                updateCanvasTransform();
-            });
-
-            window.addEventListener('mouseup', () => { isDragging = false; });
-
-            // PC 마우스 휠 줌 이벤트
-            treeViewport.addEventListener('wheel', (e) => {
-                if (currentStage !== 2) return;
-                e.preventDefault();
-
-                const zoomFactor = 1.1;
-                let newScale = e.deltaY < 0 ? canvasScale * zoomFactor : canvasScale / zoomFactor;
-                newScale = Math.max(0.3, Math.min(2.5, newScale));
-
-                const rect = treeViewport.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-
-                canvasX = mouseX - (mouseX - canvasX) * (newScale / canvasScale);
-                canvasY = mouseY - (mouseY - canvasY) * (newScale / canvasScale);
-                canvasScale = newScale;
-
-                updateCanvasTransform();
-            }, { passive: false });
-
-            // ★ 모바일 터치 (Panning & Pinch Zoom) 연산 ★
-            treeViewport.addEventListener('touchstart', (e) => {
-                if (currentStage !== 2) return;
-                if (e.touches.length === 1) {
-                    isDragging = true;
-                    startMouseX = e.touches[0].clientX - canvasX;
-                    startMouseY = e.touches[0].clientY - canvasY;
-                } else if (e.touches.length === 2) {
-                    isDragging = false;
-                    touchStartDist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                }
-            }, { passive: true });
-
-            treeViewport.addEventListener('touchmove', (e) => {
-                if (currentStage !== 2) return;
-                if (isDragging && e.touches.length === 1) {
-                    canvasX = e.touches[0].clientX - startMouseX;
-                    canvasY = e.touches[0].clientY - startMouseY;
-                    updateCanvasTransform();
-                } else if (e.touches.length === 2) {
-                    const dist = Math.hypot(
-                        e.touches[0].clientX - e.touches[1].clientX,
-                        e.touches[0].clientY - e.touches[1].clientY
-                    );
-                    if (touchStartDist > 0) {
-                        const factor = dist / touchStartDist;
-                        canvasScale = Math.max(0.3, Math.min(2.5, canvasScale * factor));
-                        updateCanvasTransform();
-                        touchStartDist = dist;
-                    }
-                }
-            }, { passive: true });
-
-            treeViewport.addEventListener('touchend', () => { isDragging = false; touchStartDist = 0; });
-
-            // 나무뿌리 노드 및 곡선 연결선 렌더링
-            const nodePositions = {
-                'sung': { x: 1000, y: 300 },
-                'sungbwar': { x: 1000, y: 650 },
-                'master': { x: 600, y: 1000 },
-                'servant': { x: 1000, y: 1000 },
-                '令呪': { x: 1400, y: 1000 }
-            };
-
-            function renderTreeGraph() {
-                treeNodesContainer.innerHTML = '';
-                treeSvgLines.innerHTML = '';
-
-                Object.keys(CONCEPT_REGISTRY).forEach(id => {
-                    const info = CONCEPT_REGISTRY[id];
-                    const pos = nodePositions[id];
-                    if (!pos) return;
-
-                    if (info.parent && nodePositions[info.parent]) {
-                        const parentPos = nodePositions[info.parent];
-                        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                        
-                        const midY = (parentPos.y + pos.y) / 2;
-                        const d = `M ${parentPos.x} ${parentPos.y} C ${parentPos.x} ${midY}, ${pos.x} ${midY}, ${pos.x} ${pos.y}`;
-                        path.setAttribute('d', d);
-                        path.setAttribute('class', 'tree-line');
-                        treeSvgLines.appendChild(path);
-                    }
-
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'tree-node-wrapper';
-                    wrapper.id = 'treeNodeWrapper_' + id;
-                    wrapper.style.left = pos.x + 'px';
-                    wrapper.style.top = pos.y + 'px';
-
-                    const btn = document.createElement('button');
-                    btn.className = 'tree-node-btn';
-                    btn.innerText = info.name;
-                    btn.style.fontSize = info.fontSize;
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        openTabDetailView(id, wrapper);
-                    });
-
-                    wrapper.appendChild(btn);
-                    treeNodesContainer.appendChild(wrapper);
-
-                    if (id !== 'sung' && !document.getElementById('tabDetail_' + id)) {
-                        createPlaceholderTabDetailView(id);
-                    }
-                });
-            }
-
-            function createPlaceholderTabDetailView(id) {
-                const viewSection = document.createElement('section');
-                viewSection.className = 'tab-detail-view';
-                viewSection.id = 'tabDetail_' + id;
-
-                viewSection.innerHTML = `
-                    <div class="detail-left-box">
-                        <img src="holygrail.png" alt="${CONCEPT_REGISTRY[id].name}" class="detail-img">
-                        <span class="detail-sub-label">${CONCEPT_REGISTRY[id].name} 개념</span>
-                    </div>
-                    <div class="detail-right-box">
-                        <h2 class="description-title">${CONCEPT_REGISTRY[id].name}란?</h2>
-                        <div class="description-content">
-                            <p>${CONCEPT_REGISTRY[id].name}에 대한 상세 데이터가 기록되어 있습니다.</p>
-                        </div>
-                    </div>
-                `;
-                dynamicTabDetailViews.appendChild(viewSection);
-            }
-
-            // ★ 탭 클릭 시 순간이동 정정: Viewport 기준 좌표 정밀 연산 및 스무스 이동 ★
-            function openTabDetailView(selectedId, selectedWrapper) {
-                history.pushState({ stage: 3, id: selectedId, snapshot: { x: canvasX, y: canvasY, scale: canvasScale } }, '', '');
-
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-
-                currentActiveTabId = selectedId;
-
-                // 클릭된 노드의 뷰포트 절대 위치 계산
-                const rect = selectedWrapper.getBoundingClientRect();
-                
-                selectedWrapper.style.position = 'fixed';
-                selectedWrapper.style.top = rect.top + 'px';
-                selectedWrapper.style.left = rect.left + 'px';
-                selectedWrapper.style.transform = 'translate(0, 0)';
-                void selectedWrapper.offsetHeight; // Force Reflow
-
-                selectedWrapper.classList.add('moving-to-top-left');
-                selectedWrapper.style.top = '6vh';
-                selectedWrapper.style.left = '5vw';
-                selectedWrapper.style.transform = 'scale(0.75)';
-
-                const allWrappers = document.querySelectorAll('.tree-node-wrapper');
-                allWrappers.forEach(wrap => {
-                    if (wrap !== selectedWrapper) {
-                        wrap.classList.add('fade-out-stay');
-                    }
-                });
-
-                const targetView = document.getElementById('tabDetail_' + selectedId);
-                setTimeout(() => {
-                    if (targetView) targetView.classList.add('show');
-                    currentStage = 3;
-                }, 1000);
-            }
-
-            // 볼륨 제어 연동
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
@@ -1082,7 +788,6 @@
                 }, 1800);
             }
 
-            // 키워드 상호작용
             const keywords = document.querySelectorAll('.interactive-keyword');
             keywords.forEach(el => {
                 const id = el.getAttribute('data-key');
@@ -1116,7 +821,7 @@
             });
 
             pressStartBtn.addEventListener('click', function() {
-                history.pushState({ stage: 2, snapshot: { x: window.innerWidth/2 - 1000, y: window.innerHeight/2 - 300, scale: 1 } }, '', '');
+                history.pushState({ stage: 2 }, '', '');
 
                 if (pstSfx) {
                     pstSfx.volume = parseFloat(seSlider.value);
@@ -1133,21 +838,36 @@
                 }, 250);
 
                 setTimeout(() => {
-                    initTreeCanvasCenter();
-                    treeViewport.classList.add('show');
+                    centerGrailWrapper.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
                 }, 1450);
+            });
+
+            centerGrailBtn.addEventListener('click', function() {
+                history.pushState({ stage: 3 }, '', '');
+
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                centerGrailWrapper.classList.add('move-top-left');
+
+                setTimeout(() => {
+                    grailDetailView.classList.add('show');
+                    currentStage = 3;
+                }, 300);
             });
 
             backBtn.addEventListener('click', function() {
                 history.back();
             });
 
-            // ★ 뒤로가기 시 원래 위치 스냅샷 정밀 복원 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
-                const snapshot = (event.state && event.state.snapshot) ? event.state.snapshot : { x: window.innerWidth/2 - 1000, y: window.innerHeight/2 - 300, scale: 1 };
+
+                if (targetStage >= currentStage) return;
 
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
@@ -1160,38 +880,14 @@
 
                 if (currentStage === 3) {
                     currentStage = targetStage;
-
-                    if (currentActiveTabId) {
-                        const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
-                        if (activeView) activeView.classList.remove('show');
-                    }
-
+                    grailDetailView.classList.remove('show');
                     setTimeout(() => {
-                        const allWrappers = document.querySelectorAll('.tree-node-wrapper');
-                        allWrappers.forEach(wrap => {
-                            wrap.classList.remove('moving-to-top-left');
-                            wrap.classList.remove('fade-out-stay');
-                            wrap.style.position = '';
-                            wrap.style.top = '';
-                            wrap.style.left = '';
-                            wrap.style.transform = '';
-                        });
-
-                        // 캔버스 이동/확대 비율 원래 위치로 정밀 재정렬
-                        canvasX = snapshot.x;
-                        canvasY = snapshot.y;
-                        canvasScale = snapshot.scale;
-                        updateCanvasTransform();
-
-                        treeViewport.classList.add('show');
-                        backBtnWrapper.classList.add('show');
-                        currentActiveTabId = null;
+                        centerGrailWrapper.classList.remove('move-top-left');
                         currentStage = 2;
-                    }, 400);
-
+                    }, 300);
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
-                    treeViewport.classList.remove('show');
+                    centerGrailWrapper.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
