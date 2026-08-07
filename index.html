@@ -245,9 +245,9 @@
             transform: scale(1.08);
         }
 
-        /* --- 프투스 전용 푸른 고전압 전기 섬광 소멸 클래스 --- */
+        /* --- 프투스 전용 강렬한 '파지직' 푸른 고전압 전격 소멸 클래스 --- */
         .press-start-wrapper.electric-exit {
-            animation: electric-flash-pop 0.35s ease-out forwards !important;
+            animation: intense-electric-crackle 0.45s ease-out forwards !important;
             pointer-events: none !important;
         }
 
@@ -340,34 +340,56 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 푸른 고전압 전기 아크 섬광 소멸 애니메이션 (청백색 전격 이펙트) */
-        @keyframes electric-flash-pop {
+        /* 정밀 '파지직' 고주파 푸른 전격 스파크 키프레임 */
+        @keyframes intense-electric-crackle {
             0% {
                 opacity: 1;
-                filter: brightness(1) drop-shadow(0 0 0 transparent);
+                filter: brightness(1);
                 transform: translateX(2px) scale(1);
             }
-            20% {
+            10% {
                 opacity: 1;
-                filter: brightness(4) drop-shadow(0 0 20px #ffffff) drop-shadow(0 0 35px #00d2ff);
-                transform: translateX(2px) scale(1.12);
-                color: #e0f7ff;
+                color: #ffffff;
+                filter: brightness(5) drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #0088ff);
+                transform: translate3d(-3px, 1px, 0) scale(1.15);
+            }
+            20% {
+                opacity: 0.4;
+                filter: brightness(2) drop-shadow(0 0 5px #00e1ff);
+                transform: translate3d(4px, -2px, 0) scale(0.95);
+            }
+            30% {
+                opacity: 1;
+                color: #e6ffff;
+                filter: brightness(8) drop-shadow(0 0 25px #ffffff) drop-shadow(0 0 45px #00d2ff) drop-shadow(0 0 60px #0033ff);
+                transform: translate3d(-5px, 2px, 0) scale(1.22);
             }
             40% {
-                opacity: 0.85;
-                filter: brightness(6) drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 50px #0055ff);
-                transform: translateX(-2px) scale(1.18);
-                color: #ffffff;
+                opacity: 0.2;
+                filter: brightness(1.5);
+                transform: translate3d(3px, 1px, 0) scale(1.02);
             }
-            60% {
+            55% {
                 opacity: 1;
-                filter: brightness(4.5) drop-shadow(0 0 25px #00ffff) drop-shadow(0 0 40px #0077ff);
-                transform: translateX(3px) scale(1.08);
+                color: #ffffff;
+                filter: brightness(10) drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 50px #00ffff);
+                transform: translate3d(-2px, -3px, 0) scale(1.18);
+            }
+            70% {
+                opacity: 0.6;
+                filter: brightness(3) drop-shadow(0 0 15px #0088ff);
+                transform: translate3d(4px, 2px, 0) scale(0.88);
+            }
+            85% {
+                opacity: 1;
+                color: #ffffff;
+                filter: brightness(12) drop-shadow(0 0 40px #ffffff) drop-shadow(0 0 70px #00d2ff);
+                transform: translate3d(-1px, 1px, 0) scale(1.05);
             }
             100% {
                 opacity: 0;
-                filter: brightness(9) drop-shadow(0 0 45px #ffffff) drop-shadow(0 0 60px #00d2ff);
-                transform: translateX(2px) scale(0.65);
+                filter: brightness(15) drop-shadow(0 0 50px #ffffff);
+                transform: translate3d(0, 0, 0) scale(0.5);
             }
         }
 
@@ -477,7 +499,7 @@
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> 푸른 고전압 전기 이펙트로 번쩍이며 프투스 소멸 -> 성배 및 제목 페이드아웃
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> '파지직' 푸른 전격 소멸 -> 성배 및 제목 페이드아웃
         pressStartBtn.addEventListener('click', function() {
             // 1. 클릭 효과음 즉시 재생
             if (pstSfx) {
@@ -487,15 +509,15 @@
                 });
             }
 
-            // 2. 프투스 버튼 전용 푸른 전기 섬광 이펙트 발동 및 소멸 (0.0초)
+            // 2. 프투스 버튼 전용 '파지직' 푸른 전격 소멸 이펙트 발동 (0.0초)
             pressStartWrapper.classList.add('electric-exit');
 
-            // 3. 푸른 전기 번쩍임 직후(0.35초 뒤) 성배 이미지 및 제목들 부드럽게 페이드아웃
+            // 3. 전격 소멸 연출 직후(0.4초 뒤) 성배 이미지 및 제목들 부드럽게 페이드아웃
             setTimeout(() => {
                 grailWrapper.classList.add('fade-out-exit');
                 mainTitle.classList.add('fade-out-exit');
                 subTitle.classList.add('fade-out-exit');
-            }, 350);
+            }, 400);
         });
 
         document.getElementById('startBtn').addEventListener('click', function() {
