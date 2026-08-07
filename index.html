@@ -369,7 +369,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 (클릭 투명 레이어 간섭 원천 차단) --- */
+        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 (포인터 레이어 전면 수리) --- */
         .center-tab-group-container {
             position: absolute;
             top: 0;
@@ -440,12 +440,12 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
+        /* 이동된 상 태에서도 포인터 차단을 풀고 고정 포지션 보장 */
         .tab-item-wrapper.move-top-left {
             top: 7% !important;
             left: 6% !important;
             transform: translate(0, 0) scale(0.75) !important;
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
-            pointer-events: none !important;
             z-index: 35;
         }
 
@@ -488,7 +488,7 @@
         .detail-grail-img {
             width: 280px;
             max-width: 100%;
-            height: auto;
+            height auto;
             filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7));
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
@@ -1036,15 +1036,9 @@
                 }, 1100);
             }
 
-            // 탭 버튼 클릭 이벤트 바인딩 (addEventListener 및 onclick 이중 보장)
-            if (tabBtns.grail) {
-                tabBtns.grail.addEventListener('click', (e) => openTabDetail('grail', e));
-                tabBtns.grail.onclick = function(e) { openTabDetail('grail', e); };
-            }
-            if (tabBtns.sung) {
-                tabBtns.sung.addEventListener('click', (e) => openTabDetail('sung', e));
-                tabBtns.sung.onclick = function(e) { openTabDetail('sung', e); };
-            }
+            // 탭 버튼 클릭 이벤트 바인딩 수리
+            tabBtns.grail.onclick = function(e) { openTabDetail('grail', e); };
+            tabBtns.sung.onclick = function(e) { openTabDetail('sung', e); };
 
             pressStartBtn.addEventListener('click', function() {
                 if (pstSfx) {
