@@ -123,7 +123,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 --- */
+        /* --- 어록 속성 (상호작용 연동 보정) --- */
         .description-quote {
             font-style: italic;
             color: rgba(200, 190, 175, 0.75);
@@ -343,7 +343,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 탭 선택창 (동적 행렬 그리드) --- */
+        /* --- 4. 탭 선택창 --- */
         .tab-selection-container {
             position: absolute;
             z-index: 30;
@@ -418,7 +418,7 @@
             visibility: hidden !important;
         }
 
-        /* --- 클론 비행 텍스트 스타일 (자유 독립 뷰포트 레이어) --- */
+        /* --- 클론 비행 텍스트 스타일 --- */
         .ghost-tab-clone {
             position: fixed;
             z-index: 99;
@@ -758,7 +758,7 @@
     </div>
 
     <script>
-        // 전역 정의: 마스터 신규개념 레지스트리 (성배 및 성배전쟁 등록)
+        // 전역 정의: 마스터 신규개념 레지스트리
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', builtIn: true },
             'sungbwar': { name: '성배전쟁', builtIn: false }
@@ -783,7 +783,6 @@
                 history.replaceState({ stage: 1 }, '', '');
             }
 
-            // 성배(sung) 고유 ID 기본 소지
             sessionStorage.setItem('fate_concept_sung', 'true');
             let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
             if (!conceptOrder.includes('sung')) {
@@ -804,7 +803,6 @@
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
             const backBtn = document.getElementById('backBtn');
-            const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
 
             const grailWrapper = document.getElementById('grailWrapper');
@@ -819,7 +817,8 @@
             let currentStage = 1;
             let currentActiveTabId = null;
             let activeToastCount = 0;
-            let activeGhostClone = null; // 활성화된 클론 보관
+            let activeGhostClone = null;
+            let originalTabRect = null; // 복귀 비행용 좌표 보관
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -839,14 +838,21 @@
                 });
             }
 
-            kotomineTrigger.addEventListener('click', function() {
-                if (!this.classList.contains('glow-fade-out')) this.classList.add('glow-fade-out');
-                if (kotomineSfx) {
-                    kotomineSfx.volume = parseFloat(voiceSlider.value);
-                    kotomineSfx.currentTime = 0;
-                    kotomineSfx.play().catch(e => console.log(e));
+            // ★ 어록 상호작용 및 보이스 출력 바인딩 ★
+            function bindQuoteTrigger() {
+                const kotomineTrigger = document.getElementById('kotomineTrigger');
+                if (kotomineTrigger) {
+                    kotomineTrigger.addEventListener('click', function() {
+                        if (!this.classList.contains('glow-fade-out')) this.classList.add('glow-fade-out');
+                        if (kotomineSfx) {
+                            kotomineSfx.volume = parseFloat(voiceSlider.value);
+                            kotomineSfx.currentTime = 0;
+                            kotomineSfx.play().catch(e => console.log("보이스 예외:", e));
+                        }
+                    });
                 }
-            });
+            }
+            bindQuoteTrigger();
 
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
@@ -861,46 +867,48 @@
                 }, 1800);
             }
 
-            // 신규개념 키워드 상호작용 및 획득 처리
-            const keywords = document.querySelectorAll('.interactive-keyword');
-            keywords.forEach(el => {
-                const id = el.getAttribute('data-key');
-                if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
-                    el.classList.add('clicked');
-                }
-
-                el.addEventListener('click', function() {
-                    if (activeToastCount > 0) {
-                        if (noshinSfx) {
-                            noshinSfx.volume = parseFloat(seSlider.value);
-                            noshinSfx.currentTime = 0;
-                            noshinSfx.play().catch(e => console.log(e));
-                        }
-                        return;
+            // 키워드 상호작용 및 획득 바인딩
+            function bindKeywordEvents() {
+                const keywords = document.querySelectorAll('.interactive-keyword');
+                keywords.forEach(el => {
+                    const id = el.getAttribute('data-key');
+                    if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
+                        el.classList.add('clicked');
                     }
 
-                    if (!this.classList.contains('clicked')) {
-                        this.classList.add('clicked');
-                        sessionStorage.setItem('fate_concept_' + id, 'true');
-
-                        let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-                        if (!orderList.includes(id)) {
-                            orderList.push(id);
-                            sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
+                    el.addEventListener('click', function() {
+                        if (activeToastCount > 0) {
+                            if (noshinSfx) {
+                                noshinSfx.volume = parseFloat(seSlider.value);
+                                noshinSfx.currentTime = 0;
+                                noshinSfx.play().catch(e => console.log(e));
+                            }
+                            return;
                         }
 
-                        if (wordSfx) {
-                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
-                            wordSfx.currentTime = 0;
-                            wordSfx.play().catch(e => console.log(e));
-                        }
+                        if (!this.classList.contains('clicked')) {
+                            this.classList.add('clicked');
+                            sessionStorage.setItem('fate_concept_' + id, 'true');
 
-                        spawnAcquireToast(this.innerText.trim());
-                    }
+                            let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
+                            if (!orderList.includes(id)) {
+                                orderList.push(id);
+                                sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
+                            }
+
+                            if (wordSfx) {
+                                wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
+                                wordSfx.currentTime = 0;
+                                wordSfx.play().catch(e => console.log(e));
+                            }
+
+                            spawnAcquireToast(this.innerText.trim());
+                        }
+                    });
                 });
-            });
+            }
+            bindKeywordEvents();
 
-            // 탭 선택창 동적 구성 및 폰트 자동 크기 스케일링
             function renderTabSelectionWindow() {
                 tabSelectionContainer.innerHTML = '';
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
@@ -968,7 +976,7 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // ★ 클론 스왑(Ghost Clone) 이동 연산 엔진 ★
+            // 탭 선택 시 순방향 클론 비행 연산
             function openTabDetailView(selectedId, selectedWrapper, selectedBtn) {
                 history.pushState({ stage: 3, id: selectedId }, '', '');
 
@@ -978,22 +986,18 @@
                 }
 
                 currentActiveTabId = selectedId;
+                originalTabRect = selectedBtn.getBoundingClientRect(); // 복귀 비행용 위치 저장
 
-                // 1. 클릭된 원래 탭의 뷰포트 절대 위치 측정
-                const rect = selectedBtn.getBoundingClientRect();
-
-                // 2. 완벽히 동일한 독립 클론(Ghost Element) 생성
                 const ghostClone = document.createElement('div');
                 ghostClone.className = 'ghost-tab-clone';
                 ghostClone.innerText = selectedBtn.innerText;
                 ghostClone.style.fontSize = selectedBtn.style.fontSize;
-                ghostClone.style.top = rect.top + 'px';
-                ghostClone.style.left = rect.left + 'px';
+                ghostClone.style.top = originalTabRect.top + 'px';
+                ghostClone.style.left = originalTabRect.left + 'px';
                 document.body.appendChild(ghostClone);
 
                 activeGhostClone = ghostClone;
 
-                // 3. 원래 그리드 탭 숨김 및 나머지 탭 페이드 아웃
                 selectedWrapper.classList.add('hidden-original');
                 const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                 allWrappers.forEach(wrap => {
@@ -1002,7 +1006,6 @@
                     }
                 });
 
-                // 4. 클론 텍스트 자유 좌측 상단 비행 가동 (Reflow 트리거)
                 void ghostClone.offsetWidth;
                 ghostClone.classList.add('move-to-target');
 
@@ -1042,6 +1045,7 @@
                 history.back();
             });
 
+            // ★ 뒤로가기 시 탭 역방향 복귀 비행 & 다른 탭 동시 페이드인 모션 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
 
@@ -1064,21 +1068,35 @@
                         if (activeView) activeView.classList.remove('show');
                     }
 
-                    // 뒤로가기 시 활성화된 클론 제거 및 원래 탭 원복
-                    if (activeGhostClone) {
-                        activeGhostClone.remove();
-                        activeGhostClone = null;
+                    // 1. 역방향 복귀 비행 연산 가동
+                    if (activeGhostClone && originalTabRect) {
+                        activeGhostClone.classList.remove('move-to-target');
+                        activeGhostClone.style.top = originalTabRect.top + 'px';
+                        activeGhostClone.style.left = originalTabRect.left + 'px';
+                        activeGhostClone.style.transform = 'scale(1)';
+                        activeGhostClone.style.filter = 'brightness(1)';
                     }
 
+                    // 2. 다른 선택 안 됐던 탭들 동시 페이드인(Fade-in)
                     setTimeout(() => {
                         const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                         allWrappers.forEach(wrap => {
-                            wrap.classList.remove('hidden-original');
                             wrap.classList.remove('fade-out-stay');
+                        });
+                    }, 100);
+
+                    // 3. 복귀 비행 종료 후 클론 제거 및 원래 탭 원복
+                    setTimeout(() => {
+                        if (activeGhostClone) {
+                            activeGhostClone.remove();
+                            activeGhostClone = null;
+                        }
+                        const allWrappers = document.querySelectorAll('.tab-item-wrapper');
+                        allWrappers.forEach(wrap => {
+                            wrap.classList.remove('hidden-original');
                         });
                         
                         if (targetStage === 2) {
-                            renderTabSelectionWindow();
                             tabSelectionContainer.classList.add('show');
                         } else if (targetStage === 1) {
                             tabSelectionContainer.classList.remove('show');
@@ -1091,7 +1109,7 @@
                             pressStartWrapper.style.pointerEvents = 'auto';
                         }
                         currentActiveTabId = null;
-                    }, 400);
+                    }, 1000);
 
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
