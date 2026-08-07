@@ -835,20 +835,20 @@
             }, 2500);
         }
 
-        // 키워드 클릭 상태 관리 & sfx/sfx-word.mp3 재생 및 상단 토스트 모션
+        // 키워드 클릭 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
         const keywords = document.querySelectorAll('.interactive-keyword');
         
         keywords.forEach(el => {
             const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
             
-            if (localStorage.getItem(key) === 'true') {
+            if (sessionStorage.getItem(key) === 'true') {
                 el.classList.add('clicked');
             }
 
             el.addEventListener('click', function() {
                 if (!this.classList.contains('clicked')) {
                     this.classList.add('clicked');
-                    localStorage.setItem(key, 'true');
+                    sessionStorage.setItem(key, 'true');
 
                     // 1. 단어 획득 효과음 재생
                     if (wordSfx) {
