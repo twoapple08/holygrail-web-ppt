@@ -46,25 +46,25 @@
             opacity: 1;
         }
 
-        /* 화면 아래 붉은 먼지/안개 이펙트 (확실한 선명도 보장) */
+        /* 화면 아래 붉은 먼지/안개 이펙트 (처음엔 연하게, 배경 완료 후 적정 농도 도달) */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 55%;
-            background: linear-gradient(to top, rgba(160, 10, 10, 0.45) 0%, rgba(90, 0, 0, 0.2) 50%, transparent 100%);
+            background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%);
             z-index: 2;
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            transition: opacity 1.2s ease-in-out;
+            transition: opacity 1.8s ease-in-out; /* 부드럽고 느린 페이드인 */
         }
 
-        /* 붉은 안개 활성화 및 부드러운 일렁임 루프 연동 */
+        /* 붉은 안개 활성화 시 은은한 상승 및 루프 동기화 */
         .red-dust-effect.active {
-            opacity: 0.85;
-            animation: dust-fade-visible 5s infinite alternate ease-in-out 1.2s;
+            opacity: 0.55;
+            animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
         /* --- Fate/stay night 스타일 시작하기 버튼 --- */
@@ -230,10 +230,10 @@
             }
         }
 
-        /* 선명하게 잘 보이는 붉은 먼지 안개 루프 */
-        @keyframes dust-fade-visible {
-            0% { opacity: 0.65; }
-            100% { opacity: 0.95; }
+        /* 배경 조화용 부드러운 안개 루프 */
+        @keyframes dust-fade-soft {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.75; }
         }
 
         @keyframes fade-in {
@@ -277,15 +277,15 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. 붉은 이펙트 먼지 페이드인 시작
-            setTimeout(() => {
-                dustEffect.classList.add('active');
-            }, 300);
-
-            // 3. 배경 이미지 페이드인
+            // 2. 배경 이미지 페이드인 (배경이 먼저 부드럽게 깔림)
             setTimeout(() => {
                 bgLayer.classList.add('active');
-            }, 600);
+            }, 300);
+
+            // 3. 은은한 붉은 안개 이펙트가 자연스럽게 차오름
+            setTimeout(() => {
+                dustEffect.classList.add('active');
+            }, 500);
 
             // 4. 성배 이미지 페이드인
             setTimeout(() => {
