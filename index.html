@@ -666,7 +666,7 @@
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
-    <audio id="noshinSfx" src="noshin.mp3" preload="auto"></audio>
+    <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
     <!-- 메인 배경 & 안개 -->
@@ -718,12 +718,7 @@
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <p style="margin-top: 10px;">
-                    성배가 7명의 <span class="interactive-keyword" data-key="magician">마술사</span>를 <span class="interactive-keyword" data-key="master">마스터</span>로 지정해<br>
-                    <span class="interactive-keyword" data-key="reiju">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant">서번트</span> 소환 자격을 얻고<br>
-                    7명의 마술사가 모두 서번트 소환에 성공하면 성배전쟁은 시작된다.
-                </p>
+                <p>성배란 <span class="interactive-keyword" data-key="grailwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
@@ -760,7 +755,7 @@
                              (performance.navigation && performance.navigation.type === 1);
             
             if (isReload) {
-                const keysToRemove = ['magician', 'master', 'reiju', 'servant'];
+                const keysToRemove = ['grailwar'];
                 keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
             }
         })();
@@ -803,7 +798,7 @@
 
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
-                if (wordSfx) wordSfx.volume = parseFloat(this.value);
+                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 1.3);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
             });
 
@@ -866,7 +861,7 @@
                 }
 
                 el.addEventListener('click', function() {
-                    // 알람이 유지되는 동안(activeToastCount > 0)에는 획득 차단 및 noshin.mp3 재생
+                    // 알람이 유지되는 동안(activeToastCount > 0)에는 획득 차단 및 sfx-noshin.mp3 재생
                     if (activeToastCount > 0) {
                         if (noshinSfx) {
                             noshinSfx.volume = parseFloat(seSlider.value);
@@ -880,9 +875,9 @@
                         this.classList.add('clicked');
                         sessionStorage.setItem(key, 'true');
 
-                        // 1. 효과음 재생
+                        // 1. 효과음 재생 (볼륨 30% 증폭 적용: 최대 1 제한)
                         if (wordSfx) {
-                            wordSfx.volume = parseFloat(seSlider.value);
+                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 1.3);
                             wordSfx.currentTime = 0;
                             wordSfx.play().catch(e => console.log(e));
                         }
@@ -985,7 +980,7 @@
                 }
 
                 if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-                if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
+                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 1.3);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
