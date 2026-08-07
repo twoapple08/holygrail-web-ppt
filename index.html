@@ -133,7 +133,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (연하게 일렁이는 흰색 글로우 & 클릭 시 0.5초 페이드아웃) --- */
+        /* --- 어록 속성 --- */
         .description-quote {
             font-style: italic;
             color: rgba(235, 225, 210, 0.9);
@@ -141,12 +141,13 @@
             cursor: pointer;
             user-select: none;
             animation: quote-gentle-glow 2.5s infinite alternate ease-in-out;
-            transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.5s ease;
+            transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
         }
 
         .description-quote:hover {
-            color: #ffffff;
+            color: #ffffff !important;
             transform: scale(1.02);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.9), 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6) !important;
         }
 
         .description-quote.glow-fade-out {
@@ -243,7 +244,6 @@
             transform: translateY(-10px);
         }
 
-        /* 페이트 로고 감싸는 레이아웃 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -269,7 +269,6 @@
             margin: 0 auto;
         }
 
-        /* 소제목 */
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -292,7 +291,6 @@
             margin: 0 2px;
         }
 
-        /* PRESS TO START 버튼 */
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
@@ -367,23 +365,33 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
-        .center-grail-text-container {
+        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 (성배, 성배전쟁 등 다중 탭) --- */
+        .center-tab-group-container {
             position: absolute;
             z-index: 30;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
+            transition: opacity 0.8s ease-out;
         }
 
-        .center-grail-text-container.show {
+        .center-tab-group-container.show {
             opacity: 1;
             pointer-events: auto;
         }
 
+        .tab-item-wrapper {
+            position: relative;
+            transition: opacity 0.6s ease-in-out, transform 0.8s ease-in-out, top 0.8s ease-in-out, left 0.8s ease-in-out, filter 0.8s ease-in-out;
+        }
+
+        /* 동적 버튼 공통 스타일 */
         .center-grail-btn {
             font-family: 'Song Myung', serif;
             font-size: 4.5rem;
@@ -410,15 +418,24 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        .center-grail-text-container.move-top-left {
+        /* 선택된 탭이 좌측 상단으로 이동할 때 스타일 */
+        .tab-item-wrapper.move-top-left {
+            position: fixed;
             top: 7%;
             left: 6%;
             transform: translate(0, 0) scale(0.75);
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
             pointer-events: none;
+            z-index: 35;
         }
 
-        /* --- 5. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
+        /* 선택되지 않은 탭이 제자리에서 페이드아웃 할 때 스타일 */
+        .tab-item-wrapper.fade-out-stay {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* --- 5. 상세 페이지 (Stage 3) --- */
         .grail-detail-view {
             position: absolute;
             top: 0;
@@ -433,7 +450,7 @@
             gap: 16%;
             opacity: 0;
             pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
+            transition: opacity 0.8s ease-in-out;
         }
 
         .grail-detail-view.show {
@@ -475,6 +492,7 @@
             padding: 40px 35px;
             box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
             backdrop-filter: blur(4px);
+            min-height: 250px;
         }
 
         .description-title {
@@ -716,13 +734,20 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
-    <div class="center-grail-text-container" id="centerGrailWrapper">
-        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
+    <!-- 2단계: 중앙 인터랙션 탭 그룹 (동적 탭 추가 가능 구조) -->
+    <div class="center-tab-group-container" id="centerTabGroup">
+        <!-- 기본 성배 탭 -->
+        <div class="tab-item-wrapper" id="tabWrapper_grail">
+            <button class="center-grail-btn" id="tabBtn_grail">성배</button>
+        </div>
+        <!-- sung 고유번호 획득 시 동적으로 연동되는 성배전쟁 탭 -->
+        <div class="tab-item-wrapper" id="tabWrapper_sung" style="display: none;">
+            <button class="center-grail-btn" id="tabBtn_sung">성배전쟁</button>
+        </div>
     </div>
 
-    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
-    <section class="grail-detail-view" id="grailDetailView">
+    <!-- 3단계: 성배 상세 페이지 -->
+    <section class="grail-detail-view" id="detailView_grail">
         <div class="detail-grail-left">
             <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
             <span class="grail-sub-label">소(小)성배</span>
@@ -730,11 +755,24 @@
         <div class="detail-description-right">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
-                <!-- 어록 속성 영역 (클릭 유도 글로우 일렁임 & 최초 클릭 시 0.5초 글로우 페이드아웃) -->
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <p>성배란 <span class="interactive-keyword" data-key="grailwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
+                <!-- sung 고유번호를 부여받은 신규개념 성배전쟁 -->
+                <p>성배란 <span class="interactive-keyword" data-key="sung">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 3단계: 성배전쟁 상세 고유 페이지 (추후 수정을 위해 공간 비워둠) -->
+    <section class="grail-detail-view" id="detailView_sung">
+        <div class="detail-grail-left" id="sungDetailLeft">
+            <!-- 이미지/라벨 비워둠 (마스터 지정 대기) -->
+        </div>
+        <div class="detail-description-right" id="sungDetailRight">
+            <h2 class="description-title" id="sungDetailTitle"></h2>
+            <div class="description-content" id="sungDetailContent">
+                <!-- 설명창 내용 비워둠 (마스터 지정 대기) -->
             </div>
         </div>
     </section>
@@ -764,14 +802,14 @@
     </div>
 
     <script>
-        // 모바일 데스크톱 모드 및 PC 새로고침 시 세션 데이터를 강제 초기화하는 로직
+        // 모바일 데스크톱 모드 및 PC 새로고침 시 고유번호 세션 데이터 강제 초기화
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
                              (performance.navigation && performance.navigation.type === 1);
             
             if (isReload) {
-                const keysToRemove = ['grailwar'];
+                const keysToRemove = ['sung']; // 등록된 고유번호 키
                 keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
             }
         })();
@@ -789,7 +827,6 @@
 
             const startBtn = document.getElementById('startBtn');
             const pressStartBtn = document.getElementById('pressStartBtn');
-            const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
@@ -800,12 +837,23 @@
             const pressStartWrapper = document.getElementById('pressStartWrapper');
             const introNotice = document.getElementById('introNotice');
 
-            const centerGrailWrapper = document.getElementById('centerGrailWrapper');
-            const grailDetailView = document.getElementById('grailDetailView');
+            const centerTabGroup = document.getElementById('centerTabGroup');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
+            // 탭 및 상세뷰 매핑
+            const tabWrappers = {
+                grail: document.getElementById('tabWrapper_grail'),
+                sung: document.getElementById('tabWrapper_sung')
+            };
+
+            const detailViews = {
+                grail: document.getElementById('detailView_grail'),
+                sung: document.getElementById('detailView_sung')
+            };
+
             let currentStage = 1;
-            let activeToastCount = 0; // 현재 화면에 유지 중인 알람 개수 카운트
+            let currentActiveTabKey = null;
+            let activeToastCount = 0;
 
             // 볼륨 연동
             volumeSlider.addEventListener('input', function() {
@@ -829,7 +877,7 @@
                 }
             });
 
-            // 코토미네 보이스 4.4초 제한 제어
+            // 코토미네 보이스 제한 제어
             if (kotomineSfx) {
                 kotomineSfx.addEventListener('timeupdate', function() {
                     if (this.currentTime >= 4.4) {
@@ -839,7 +887,6 @@
                 });
             }
 
-            // 어록 클릭 시 음성 재생 및 0.5초 글로우 페이드아웃 처리
             kotomineTrigger.addEventListener('click', function() {
                 if (!this.classList.contains('glow-fade-out')) {
                     this.classList.add('glow-fade-out');
@@ -848,11 +895,11 @@
                 if (kotomineSfx) {
                     kotomineSfx.volume = parseFloat(voiceSlider.value);
                     kotomineSfx.currentTime = 0;
-                    kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
+                    kotomineSfx.play().catch(e => console.log("보이스 재생 예외:", e));
                 }
             });
 
-            // 신규개념 획득 토스트 알림 생성 함수 (1.8초 지속)
+            // 신규개념 토스트 알림 생성
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
                 const toastEl = document.createElement('div');
@@ -869,20 +916,20 @@
                 }, 1800);
             }
 
-            // 신규개념(노란색 키워드) 클릭 및 상태 관리
+            // 신규개념(고유번호 보유 키워드) 인터랙션 로직
             const keywords = document.querySelectorAll('.interactive-keyword');
             
             keywords.forEach(el => {
-                const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
+                const key = el.getAttribute('data-key'); // 고유번호 ID (예: 'sung')
+                const sessionKey = 'fate_kw_clicked_' + key;
                 
-                if (sessionStorage.getItem(key) === 'true') {
+                if (sessionStorage.getItem(sessionKey) === 'true') {
                     el.classList.add('clicked');
                 } else {
                     el.classList.remove('clicked');
                 }
 
                 el.addEventListener('click', function() {
-                    // 알람이 유지되는 동안(activeToastCount > 0)에는 획득 차단 및 sfx-noshin.mp3 재생
                     if (activeToastCount > 0) {
                         if (noshinSfx) {
                             noshinSfx.volume = parseFloat(seSlider.value);
@@ -894,21 +941,60 @@
 
                     if (!this.classList.contains('clicked')) {
                         this.classList.add('clicked');
-                        sessionStorage.setItem(key, 'true');
+                        sessionStorage.setItem(sessionKey, 'true');
 
-                        // 1. 효과음 재생 (볼륨 30% 증폭 적용: 최대 1 제한)
                         if (wordSfx) {
                             wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 1.3);
                             wordSfx.currentTime = 0;
                             wordSfx.play().catch(e => console.log(e));
                         }
 
-                        // 2. 알림 팝업 출력
                         spawnAcquireToast(this.innerText.trim());
                     }
                 });
             });
 
+            // 고유번호 획득 여부에 따른 동적 탭 업데이트 함수
+            function refreshDynamicTabs() {
+                if (sessionStorage.getItem('fate_kw_clicked_sung') === 'true') {
+                    tabWrappers.sung.style.display = 'block';
+                } else {
+                    tabWrappers.sung.style.display = 'none';
+                }
+            }
+
+            // 탭 클릭 및 고유 페이지(Stage 3) 진입 공통 로직
+            function openTabDetail(selectedKey) {
+                if (pstSfx) {
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(e => console.log(e));
+                }
+
+                currentActiveTabKey = selectedKey;
+
+                // 선택된 탭은 좌측 상단으로 이동, 선택받지 못한 탭은 제자리에서 페이드아웃
+                Object.keys(tabWrappers).forEach(k => {
+                    const wrap = tabWrappers[k];
+                    if (k === selectedKey) {
+                        wrap.classList.add('move-top-left');
+                    } else {
+                        wrap.classList.add('fade-out-stay');
+                    }
+                });
+
+                setTimeout(() => {
+                    if (detailViews[selectedKey]) {
+                        detailViews[selectedKey].classList.add('show');
+                    }
+                    currentStage = 3;
+                }, 300);
+            }
+
+            // 탭 버튼 이벤트 바인딩
+            document.getElementById('tabBtn_grail').addEventListener('click', () => openTabDetail('grail'));
+            document.getElementById('tabBtn_sung').addEventListener('click', () => openTabDetail('sung'));
+
+            // PRESS TO START 클릭 (Stage 1 -> Stage 2)
             pressStartBtn.addEventListener('click', function() {
                 if (pstSfx) {
                     pstSfx.volume = parseFloat(seSlider.value);
@@ -925,26 +1011,14 @@
                 }, 250);
 
                 setTimeout(() => {
-                    centerGrailWrapper.classList.add('show');
+                    refreshDynamicTabs(); // 동적 탭 갱신
+                    centerTabGroup.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
                 }, 1450);
             });
 
-            centerGrailBtn.addEventListener('click', function() {
-                if (pstSfx) {
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(e => console.log(e));
-                }
-
-                centerGrailWrapper.classList.add('move-top-left');
-
-                setTimeout(() => {
-                    grailDetailView.classList.add('show');
-                    currentStage = 3;
-                }, 300);
-            });
-
+            // 뒤로가기 버튼
             backBtn.addEventListener('click', function() {
                 if (pstSfx) {
                     pstSfx.currentTime = 0;
@@ -957,14 +1031,24 @@
                 }
 
                 if (currentStage === 3) {
-                    grailDetailView.classList.remove('show');
+                    // Stage 3 -> Stage 2: 상세뷰 숨김 및 탭 원래 위치로 복원
+                    if (currentActiveTabKey && detailViews[currentActiveTabKey]) {
+                        detailViews[currentActiveTabKey].classList.remove('show');
+                    }
+
                     setTimeout(() => {
-                        centerGrailWrapper.classList.remove('move-top-left');
+                        Object.keys(tabWrappers).forEach(k => {
+                            tabWrappers[k].classList.remove('move-top-left');
+                            tabWrappers[k].classList.remove('fade-out-stay');
+                        });
+                        refreshDynamicTabs(); // 획득 상태 재점검
                         currentStage = 2;
+                        currentActiveTabKey = null;
                     }, 300);
 
                 } else if (currentStage === 2) {
-                    centerGrailWrapper.classList.remove('show');
+                    // Stage 2 -> Stage 1: 타이틀 화면으로 복귀
+                    centerTabGroup.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
@@ -984,6 +1068,7 @@
                 }
             });
 
+            // 최초 시작하기 버튼
             startBtn.addEventListener('click', function() {
                 const btnContainer = document.getElementById('btnContainer');
                 const bgLayer = document.getElementById('bgLayer');
@@ -1021,4 +1106,3 @@
     </script>
 </body>
 </html>
-
