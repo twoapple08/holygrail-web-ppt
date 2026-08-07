@@ -20,9 +20,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            overflow: hidden;
+            position: relative;
             
-            /* 화려한 마력 안개 및 다중 그라데이션 패턴 배경 */
+            /* 신비로운 마력 안개 및 다중 그라데이션 패턴 배경 */
             background-color: #050508;
             background-image: 
                 radial-gradient(circle at 50% 35%, rgba(120, 10, 25, 0.5) 0%, rgba(30, 10, 45, 0.35) 45%, transparent 75%),
@@ -46,23 +47,26 @@
             z-index: 2;
         }
 
-        /* 검은 박스 배경을 제거하고 순수 마력 후광 효과만 남김 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            background: transparent;
+            background: transparent !important;
             margin-bottom: 25px;
+            animation: pulse-aura 4s infinite ease-in-out;
         }
 
+        /* 검은 박스 잔상을 완전히 없애기 위한 이미지 강제 투명 처리 및 스타일 */
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
             height: auto;
-            /* 성배 뒤로 은은하게 퍼지는 마력 광채 효과 */
-            filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.75)) drop-shadow(0 0 50px rgba(210, 20, 40, 0.85));
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            animation: grail-breathing 4s infinite ease-in-out;
         }
 
         .main-title {
@@ -78,6 +82,7 @@
                 -1px 1px 0px #700000,
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
+            animation: title-glow 3s infinite alternate ease-in-out;
         }
 
         .sub-title {
@@ -88,6 +93,66 @@
             line-height: 1.6;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
+        }
+
+        /* 화면 맨 오른쪽 아래에 위치한 메이드 바이 문구 스타일 */
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.25);
+            letter-spacing: 1.5px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* --- 동적 애니메이션 정의 --- */
+
+        @keyframes grail-breathing {
+            0% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 40px rgba(200, 20, 40, 0.8));
+            }
+            50% {
+                transform: scale(1.06);
+                filter: drop-shadow(0 0 30px rgba(255, 230, 100, 0.9)) drop-shadow(0 0 65px rgba(255, 40, 60, 1));
+            }
+            100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 40px rgba(200, 20, 40, 0.8));
+            }
+        }
+
+        @keyframes pulse-aura {
+            0% {
+                transform: scale(0.95);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(0.95);
+            }
+        }
+
+        @keyframes title-glow {
+            0% {
+                text-shadow: 
+                    3px 3px 0px #700000, 
+                    -1px -1px 0px #700000, 
+                    1px -1px 0px #700000, 
+                    -1px 1px 0px #700000,
+                    0 0 25px rgba(255, 50, 50, 0.5);
+            }
+            100% {
+                text-shadow: 
+                    3px 3px 0px #700000, 
+                    -1px -1px 0px #700000, 
+                    1px -1px 0px #700000, 
+                    -1px 1px 0px #700000,
+                    0 0 45px rgba(255, 80, 80, 0.9);
+            }
         }
     </style>
 </head>
@@ -103,5 +168,9 @@
         <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
+    <!-- 화면 우측 하단 워터마크 -->
+    <footer class="watermark">Made by 사과사과</footer>
+
 </body>
 </html>
+
