@@ -682,7 +682,8 @@
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
-                <p style="margin-top: 12px;">성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
+                <!-- 성배전쟁 키워드에 sungbwar 고유 ID 인터랙션 속성 부여 완료 -->
+                <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
             </div>
         </div>
     </section>
@@ -732,6 +733,7 @@
             const centerGrailBtn = document.getElementById('centerGrailBtn');
             const backBtn = document.getElementById('backBtn');
             const kotomineTrigger = document.getElementById('kotomineTrigger');
+            const acquireToastContainer = document.getElementById('acquireToastContainer');
 
             const grailWrapper = document.getElementById('grailWrapper');
             const subTitle = document.getElementById('subTitle');
@@ -743,6 +745,7 @@
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;
+            let activeToastCount = 0;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
             seSlider.addEventListener('input', function() {
@@ -769,6 +772,52 @@
                     kotomineSfx.currentTime = 0;
                     kotomineSfx.play().catch(e => console.log(e));
                 }
+            });
+
+            function spawnAcquireToast(wordText) {
+                activeToastCount++;
+                const toastEl = document.createElement('div');
+                toastEl.className = 'word-toast-item';
+                toastEl.innerText = `—${wordText}을(를) 획득했습니다—`;
+                acquireToastContainer.appendChild(toastEl);
+
+                setTimeout(() => {
+                    if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+                    activeToastCount = Math.max(0, activeToastCount - 1);
+                }, 1800);
+            }
+
+            // '성배전쟁' 신규개념 키워드 획득 연동 로직
+            const keywords = document.querySelectorAll('.interactive-keyword');
+            keywords.forEach(el => {
+                const id = el.getAttribute('data-key');
+                if (sessionStorage.getItem('fate_concept_' + id) === 'true') {
+                    el.classList.add('clicked');
+                }
+
+                el.addEventListener('click', function() {
+                    if (activeToastCount > 0) {
+                        if (noshinSfx) {
+                            noshinSfx.volume = parseFloat(seSlider.value);
+                            noshinSfx.currentTime = 0;
+                            noshinSfx.play().catch(e => console.log(e));
+                        }
+                        return;
+                    }
+
+                    if (!this.classList.contains('clicked')) {
+                        this.classList.add('clicked');
+                        sessionStorage.setItem('fate_concept_' + id, 'true');
+
+                        if (wordSfx) {
+                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
+                            wordSfx.currentTime = 0;
+                            wordSfx.play().catch(e => console.log(e));
+                        }
+
+                        spawnAcquireToast(this.innerText.trim());
+                    }
+                });
             });
 
             pressStartBtn.addEventListener('click', function() {
