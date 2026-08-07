@@ -415,7 +415,6 @@
             word-break: keep-all;
         }
 
-        /* 텍스트 단독 선택 상호작용 스타일 */
         .description-quote {
             font-style: italic;
             color: rgba(235, 225, 210, 0.9);
@@ -482,7 +481,7 @@
             transform: scale(1.03);
         }
 
-        /* --- 7. 화면 우측 하단 레이아웃 (SFX/BGM 슬라이더 + 워터마크) --- */
+        /* --- 7. 화면 우측 하단 레이아웃 (SFX/BGM/VOICE 슬라이더 + 워터마크) --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -526,7 +525,7 @@
             letter-spacing: 1px;
             font-weight: 700;
             user-select: none;
-            min-width: 30px;
+            min-width: 40px;
             text-align: left;
         }
 
@@ -661,12 +660,12 @@
         <div class="detail-description-right">
             <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
             <div class="description-content">
-                <!-- 오직 '성배란, 어떤 소원이라도 이루어주는 원망기다.' 텍스트만 클릭 가능하도록 박스 제거 -->
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
                 <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <p style="margin-top: 10px;">성배전쟁은 성배가 7명의 마술사를 마스터로 지정해 령주(令呪)를 부여하고 서번트 소환 자격을 얻은 7명의 마술사가 모두 서번트 소환해 성공하면 시작된다.</p>
+                <!-- 요청된 줄바꿈 적용 구역: '지정해' 다음 <br> 추가 -->
+                <p style="margin-top: 10px;">성배전쟁은 성배가 7명의 마술사를 마스터로 지정해<br>령주(令呪)를 부여하고 서번트 소환 자격을 얻은 7명의 마술사가 모두 서번트 소환해 성공하면 시작된다.</p>
             </div>
         </div>
     </section>
@@ -687,6 +686,10 @@
                 <span class="volume-label">BGM</span>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
             </div>
+            <div class="volume-control-box">
+                <span class="volume-label">VOICE</span>
+                <input type="range" id="voiceSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.3">
+            </div>
         </div>
         <footer class="watermark">Made by 사과사과</footer>
     </div>
@@ -697,6 +700,7 @@
         const kotomineSfx = document.getElementById('kotomineSfx');
         const volumeSlider = document.getElementById('volumeSlider');
         const seSlider = document.getElementById('seSlider');
+        const voiceSlider = document.getElementById('voiceSlider');
 
         const startBtn = document.getElementById('startBtn');
         const pressStartBtn = document.getElementById('pressStartBtn');
@@ -723,6 +727,9 @@
 
         seSlider.addEventListener('input', function() {
             if (pstSfx) pstSfx.volume = parseFloat(this.value);
+        });
+
+        voiceSlider.addEventListener('input', function() {
             if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
         });
 
@@ -733,10 +740,9 @@
             }
         });
 
-        // '성배란, 어떤 소원이라도 이루어주는 원망기다.' 텍스트 클릭 시 음원 재생
         kotomineTrigger.addEventListener('click', function() {
             if (kotomineSfx) {
-                kotomineSfx.volume = parseFloat(seSlider.value);
+                kotomineSfx.volume = parseFloat(voiceSlider.value);
                 kotomineSfx.currentTime = 0;
                 kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
             }
@@ -836,7 +842,7 @@
             }
 
             if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(seSlider.value);
+            if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
             setTimeout(() => bgLayer.classList.add('active'), 300);
             setTimeout(() => dustEffect.classList.add('active'), 500);
