@@ -22,7 +22,6 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-            /* 배경 이미지 지정 및 화면에 가득 차도록 설정 */
             background-image: url('first-background.png');
             background-size: cover;
             background-position: center;
@@ -70,7 +69,7 @@
             background: transparent;
         }
 
-        /* 성배 이미지 래퍼 (빛이 강렬하게 번쩍이며 등장 - 즉시 시작) */
+        /* 성배 이미지 래퍼 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -84,7 +83,7 @@
             animation: grail-flash-appear-fast 0.9s cubic-bezier(0.2, 0.8, 0.3, 1) 0.3s forwards;
         }
 
-        /* 성배 본체 (위아래로 아주 살짝씩만 부유하는 루프 애니메이션) */
+        /* 성배 본체 (위아래로 아주 살짝씩만 부유) */
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
@@ -96,11 +95,11 @@
             filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
         }
 
-        /* 본제목: 성배 이미지 바로 아래 배치 (중심에서 좌우로 싹 펼쳐짐) */
+        /* 본제목: 수직 이동 없이 자간과 스케일만 양옆으로 탁! 펼쳐지는 연출 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 7px;
+            letter-spacing: 15px; /* 최종 자간 */
             margin-bottom: 12px;
             color: #f5f0e6;
             text-shadow: 
@@ -111,12 +110,11 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            transform: scaleX(0.2) translateY(15px);
-            /* 성배 등장 직후인 0.7초에 시작 지연 설정 */
-            animation: title-spread-appear-fast 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) 0.7s forwards;
+            transform: scale(0.9);
+            animation: title-snap-expand 0.5s cubic-bezier(0.1, 0.9, 0.2, 1) 0.7s forwards;
         }
 
-        /* 소제목 (본제목 등장 후 페이드 인 - 1.4초 지연 설정으로 오류 수정) */
+        /* 소제목 */
         .sub-title {
             font-size: 1.15rem;
             font-weight: 400;
@@ -126,11 +124,10 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
             padding: 0 15px;
             opacity: 0;
-            /* 한글 단위 제거 및 표준 초 단위 설정으로 소제목 노출 오류 해결 */
-            animation: fade-in 1.0s ease-out 1.4s forwards;
+            animation: fade-in 1.0s ease-out 1.2s forwards;
         }
 
-        /* 화면 맨 오른쪽 아래 워터마크 (등장 애니메이션 적용 - 1.8초 지연) */
+        /* 화면 맨 오른쪽 아래 워터마크 */
         .watermark {
             position: absolute;
             bottom: 20px;
@@ -141,12 +138,11 @@
             z-index: 20;
             pointer-events: none;
             opacity: 0;
-            animation: fade-in 1.5s ease-out 1.8s forwards;
+            animation: fade-in 1.5s ease-out 1.6s forwards;
         }
 
         /* --- 동적 애니메이션 정의 --- */
 
-        /* 성배가 강렬한 섬광과 함께 매우 빠르게 번쩍이며 나타나는 연출 */
         @keyframes grail-flash-appear-fast {
             0% {
                 opacity: 0;
@@ -165,7 +161,6 @@
             }
         }
 
-        /* 성배 본체가 위아래로 아주 살짝만 움직이는 루프 효과 */
         @keyframes grail-gentle-float {
             0%, 100% {
                 transform: translateY(0);
@@ -175,21 +170,25 @@
             }
         }
 
-        /* 본제목이 중심에서 좌우로 매우 빠르게 퍼지며 나타나는 연출 */
-        @keyframes title-spread-appear-fast {
+        /* 글자가 압축되지 않고 자간이 넓어지며 싹 펼쳐지는 연출 */
+        @keyframes title-snap-expand {
             0% {
                 opacity: 0;
-                transform: scaleX(0.2) translateY(15px);
-                letter-spacing: 0px;
+                letter-spacing: -5px;
+                transform: scale(0.95);
+            }
+            60% {
+                opacity: 1;
+                letter-spacing: 18px;
+                transform: scale(1.02);
             }
             100% {
                 opacity: 1;
-                transform: scaleX(1) translateY(0);
                 letter-spacing: 7px;
+                transform: scale(1);
             }
         }
 
-        /* 배경 마력 오라의 맥동 효과 */
         @keyframes pulse-aura {
             0% {
                 opacity: 0.4;
@@ -201,7 +200,6 @@
             }
         }
 
-        /* 화면 아래 붉은 안개 점멸 효과 */
         @keyframes dust-fade {
             0% {
                 opacity: 0.7;
@@ -211,7 +209,6 @@
             }
         }
 
-        /* 단순 페이드인 */
         @keyframes fade-in {
             0% {
                 opacity: 0;
@@ -232,15 +229,15 @@
 
     <!-- 컨텐츠 레이어 -->
     <main class="content-container">
-        <!-- 1. 성배 이미지 (섬광 후 등장) -->
+        <!-- 1. 성배 이미지 -->
         <div class="holy-grail-wrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
 
-        <!-- 2. 본제목 (성배 아래에서 좌우로 빠르게 펼쳐짐) -->
+        <!-- 2. 본제목 -->
         <h1 class="main-title">성배전쟁</h1>
 
-        <!-- 3. 소제목 (페이드 인 - 노출 오류 수정 완료) -->
+        <!-- 3. 소제목 -->
         <p class="sub-title">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
     </main>
 
@@ -249,4 +246,3 @@
 
 </body>
 </html>
-```》
