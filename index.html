@@ -369,7 +369,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 --- */
+        /* --- 4. Stage 2: 중앙 인터랙션 탭 그룹 (클릭 투명 레이어 간섭 원천 차단) --- */
         .center-tab-group-container {
             position: absolute;
             top: 0;
@@ -393,6 +393,7 @@
             transform: translateX(-50%);
             white-space: nowrap;
             pointer-events: auto !important;
+            z-index: 32;
             transition: top 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         left 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
@@ -430,7 +431,7 @@
             display: inline-block;
             pointer-events: auto !important;
             position: relative;
-            z-index: 32;
+            z-index: 35;
         }
 
         .center-grail-btn:hover {
@@ -761,11 +762,11 @@
     <div class="center-tab-group-container" id="centerTabGroup">
         <!-- 기본 성배 탭 (sungbae 고유번호 소지) -->
         <div class="tab-item-wrapper" id="tabWrapper_grail">
-            <button class="center-grail-btn" id="tabBtn_grail">성배</button>
+            <button class="center-grail-btn" id="tabBtn_grail" type="button">성배</button>
         </div>
         <!-- sung 고유번호 획득 시 동적으로 연동되는 성배전쟁 탭 -->
         <div class="tab-item-wrapper" id="tabWrapper_sung" style="display: none;">
-            <button class="center-grail-btn" id="tabBtn_sung">성배전쟁</button>
+            <button class="center-grail-btn" id="tabBtn_sung" type="button">성배전쟁</button>
         </div>
     </div>
 
@@ -1035,16 +1036,14 @@
                 }, 1100);
             }
 
-            // 탭 버튼 클릭 이벤트 강제 보완
+            // 탭 버튼 클릭 이벤트 바인딩 (addEventListener 및 onclick 이중 보장)
             if (tabBtns.grail) {
-                tabBtns.grail.onclick = function(e) {
-                    openTabDetail('grail', e);
-                };
+                tabBtns.grail.addEventListener('click', (e) => openTabDetail('grail', e));
+                tabBtns.grail.onclick = function(e) { openTabDetail('grail', e); };
             }
             if (tabBtns.sung) {
-                tabBtns.sung.onclick = function(e) {
-                    openTabDetail('sung', e);
-                };
+                tabBtns.sung.addEventListener('click', (e) => openTabDetail('sung', e));
+                tabBtns.sung.onclick = function(e) { openTabDetail('sung', e); };
             }
 
             pressStartBtn.addEventListener('click', function() {
