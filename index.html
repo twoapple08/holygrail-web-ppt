@@ -29,7 +29,7 @@
             background-color: #000000;
         }
 
-        /* 배경 이미지 위에 겹쳐질 은은한 마력 오라 레이어 */
+        /* 배경 이미지 위에 겹쳐질 은은한 마력 오라 레이er */
         .background-aura {
             position: absolute;
             top: 0;
@@ -55,7 +55,7 @@
             animation: dust-fade 6s infinite alternate ease-in-out;
         }
 
-        /* 컨텐츠 컨테이너 */
+        /* 컨텐츠 컨테이너: 완벽한 중앙 정렬 및 축 고정 */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -67,9 +67,10 @@
             position: relative;
             z-index: 10;
             background: transparent;
+            margin: 0 auto;
         }
 
-        /* 성배 이미지 래퍼 */
+        /* 성배 이미지 래퍼: 중앙 정렬 보정 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -93,13 +94,15 @@
             box-shadow: none !important;
             animation: grail-gentle-float 3s infinite ease-in-out;
             filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+            display: block;
+            margin: 0 auto;
         }
 
-        /* 본제목: 수직 이동 없이 자간과 스케일만 양옆으로 탁! 펼쳐지는 연출 */
+        /* 본제목: 좁아지는 현상 없이 나타남과 동시에 자간이 넓어진 채로 고정 */
         .main-title {
             font-size: 3.5rem;
             font-weight: 700;
-            letter-spacing: 15px; /* 최종 자간 */
+            letter-spacing: 9px;
             margin-bottom: 12px;
             color: #f5f0e6;
             text-shadow: 
@@ -110,8 +113,8 @@
                 0 0 35px rgba(255, 50, 50, 0.7);
             text-transform: uppercase;
             opacity: 0;
-            transform: scale(0.9);
-            animation: title-snap-expand 0.5s cubic-bezier(0.1, 0.9, 0.2, 1) 0.7s forwards;
+            transform: scale(0.95);
+            animation: title-snap-fixed 0.4s cubic-bezier(0.1, 0.9, 0.2, 1) 0.7s forwards;
         }
 
         /* 소제목 */
@@ -170,21 +173,16 @@
             }
         }
 
-        /* 글자가 압축되지 않고 자간이 넓어지며 싹 펼쳐지는 연출 */
-        @keyframes title-snap-expand {
+        /* 자간이 좁아지는 루프 없이 펴진 상태로 즉시 안착하여 고정 */
+        @keyframes title-snap-fixed {
             0% {
                 opacity: 0;
-                letter-spacing: -5px;
-                transform: scale(0.95);
-            }
-            60% {
-                opacity: 1;
-                letter-spacing: 18px;
-                transform: scale(1.02);
+                letter-spacing: 2px;
+                transform: scale(0.9);
             }
             100% {
                 opacity: 1;
-                letter-spacing: 7px;
+                letter-spacing: 9px;
                 transform: scale(1);
             }
         }
