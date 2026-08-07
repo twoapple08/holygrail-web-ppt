@@ -22,19 +22,24 @@
             align-items: center;
             overflow: hidden;
             position: relative;
-            
-            /* 신비로운 마력 안개 및 다중 그라데이션 패턴 배경 */
-            background-color: #050508;
-            background-image: 
-                radial-gradient(circle at 50% 35%, rgba(120, 10, 25, 0.5) 0%, rgba(30, 10, 45, 0.35) 45%, transparent 75%),
-                radial-gradient(circle at 15% 85%, rgba(90, 0, 90, 0.3) 0%, transparent 55%),
-                radial-gradient(circle at 85% 85%, rgba(150, 20, 20, 0.25) 0%, transparent 55%),
-                linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 100% 100%, 50px 50px, 50px 50px;
-            background-position: center;
+            /* 순수 검은색 배경 (마력 이펙트가 이 위에서만 표현됨) */
+            background-color: #000000;
         }
 
+        /* 배경 레이어: 은은하게 일렁이는 마력 오라 (배경 역할) */
+        .background-aura {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(80, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 70%);
+            z-index: 1;
+            animation: pulse-aura 4s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+
+        /* 컨텐츠 컨테이너: 모든 텍스트와 성배를 포함하며 최상위 배치 */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -44,41 +49,11 @@
             max-width: 700px;
             padding: 40px 20px;
             position: relative;
+            z-index: 10; /* 레이어 최상위 설정 */
+            background: transparent;
         }
 
-        /* 1순위: 본제목을 최상단 레이어로 배치 (z-index 부여) */
-        .main-title {
-            position: relative;
-            z-index: 3;
-            font-size: 3.5rem;
-            font-weight: 700;
-            letter-spacing: 5px;
-            margin-bottom: 15px;
-            color: #f5f0e6;
-            text-shadow: 
-                3px 3px 0px #700000, 
-                -1px -1px 0px #700000, 
-                1px -1px 0px #700000, 
-                -1px 1px 0px #700000,
-                0 0 35px rgba(255, 50, 50, 0.7);
-            text-transform: uppercase;
-            animation: title-glow 3s infinite alternate ease-in-out;
-        }
-
-        /* 소제목 영역 */
-        .sub-title {
-            position: relative;
-            z-index: 3;
-            font-size: 1.15rem;
-            font-weight: 400;
-            color: #b5b5c2;
-            letter-spacing: 1px;
-            line-height: 1.6;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
-            padding: 0 15px;
-        }
-
-        /* 성배 래퍼 (오라만 일렁이도록 설정) */
+        /* 성배 이미지 래퍼 */
         .holy-grail-wrapper {
             position: relative;
             display: flex;
@@ -87,11 +62,9 @@
             padding: 20px;
             background: transparent !important;
             margin-bottom: 25px;
-            z-index: 1;
-            animation: pulse-aura 4s infinite ease-in-out;
         }
 
-        /* 성배 본체 (위아래로 아주 살짝씩만 움직이도록 미세한 애니메이션 적용) */
+        /* 성배 본체 (위아래로 아주 살짝씩만 부유) */
         .holy-grail-img {
             width: 180px;
             max-width: 100%;
@@ -100,6 +73,37 @@
             border: none !important;
             box-shadow: none !important;
             animation: grail-gentle-float 3s infinite ease-in-out;
+            /* 성배 자체의 영롱한 빛 */
+            filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+        }
+
+        /* 본제목: 제일 위로 올라오며, 배경 오라의 간섭을 받지 않음 */
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+            /* 제목 고유의 색상 (금색/진홍색 테두리) */
+            color: #f5f0e6;
+            text-shadow: 
+                3px 3px 0px #700000, 
+                -1px -1px 0px #700000, 
+                1px -1px 0px #700000, 
+                -1px 1px 0px #700000,
+                0 0 35px rgba(255, 50, 50, 0.7);
+            text-transform: uppercase;
+            /* 제목은 고정된 불변의 빛을 유지 */
+        }
+
+        /* 소제목 */
+        .sub-title {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #b5b5c2;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95);
+            padding: 0 15px;
         }
 
         /* 화면 맨 오른쪽 아래 워터마크 */
@@ -110,7 +114,7 @@
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.25);
             letter-spacing: 1.5px;
-            z-index: 10;
+            z-index: 20; /* 최상위 */
             pointer-events: none;
         }
 
@@ -118,64 +122,38 @@
 
         /* 성배 본체가 위아래로 아주 살짝만 움직이는 효과 */
         @keyframes grail-gentle-float {
-            0% {
+            0%, 100% {
                 transform: translateY(0);
-                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 40px rgba(200, 20, 40, 0.8));
             }
             50% {
                 transform: translateY(-4px);
-                filter: drop-shadow(0 0 25px rgba(255, 230, 100, 0.8)) drop-shadow(0 0 50px rgba(255, 40, 60, 0.9));
-            }
-            100% {
-                transform: translateY(0);
-                filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.7)) drop-shadow(0 0 40px rgba(200, 20, 40, 0.8));
             }
         }
 
-        /* 성배 주변 오라의 일렁임 효과 */
+        /* 배경 마력 오라의 맥동 효과 */
         @keyframes pulse-aura {
             0% {
+                opacity: 0.5;
                 transform: scale(0.98);
-                opacity: 0.9;
             }
-            50% {
-                transform: scale(1.02);
+            100% {
                 opacity: 1;
-            }
-            100% {
-                transform: scale(0.98);
-                opacity: 0.9;
-            }
-        }
-
-        /* 타이틀 광채 효과 */
-        @keyframes title-glow {
-            0% {
-                text-shadow: 
-                    3px 3px 0px #700000, 
-                    -1px -1px 0px #700000, 
-                    1px -1px 0px #700000, 
-                    -1px 1px 0px #700000,
-                    0 0 25px rgba(255, 50, 50, 0.5);
-            }
-            100% {
-                text-shadow: 
-                    3px 3px 0px #700000, 
-                    -1px -1px 0px #700000, 
-                    1px -1px 0px #700000, 
-                    -1px 1px 0px #700000,
-                    0 0 45px rgba(255, 80, 80, 0.9);
+                transform: scale(1.02);
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- 배경 마력 이펙트 레이어 (z-index: 1) -->
+    <div class="background-aura"></div>
+
+    <!-- 최상위 컨텐츠 레이어 (z-index: 10) -->
     <main class="content-container">
-        <!-- 본제목 (최상단 레이어) -->
+        <!-- 본제목 (제일 위로 고정) -->
         <h1 class="main-title">성배전쟁</h1>
 
-        <!-- 성배 및 오라 영역 -->
+        <!-- 성배 이미지 (미세하게 부유) -->
         <div class="holy-grail-wrapper">
             <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
         </div>
