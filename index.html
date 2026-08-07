@@ -74,7 +74,7 @@
         /* 신규개념 획득 토스트 알림 */
         #acquireToastContainer {
             position: absolute;
-            top: 30px;
+            top: 150px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 9999;
@@ -356,7 +356,7 @@
             pointer-events: auto;
         }
 
-        /* 전체 마인드맵 매트릭스 레이어 (포커스 이동 시 transform 적용) */
+        /* 전체 마인드맵 매트릭스 레이어 */
         .tree-matrix-world {
             position: absolute;
             top: 0;
@@ -382,7 +382,7 @@
             fill: none;
             filter: drop-shadow(0 0 10px rgba(139, 0, 0, 0.6));
             cursor: pointer;
-            pointer-events: stroke; /* 선 클릭 가능 */
+            pointer-events: stroke;
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
@@ -835,7 +835,7 @@
 
             let currentStage = 1;
             let currentActiveTabId = null;
-            let currentFocusedId = 'sung'; // 현재 화면 중앙에 포커스된 노드 ID
+            let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
 
             volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
@@ -843,7 +843,7 @@
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
-                if (moveSfx) moveSfx.volume = parseFloat(this.value);
+                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 2.5);
             });
             voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
 
@@ -937,7 +937,7 @@
                             wordSfx.currentTime = 0;
                             wordSfx.play().catch(()=>{});
                         }
-                        spawnAcquireToast(wordText = keyTarget.innerText.trim());
+                        spawnAcquireToast(keyTarget.innerText.trim());
                     }
                 }
             });
@@ -972,7 +972,6 @@
 
                 currentFocusedId = targetId;
 
-                // 화면 중앙(50vw, 50vh)에 대상 노드 좌표가 오도록 매트릭스 역산 이동
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
@@ -990,7 +989,7 @@
                 if (resetFocus) currentFocusedId = 'sung';
                 focusToNode(currentFocusedId);
 
-                // 1. 연결선 렌더링 먼저 수행 (노드 밑에 깔리도록)
+                // 1. 연결선 렌더링
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1030,11 +1029,10 @@
                         line.setAttribute('y2', cNode.y + '%');
                         line.setAttribute('stroke', `url(#${gradId})`);
 
-                        // ★ 선 클릭 시 포커스 슬라이드 연동 ★
                         line.onclick = () => {
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
-                                moveSfx.volume = parseFloat(seSlider.value);
+                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
                                 moveSfx.currentTime = 0;
                                 moveSfx.play().catch(()=>{});
                             }
@@ -1060,18 +1058,15 @@
                     btn.style.fontSize = '4.5rem';
                     btn.innerText = nodeInfo.name;
                     
-                    // ★ `(이름) 탭 선택 버튼` 클릭 제어 아키텍처 ★
                     btn.onclick = () => {
                         if (currentFocusedId !== id) {
-                            // 현재 정중앙에 포커스되지 않은 경우 -> 해당 버튼을 정중앙으로 슬라이드 이동
                             if (moveSfx) {
-                                moveSfx.volume = parseFloat(seSlider.value);
+                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
                                 moveSfx.currentTime = 0;
                                 moveSfx.play().catch(()=>{});
                             }
                             focusToNode(id);
                         } else {
-                            // 이미 정중앙에 포커스된 경우 -> 해당 탭 상세 뷰로 페이드인 진입
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
                                 pstSfx.volume = parseFloat(seSlider.value);
@@ -1115,7 +1110,7 @@
                 }, 250);
 
                 setTimeout(() => {
-                    renderTreeGrid(true); // 최초 진입 시 성배가 정중앙에 오도록 포커스 리셋
+                    renderTreeGrid(true); 
                     treeSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
@@ -1156,7 +1151,7 @@
                             pressStartWrapper.style.pointerEvents = 'auto';
                         }
                         currentActiveTabId = null;
-                    }, 600);
+                    }, 600); 
 
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
@@ -1198,7 +1193,7 @@
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
-                if (moveSfx) moveSfx.volume = parseFloat(seSlider.value);
+                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
