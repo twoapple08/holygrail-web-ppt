@@ -46,7 +46,7 @@
             opacity: 1;
         }
 
-        /* 화면 아래 붉은 먼지/안개 이펙트 (처음엔 연하게, 배경 완료 후 적정 농도 도달) */
+        /* 화면 아래 붉은 먼지/안개 이펙트 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -58,7 +58,7 @@
             pointer-events: none;
             opacity: 0;
             will-change: opacity;
-            transition: opacity 1.8s ease-in-out; /* 부드럽고 느린 페이드인 */
+            transition: opacity 1.8s ease-in-out;
         }
 
         /* 붉은 안개 활성화 시 은은한 상승 및 루프 동기화 */
@@ -230,7 +230,6 @@
             }
         }
 
-        /* 배경 조화용 부드러운 안개 루프 */
         @keyframes dust-fade-soft {
             0% { opacity: 0.5; }
             100% { opacity: 0.75; }
@@ -243,6 +242,8 @@
     </style>
 </head>
 <body>
+
+    <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
 
     <div class="main-background-layer" id="bgLayer"></div>
 
@@ -266,6 +267,7 @@
 
     <script>
         document.getElementById('startBtn').addEventListener('click', function() {
+            const bgm = document.getElementById('bgm');
             const btnContainer = document.getElementById('btnContainer');
             const bgLayer = document.getElementById('bgLayer');
             const dustEffect = document.getElementById('dustEffect');
@@ -274,15 +276,22 @@
             const subTitle = document.getElementById('subTitle');
             const watermark = document.getElementById('watermark');
 
+            // 0. BGM 재생 (클릭 시 즉시 시작)
+            if (bgm) {
+                bgm.play().catch(error => {
+                    console.log("BGM 재생 예외 발생:", error);
+                });
+            }
+
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. 배경 이미지 페이드인 (배경이 먼저 부드럽게 깔림)
+            // 2. 배경 이미지 페이드인
             setTimeout(() => {
                 bgLayer.classList.add('active');
             }, 300);
 
-            // 3. 은은한 붉은 안개 이펙트가 자연스럽게 차오름
+            // 3. 은은한 붉은 안개 이펙트 자연스럽게 연출
             setTimeout(() => {
                 dustEffect.classList.add('active');
             }, 500);
