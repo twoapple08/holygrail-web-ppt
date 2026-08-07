@@ -66,6 +66,35 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
+        /* --- 상단 아이템 획득 드롭다운 알림 팝업 --- */
+        .word-acquire-toast {
+            position: absolute;
+            top: -80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(20, 0, 0, 0.9);
+            border: 2px solid #b30000;
+            border-radius: 6px;
+            padding: 12px 32px;
+            box-shadow: 0 0 20px rgba(255, 30, 30, 0.8), inset 0 0 10px rgba(100, 0, 0, 0.6);
+            color: #fffdfa;
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center;
+            user-select: none;
+            pointer-events: none;
+            opacity: 0;
+            transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease-in-out;
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+        }
+
+        .word-acquire-toast.show {
+            top: 40px;
+            opacity: 1;
+        }
+
         /* --- 0. 최초 접속 화면 우측 하단 전체화면 안내 문구 --- */
         .initial-notice-right {
             position: absolute;
@@ -456,7 +485,6 @@
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
         }
 
-        /* 클릭 완료 후 주변 글자와 동일해진 비활성화 스타일 */
         .interactive-keyword.clicked {
             color: #d0c5b5 !important;
             font-weight: 400 !important;
@@ -632,9 +660,13 @@
 </head>
 <body>
 
-    <!-- BGM & SFX 레이어 -->
+    <!-- 상단 단어 획득 알림 토스트 팝업 레이어 -->
+    <div class="word-acquire-toast" id="acquireToast"></div>
+
+    <!-- BGM & SFX 레이어 (sfx/ 폴더 경로 지정) -->
     <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
-    <audio id="pstSfx" src="pst.mp3" preload="auto"></audio>
+    <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
+    <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
 
     <!-- 메인 배경 & 안개 -->
@@ -688,7 +720,6 @@
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
                 <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <!-- 수정된 텍스트 및 최초 등장 키워드 노란색 하이라이트 구역 -->
                 <p style="margin-top: 10px;">
                     성배가 7명의 <span class="interactive-keyword" data-key="magician">마술사</span>를 <span class="interactive-keyword" data-key="master">마스터</span>로 지정해<br>
                     <span class="interactive-keyword" data-key="reiju">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant">서번트</span> 소환 자격을 얻고<br>
@@ -725,7 +756,9 @@
     <script>
         const bgm = document.getElementById('bgm');
         const pstSfx = document.getElementById('pstSfx');
+        const wordSfx = document.getElementById('wordSfx');
         const kotomineSfx = document.getElementById('kotomineSfx');
+
         const volumeSlider = document.getElementById('volumeSlider');
         const seSlider = document.getElementById('seSlider');
         const voiceSlider = document.getElementById('voiceSlider');
@@ -735,6 +768,7 @@
         const centerGrailBtn = document.getElementById('centerGrailBtn');
         const backBtn = document.getElementById('backBtn');
         const kotomineTrigger = document.getElementById('kotomineTrigger');
+        const acquireToast = document.getElementById('acquireToast');
 
         const initialNotice = document.getElementById('initialNotice');
         const grailWrapper = document.getElementById('grailWrapper');
@@ -748,14 +782,16 @@
         const backBtnWrapper = document.getElementById('backBtnWrapper');
 
         let currentStage = 1;
+        let toastTimeout = null;
 
-        // BGM, SFX, VOICE 볼륨 연동
+        // 볼륨 연동
         volumeSlider.addEventListener('input', function() {
             if (bgm) bgm.volume = parseFloat(this.value);
         });
 
         seSlider.addEventListener('input', function() {
             if (pstSfx) pstSfx.volume = parseFloat(this.value);
+            if (wordSfx) wordSfx.volume = parseFloat(this.value);
         });
 
         voiceSlider.addEventListener('input', function() {
@@ -769,7 +805,7 @@
             }
         });
 
-        // 1. 코토미네 보이스 4.4초 자동 정지 제어
+        // 코토미네 보이스 4.4초 자동 정지 제어
         if (kotomineSfx) {
             kotomineSfx.addEventListener('timeupdate', function() {
                 if (this.currentTime >= 4.4) {
@@ -787,13 +823,24 @@
             }
         });
 
-        // 2. 키워드 클릭 상태 관리 (localStorage 기반 영구 비활성화)
+        // 단어 획득 알림 모션 함수
+        function showAcquireToast(wordText) {
+            acquireToast.innerText = `${wordText}를 획득했습니다.`;
+            acquireToast.classList.add('show');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            toastTimeout = setTimeout(() => {
+                acquireToast.classList.remove('show');
+            }, 2500);
+        }
+
+        // 키워드 클릭 상태 관리 & sfx/sfx-word.mp3 재생 및 상단 토스트 모션
         const keywords = document.querySelectorAll('.interactive-keyword');
         
         keywords.forEach(el => {
             const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
             
-            // 페이지 로드 시 기존 클릭 이력이 있으면 비활성화 상태로 고정
             if (localStorage.getItem(key) === 'true') {
                 el.classList.add('clicked');
             }
@@ -801,7 +848,17 @@
             el.addEventListener('click', function() {
                 if (!this.classList.contains('clicked')) {
                     this.classList.add('clicked');
-                    localStorage.setItem(key, 'true'); // 클릭 상태 저장하여 영구 클릭 불가
+                    localStorage.setItem(key, 'true');
+
+                    // 1. 단어 획득 효과음 재생
+                    if (wordSfx) {
+                        wordSfx.volume = parseFloat(seSlider.value);
+                        wordSfx.currentTime = 0;
+                        wordSfx.play().catch(e => console.log(e));
+                    }
+
+                    // 2. 상단 드롭다운 알림 팝업 출현
+                    showAcquireToast(this.innerText.trim());
                 }
             });
         });
@@ -900,6 +957,7 @@
             }
 
             if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
+            if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
             if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
 
             setTimeout(() => bgLayer.classList.add('active'), 300);
