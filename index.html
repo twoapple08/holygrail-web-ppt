@@ -124,10 +124,10 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 --- */
+        /* --- 어록 속성 (기본 밝기를 살짝 낮춤) --- */
         .description-quote {
             font-style: italic;
-            color: rgba(235, 225, 210, 0.9);
+            color: rgba(200, 190, 175, 0.75);
             display: inline-block;
             cursor: pointer;
             user-select: none;
@@ -147,8 +147,8 @@
         }
 
         @keyframes quote-gentle-glow {
-            0% { text-shadow: 0 0 4px rgba(255, 255, 255, 0.3); }
-            100% { text-shadow: 0 0 14px rgba(255, 255, 255, 0.8), 0 0 22px rgba(255, 255, 255, 0.5); }
+            0% { text-shadow: 0 0 3px rgba(200, 190, 175, 0.2); }
+            100% { text-shadow: 0 0 10px rgba(220, 210, 195, 0.5), 0 0 16px rgba(200, 190, 175, 0.3); }
         }
 
         /* --- 1. [시작하기] UI 컨테이너 (시작하기 창 버튼 & 참고 사항 그룹화) --- */
