@@ -124,7 +124,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (완벽히 복원된 일렁이는 흰색 글로우) --- */
+        /* --- 어록 속성 --- */
         .description-quote {
             font-style: italic;
             color: rgba(235, 225, 210, 0.9);
@@ -377,15 +377,15 @@
             flex-wrap: nowrap;
         }
 
-        /* 탭 이동 모션 트랜지션 정의 */
+        /* 탭 이동 모션: 부드러운 위치/크기 트랜지션 보장 */
         .tab-item-wrapper {
             position: relative;
             display: inline-block;
-            transition: top 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                        left 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
-                        transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), 
+            transition: top 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        left 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
+                        transform 1.4s cubic-bezier(0.16, 1, 0.3, 1), 
                         opacity 0.8s ease-in-out, 
-                        filter 1.2s ease-in-out;
+                        filter 1.4s ease-in-out;
             will-change: top, left, transform, opacity;
         }
 
@@ -416,11 +416,15 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
+        /* 정확히 좌측 상단으로 부드럽게 미끄러지듯 이동하는 좌표 지정 */
         .tab-item-wrapper.move-top-left {
             position: fixed !important;
-            z-index: 35 !important;
-            pointer-events: none !important;
+            top: 7% !important;
+            left: 6% !important;
+            transform: translate(0, 0) scale(0.75) !important;
             filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
+            pointer-events: none !important;
+            z-index: 35 !important;
         }
 
         .tab-item-wrapper.fade-out-stay {
@@ -712,7 +716,6 @@
         <div class="detail-right-box">
             <h2 class="description-title">성배란?</h2>
             <div class="description-content">
-                <!-- 원본과 동일한 어록 영역 -->
                 <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                 <span class="description-quote-author">- 코토미네 키레이</span>
 
@@ -955,7 +958,7 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            // ★ 탭 선택 시 부드러운 트랜지션 모션 보장 (좌측 상단 7vh, 6vw로 스르륵 이동) ★
+            // ★ 자바스크립트 강제 좌표 측정 방식을 배제하고 CSS 클래스 기반의 정석적인 좌측 상단 트랜지션으로 전면 환원 ★
             function openTabDetailView(selectedId, selectedWrapper) {
                 history.pushState({ stage: 3, id: selectedId }, '', '');
 
@@ -966,23 +969,11 @@
 
                 currentActiveTabId = selectedId;
 
-                const rect = selectedWrapper.getBoundingClientRect();
-                selectedWrapper.style.position = 'fixed';
-                selectedWrapper.style.top = rect.top + 'px';
-                selectedWrapper.style.left = rect.left + 'px';
-                selectedWrapper.style.transform = 'none';
-                
-                // 브라우저가 위치를 인지하도록 강제 렌더링 유도
-                void selectedWrapper.offsetHeight;
-
-                selectedWrapper.classList.add('move-top-left');
-                selectedWrapper.style.top = '7vh';
-                selectedWrapper.style.left = '6vw';
-                selectedWrapper.style.transform = 'scale(0.75)';
-
                 const allWrappers = document.querySelectorAll('.tab-item-wrapper');
                 allWrappers.forEach(wrap => {
-                    if (wrap !== selectedWrapper) {
+                    if (wrap === selectedWrapper) {
+                        wrap.classList.add('move-top-left');
+                    } else {
                         wrap.classList.add('fade-out-stay');
                     }
                 });
@@ -1050,10 +1041,6 @@
                         allWrappers.forEach(wrap => {
                             wrap.classList.remove('move-top-left');
                             wrap.classList.remove('fade-out-stay');
-                            wrap.style.position = '';
-                            wrap.style.top = '';
-                            wrap.style.left = '';
-                            wrap.style.transform = '';
                         });
                         
                         if (targetStage === 2) {
