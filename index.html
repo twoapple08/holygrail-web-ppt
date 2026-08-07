@@ -109,20 +109,22 @@
             pointer-events: none;
         }
 
-        /* 컨텐츠 컨테이너 (성배 및 타이틀) */
+        /* 컨텐츠 컨테이너 (성배 및 타이틀 정밀 Y축 정렬) */
         .content-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             text-align: center;
             width: 100%;
             max-width: 700px;
-            padding: 40px 20px;
+            padding: 0 20px;
             position: relative;
             z-index: 10;
             background: transparent;
             margin: 0 auto;
             pointer-events: none;
+            transform: translateY(-10px); /* 화면 전체 정중앙 수직 축 맞춤 */
         }
 
         /* 성배 이미지 래퍼 */
@@ -131,9 +133,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
             background: transparent !important;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             opacity: 0;
         }
 
@@ -142,7 +144,7 @@
         }
 
         .holy-grail-img {
-            width: 180px;
+            width: 170px;
             max-width: 100%;
             height: auto;
             background-color: transparent !important;
@@ -279,14 +281,14 @@
             // 1. 시작 버튼 사라짐
             btnContainer.classList.add('hide');
 
-            // 2. BGM 재생 설정: 음량 80%(0.8) 설정 및 2초(2000ms) 지연 재생
+            // 2. BGM 재생 설정: 음량 70%(0.7) 설정 및 1.3초(1300ms) 지연 재생
             if (bgm) {
-                bgm.volume = 0.8; // 볼륨 80% 지정
+                bgm.volume = 0.7; // 볼륨 70% 설정
                 setTimeout(() => {
                     bgm.play().catch(error => {
                         console.log("BGM 재생 예외 발생:", error);
                     });
-                }, 2000);
+                }, 1300);
             }
 
             // 3. 배경 이미지 페이드인
