@@ -843,7 +843,7 @@
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
-                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 2.5);
+                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
             voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
 
@@ -1032,7 +1032,7 @@
                         line.onclick = () => {
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
-                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
+                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                                 moveSfx.currentTime = 0;
                                 moveSfx.play().catch(()=>{});
                             }
@@ -1061,7 +1061,7 @@
                     btn.onclick = () => {
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
-                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
+                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                                 moveSfx.currentTime = 0;
                                 moveSfx.play().catch(()=>{});
                             }
@@ -1193,7 +1193,7 @@
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
-                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 2.5);
+                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
