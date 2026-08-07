@@ -369,7 +369,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 탭 (포인터 이벤트 차단 해제 보완) --- */
+        /* --- 4. Stage 2: 중앙 클릭 가능 인터랙션 탭 --- */
         .center-tab-group-container {
             position: absolute;
             top: 0;
@@ -757,7 +757,7 @@
 
     <!-- 2단계: 중앙 인터랙션 탭 그룹 -->
     <div class="center-tab-group-container" id="centerTabGroup">
-        <!-- 기본 성배 탭 -->
+        <!-- 기본 성배 탭 (sungbae 고유번호 소지) -->
         <div class="tab-item-wrapper" id="tabWrapper_grail">
             <button class="center-grail-btn" id="tabBtn_grail">성배</button>
         </div>
@@ -831,12 +831,15 @@
                              (performance.navigation && performance.navigation.type === 1);
             
             if (isReload) {
-                const keysToRemove = ['sung'];
+                const keysToRemove = ['sung', 'sungbae'];
                 keysToRemove.forEach(k => sessionStorage.removeItem('fate_kw_clicked_' + k));
             }
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
+            // 접속 시 성배(sungbae) 고유번호 기본 소지 설정 (알림 없이 세션 등록)
+            sessionStorage.setItem('fate_kw_clicked_sungbae', 'true');
+
             const bgm = document.getElementById('bgm');
             const pstSfx = document.getElementById('pstSfx');
             const wordSfx = document.getElementById('wordSfx');
