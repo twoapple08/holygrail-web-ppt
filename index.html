@@ -66,33 +66,29 @@
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        /* --- 상단 아이템 획득 드롭다운 알림 팝업 --- */
+        /* --- 수정된 하단 중앙 흰색 텍스트 획득 알림 모션 --- */
         .word-acquire-toast {
             position: absolute;
-            top: -80px;
+            bottom: 20%; /* 기존보다 아래로 위치 조정 */
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) translateY(30px); /* 아래에서 시작 */
             z-index: 100;
-            background: rgba(20, 0, 0, 0.9);
-            border: 2px solid #b30000;
-            border-radius: 6px;
-            padding: 12px 32px;
-            box-shadow: 0 0 20px rgba(255, 30, 30, 0.8), inset 0 0 10px rgba(100, 0, 0, 0.6);
-            color: #fffdfa;
-            font-size: 1.2rem;
+            color: #ffffff; /* 흰색 텍스트만 */
+            font-size: 1.4rem; /* 더 크게 */
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-align: center;
             user-select: none;
             pointer-events: none;
-            opacity: 0;
-            transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease-in-out;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+            opacity: 0; /* 투명하게 시작 */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.5);
+            /* 아래에서 위로, 페이드 인/아웃 복합 모션 */
+            transition: opacity 0.8s ease-in-out, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .word-acquire-toast.show {
-            top: 40px;
             opacity: 1;
+            transform: translateX(-50%) translateY(0); /* 제자리로 */
         }
 
         /* --- 0. 최초 접속 화면 우측 하단 전체화면 안내 문구 --- */
@@ -123,6 +119,7 @@
             align-items: center;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
             transform: translateX(2px);
+            flex-direction: column;
         }
 
         .fate-start-btn {
@@ -155,6 +152,37 @@
             opacity: 0;
             transform: translateX(2px) scale(0.9);
             pointer-events: none;
+        }
+
+        /* 습득한 단어 동적 추가 컨테이너 (메인 화면 하단) */
+        .acquired-words-container {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .acquired-word-item {
+            font-family: 'Song Myung', serif;
+            font-size: 1.3rem;
+            color: #f5f0e6;
+            background: rgba(30, 0, 0, 0.6);
+            border: 1px solid #700000;
+            padding: 12px 30px;
+            letter-spacing: 3px;
+            cursor: default;
+            user-select: none;
+            text-shadow: 0 0 5px rgba(255, 100, 100, 0.5);
+            transition: color 0.5s ease, border-color 0.5s ease;
+        }
+
+        /* 모든 단어 획득 시 회색빛으로 변하는 상태 */
+        .acquired-word-item.all-acquired {
+            color: #808080 !important; /* 회색빛 */
+            border-color: #444444 !important;
+            text-shadow: none !important;
         }
 
         /* --- 2. 타이틀 컨텐츠 컨테이너 --- */
@@ -297,682 +325,4 @@
             z-index: 20;
             max-width: 500px;
             font-size: 1.05rem;
-            color: rgba(230, 220, 205, 0.65);
-            letter-spacing: 1px;
-            line-height: 1.45;
-            user-select: none;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.6);
-            opacity: 0;
-            pointer-events: none;
-            word-break: keep-all;
-        }
-
-        .intro-notice-left.animate {
-            animation: fade-in 1.2s ease-out forwards;
-        }
-
-        .intro-notice-left.slow-fade-out {
-            animation: pure-fade-out 1.2s ease-out forwards !important;
-        }
-
-        /* --- 4. 다음 페이지: 중앙 [성배] 클릭 가능 대형 텍스트 --- */
-        .center-grail-text-container {
-            position: absolute;
-            z-index: 30;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.0s ease-out, top 1.0s ease-in-out, left 1.0s ease-in-out, transform 1.0s ease-in-out, filter 1.0s ease-in-out;
-        }
-
-        .center-grail-text-container.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .center-grail-btn {
-            font-family: 'Song Myung', serif;
-            font-size: 4.5rem;
-            font-weight: 700;
-            color: #fffdfa;
-            letter-spacing: 12px;
-            background: transparent;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            user-select: none;
-            text-shadow: 
-                3px 3px 0px #700000, 
-                -1px -1px 0px #700000, 
-                1px -1px 0px #700000, 
-                -1px 1px 0px #700000,
-                0 0 40px rgba(255, 215, 0, 0.8);
-            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        .center-grail-btn:hover {
-            color: #ffffff;
-            transform: scale(1.08);
-            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-
-        .center-grail-text-container.move-top-left {
-            top: 7%;
-            left: 6%;
-            transform: translate(0, 0) scale(0.75);
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
-            pointer-events: none;
-        }
-
-        /* --- 5. 상세 페이지: 좌측 성배 대형 이미지 & 우측 설명 상자 --- */
-        .grail-detail-view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 25;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding-left: 18%;
-            gap: 16%;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 1.0s ease-in-out;
-        }
-
-        .grail-detail-view.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .detail-grail-left {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .detail-grail-img {
-            width: 280px;
-            max-width: 100%;
-            height: auto;
-            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7));
-            animation: grail-gentle-float 3.5s infinite ease-in-out;
-        }
-
-        .grail-sub-label {
-            margin-top: 15px;
-            font-size: 0.95rem;
-            font-weight: 400;
-            color: rgba(215, 205, 190, 0.65);
-            letter-spacing: 2px;
-            user-select: none;
-            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
-        }
-
-        .detail-description-right {
-            flex: 1;
-            max-width: 650px;
-            background: rgba(15, 0, 0, 0.75);
-            border: 2px solid rgba(160, 0, 0, 0.8);
-            border-radius: 8px;
-            padding: 40px 35px;
-            box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-        }
-
-        .description-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #f5f0e6;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(180, 0, 0, 0.6);
-            padding-bottom: 10px;
-            text-shadow: 0 0 10px rgba(255, 50, 50, 0.6);
-        }
-
-        .description-content {
-            font-size: 1.43rem;
-            line-height: 1.85;
-            color: #d0c5b5;
-            letter-spacing: 1px;
-            word-break: keep-all;
-        }
-
-        .description-quote {
-            font-style: italic;
-            color: rgba(235, 225, 210, 0.9);
-            display: inline-block;
-            cursor: pointer;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
-            user-select: none;
-        }
-
-        .description-quote:hover {
-            color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 8px rgba(255, 255, 255, 0.8);
-            transform: scale(1.02);
-        }
-
-        .description-quote-author {
-            font-style: normal;
-            font-size: 1.15rem;
-            color: #a08a75;
-            display: block;
-            margin-top: 4px;
-            margin-bottom: 16px;
-            text-align: right;
-            user-select: none;
-        }
-
-        /* 클릭 가능한 노란색 하이라이트 키워드 스타일 */
-        .interactive-keyword {
-            color: #ffd700;
-            font-weight: 700;
-            cursor: pointer;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-            user-select: none;
-        }
-
-        .interactive-keyword:hover {
-            color: #ffffff;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
-        }
-
-        .interactive-keyword.clicked {
-            color: #d0c5b5 !important;
-            font-weight: 400 !important;
-            cursor: default !important;
-            text-shadow: none !important;
-            pointer-events: none !important;
-        }
-
-        /* --- 6. 화면 좌측 하단 (화살표)뒤로가기 버튼 --- */
-        .bottom-left-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 25px;
-            z-index: 40;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease-in-out;
-        }
-
-        .bottom-left-controls.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .fate-back-btn {
-            font-family: 'Song Myung', serif;
-            font-size: 1.0rem;
-            font-weight: 700;
-            color: #c0c0c8;
-            background: rgba(20, 0, 0, 0.6);
-            border: 1px solid rgba(160, 0, 0, 0.7);
-            padding: 8px 24px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            outline: none;
-            box-shadow: 0 0 10px rgba(100, 0, 0, 0.4);
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .fate-back-btn:hover {
-            color: #ffffff;
-            background: rgba(50, 0, 0, 0.8);
-            border-color: #ff4444;
-            box-shadow: 0 0 18px rgba(255, 50, 50, 0.7);
-            transform: scale(1.03);
-        }
-
-        /* --- 7. 화면 우측 하단 레이아웃 (SFX/BGM/VOICE 슬라이더 + 워터마크) --- */
-        .bottom-right-controls {
-            position: absolute;
-            bottom: 20px;
-            right: 25px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            z-index: 40;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .bottom-right-controls.animate {
-            pointer-events: auto;
-            animation: fade-in 1.2s ease-out forwards;
-        }
-
-        .sound-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            background: rgba(15, 0, 0, 0.7);
-            border: 1px solid rgba(140, 0, 0, 0.8);
-            padding: 8px 12px;
-            border-radius: 4px;
-            box-shadow: 0 0 12px rgba(80, 0, 0, 0.6);
-            backdrop-filter: blur(3px);
-        }
-
-        .volume-control-box {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .volume-label {
-            font-size: 0.75rem;
-            color: #d0c5b5;
-            letter-spacing: 1px;
-            font-weight: 700;
-            user-select: none;
-            min-width: 40px;
-            text-align: left;
-        }
-
-        .volume-slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 80px;
-            height: 4px;
-            background: rgba(80, 10, 10, 0.8);
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #ff3333;
-            border: 1px solid #ffffff;
-            box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
-            cursor: pointer;
-            transition: transform 0.1s ease;
-        }
-
-        .volume-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.25);
-            background: #ff6666;
-        }
-
-        .watermark {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 1.5px;
-            user-select: none;
-            margin-top: 2px;
-        }
-
-        /* --- 키프레임 애니메이션 정의 --- */
-
-        @keyframes pure-fade-out {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-
-        @keyframes simple-flash-fade {
-            0% { opacity: 1; filter: brightness(1); color: #ffffff; }
-            30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
-            100% { opacity: 0; filter: brightness(8); color: #ffffff; transform: translateX(2px) scale(0.95); }
-        }
-
-        @keyframes slow-blink-loop {
-            0% { opacity: 0.2; }
-            50% { opacity: 0.85; }
-            100% { opacity: 0.2; }
-        }
-
-        @keyframes grail-smooth-fadein {
-            0% { opacity: 0; transform: scale(0.96); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        @keyframes grail-gentle-float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
-        }
-
-        @keyframes dust-fade-soft {
-            0% { opacity: 0.5; }
-            100% { opacity: 0.75; }
-        }
-
-        @keyframes fade-in {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- 상단 단어 획득 알림 토스트 팝업 레이어 -->
-    <div class="word-acquire-toast" id="acquireToast"></div>
-
-    <!-- BGM & SFX 레이어 (sfx/ 폴더 경로 지정) -->
-    <audio id="bgm" src="main-theme.mp3" loop preload="auto"></audio>
-    <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
-    <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
-    <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
-
-    <!-- 메인 배경 & 안개 -->
-    <div class="main-background-layer" id="bgLayer"></div>
-    <div class="red-dust-effect" id="dustEffect"></div>
-
-    <!-- 0단계: 최초 접속 화면 우측 하단 전체화면 안내 문구 구역 -->
-    <div class="initial-notice-right" id="initialNotice">
-        ※이 사이트는 컴퓨터 전체화면을 기준으로 제작되었습니다.
-    </div>
-
-    <!-- 1단계: [시작하기] UI 버튼 -->
-    <div class="start-btn-container" id="btnContainer">
-        <button class="fate-start-btn" id="startBtn">시작하기</button>
-    </div>
-
-    <!-- 1단계 메인 타이틀 컨텐츠 -->
-    <main class="content-container">
-        <div class="holy-grail-wrapper" id="grailWrapper">
-            <img src="holygrail.png" alt="Holy Grail" class="holy-grail-img">
-        </div>
-
-        <h1 class="main-title" id="mainTitle">성배전쟁</h1>
-        <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
-
-        <div class="press-start-wrapper" id="pressStartWrapper">
-            <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
-        </div>
-    </main>
-
-    <!-- 메인 화면 좌측 하단 유입자 안내 문구 구역 -->
-    <div class="intro-notice-left" id="introNotice">
-        ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
-    </div>
-
-    <!-- 2단계: 중앙 클릭 가능한 대형 [성배] 텍스트 -->
-    <div class="center-grail-text-container" id="centerGrailWrapper">
-        <button class="center-grail-btn" id="centerGrailBtn">성배</button>
-    </div>
-
-    <!-- 3단계: 상세뷰 (좌측 대형 성배 이미지 & 우측 설명 상자) -->
-    <section class="grail-detail-view" id="grailDetailView">
-        <div class="detail-grail-left">
-            <img src="holygrail.png" alt="Holy Grail Detail" class="detail-grail-img">
-            <span class="grail-sub-label">소(小)성배</span>
-        </div>
-        <div class="detail-description-right">
-            <h2 class="description-title">어떤 소원이라도 이루어주는 원망기(願望器)</h2>
-            <div class="description-content">
-                <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
-                <span class="description-quote-author">- 코토미네 키레이</span>
-
-                <p>성배란 성배전쟁이 일어나기 위한 촉매이다.</p>
-                <p style="margin-top: 10px;">
-                    성배가 7명의 <span class="interactive-keyword" data-key="magician">마술사</span>를 <span class="interactive-keyword" data-key="master">마스터</span>로 지정해<br>
-                    <span class="interactive-keyword" data-key="reiju">령주(令呪)</span>를 부여함과 동시에 <span class="interactive-keyword" data-key="servant">서번트</span> 소환 자격을 얻고<br>
-                    7명의 마술사가 모두 서번트 소환에 성공하면 성배전쟁은 시작된다.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 화면 좌측 하단 (화살표)뒤로가기 버튼 -->
-    <div class="bottom-left-controls" id="backBtnWrapper">
-        <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
-    </div>
-
-    <!-- 화면 우측 하단 컨트롤러 -->
-    <div class="bottom-right-controls" id="controlsGroup">
-        <div class="sound-panel">
-            <div class="volume-control-box">
-                <span class="volume-label">SFX</span>
-                <input type="range" id="seSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
-            </div>
-            <div class="volume-control-box">
-                <span class="volume-label">BGM</span>
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
-            </div>
-            <div class="volume-control-box">
-                <span class="volume-label">VOICE</span>
-                <input type="range" id="voiceSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.3">
-            </div>
-        </div>
-        <footer class="watermark">Made by 사과사과</footer>
-    </div>
-
-    <script>
-        const bgm = document.getElementById('bgm');
-        const pstSfx = document.getElementById('pstSfx');
-        const wordSfx = document.getElementById('wordSfx');
-        const kotomineSfx = document.getElementById('kotomineSfx');
-
-        const volumeSlider = document.getElementById('volumeSlider');
-        const seSlider = document.getElementById('seSlider');
-        const voiceSlider = document.getElementById('voiceSlider');
-
-        const startBtn = document.getElementById('startBtn');
-        const pressStartBtn = document.getElementById('pressStartBtn');
-        const centerGrailBtn = document.getElementById('centerGrailBtn');
-        const backBtn = document.getElementById('backBtn');
-        const kotomineTrigger = document.getElementById('kotomineTrigger');
-        const acquireToast = document.getElementById('acquireToast');
-
-        const initialNotice = document.getElementById('initialNotice');
-        const grailWrapper = document.getElementById('grailWrapper');
-        const mainTitle = document.getElementById('mainTitle');
-        const subTitle = document.getElementById('subTitle');
-        const pressStartWrapper = document.getElementById('pressStartWrapper');
-        const introNotice = document.getElementById('introNotice');
-
-        const centerGrailWrapper = document.getElementById('centerGrailWrapper');
-        const grailDetailView = document.getElementById('grailDetailView');
-        const backBtnWrapper = document.getElementById('backBtnWrapper');
-
-        let currentStage = 1;
-        let toastTimeout = null;
-
-        // 볼륨 연동
-        volumeSlider.addEventListener('input', function() {
-            if (bgm) bgm.volume = parseFloat(this.value);
-        });
-
-        seSlider.addEventListener('input', function() {
-            if (pstSfx) pstSfx.volume = parseFloat(this.value);
-            if (wordSfx) wordSfx.volume = parseFloat(this.value);
-        });
-
-        voiceSlider.addEventListener('input', function() {
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value);
-        });
-
-        seSlider.addEventListener('change', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-        });
-
-        // 코토미네 보이스 4.4초 자동 정지 제어
-        if (kotomineSfx) {
-            kotomineSfx.addEventListener('timeupdate', function() {
-                if (this.currentTime >= 4.4) {
-                    this.pause();
-                    this.currentTime = 0;
-                }
-            });
-        }
-
-        kotomineTrigger.addEventListener('click', function() {
-            if (kotomineSfx) {
-                kotomineSfx.volume = parseFloat(voiceSlider.value);
-                kotomineSfx.currentTime = 0;
-                kotomineSfx.play().catch(e => console.log("코토미네 음원 재생 예외 발생:", e));
-            }
-        });
-
-        // 단어 획득 알림 모션 함수
-        function showAcquireToast(wordText) {
-            acquireToast.innerText = `${wordText}를 획득했습니다.`;
-            acquireToast.classList.add('show');
-
-            if (toastTimeout) clearTimeout(toastTimeout);
-
-            toastTimeout = setTimeout(() => {
-                acquireToast.classList.remove('show');
-            }, 2500);
-        }
-
-        // 키워드 클릭 상태 관리 (sessionStorage 적용: 새로고침 시 초기화)
-        const keywords = document.querySelectorAll('.interactive-keyword');
-        
-        keywords.forEach(el => {
-            const key = 'fate_kw_clicked_' + el.getAttribute('data-key');
-            
-            if (sessionStorage.getItem(key) === 'true') {
-                el.classList.add('clicked');
-            }
-
-            el.addEventListener('click', function() {
-                if (!this.classList.contains('clicked')) {
-                    this.classList.add('clicked');
-                    sessionStorage.setItem(key, 'true');
-
-                    // 1. 단어 획득 효과음 재생
-                    if (wordSfx) {
-                        wordSfx.volume = parseFloat(seSlider.value);
-                        wordSfx.currentTime = 0;
-                        wordSfx.play().catch(e => console.log(e));
-                    }
-
-                    // 2. 상단 드롭다운 알림 팝업 출현
-                    showAcquireToast(this.innerText.trim());
-                }
-            });
-        });
-
-        pressStartBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.volume = parseFloat(seSlider.value);
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-
-            pressStartWrapper.classList.add('flash-exit');
-
-            setTimeout(() => {
-                grailWrapper.classList.add('slow-fade-out');
-                mainTitle.classList.add('slow-fade-out');
-                subTitle.classList.add('slow-fade-out');
-                introNotice.classList.add('slow-fade-out');
-            }, 250);
-
-            setTimeout(() => {
-                centerGrailWrapper.classList.add('show');
-                backBtnWrapper.classList.add('show');
-                currentStage = 2;
-            }, 1450);
-        });
-
-        centerGrailBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-
-            centerGrailWrapper.classList.add('move-top-left');
-
-            setTimeout(() => {
-                grailDetailView.classList.add('show');
-                currentStage = 3;
-            }, 300);
-        });
-
-        backBtn.addEventListener('click', function() {
-            if (pstSfx) {
-                pstSfx.currentTime = 0;
-                pstSfx.play().catch(e => console.log(e));
-            }
-
-            if (kotomineSfx) {
-                kotomineSfx.pause();
-                kotomineSfx.currentTime = 0;
-            }
-
-            if (currentStage === 3) {
-                grailDetailView.classList.remove('show');
-                setTimeout(() => {
-                    centerGrailWrapper.classList.remove('move-top-left');
-                    currentStage = 2;
-                }, 300);
-
-            } else if (currentStage === 2) {
-                centerGrailWrapper.classList.remove('show');
-                backBtnWrapper.classList.remove('show');
-
-                setTimeout(() => {
-                    grailWrapper.classList.remove('slow-fade-out');
-                    mainTitle.classList.remove('slow-fade-out');
-                    subTitle.classList.remove('slow-fade-out');
-                    introNotice.classList.remove('slow-fade-out');
-                }, 300);
-
-                setTimeout(() => {
-                    pressStartWrapper.classList.remove('flash-exit');
-                    pressStartWrapper.style.opacity = '0';
-                    void pressStartWrapper.offsetWidth;
-                    pressStartWrapper.style.opacity = '1';
-                    pressStartWrapper.style.pointerEvents = 'auto';
-                    currentStage = 1;
-                }, 800);
-            }
-        });
-
-        startBtn.addEventListener('click', function() {
-            const btnContainer = document.getElementById('btnContainer');
-            const bgLayer = document.getElementById('bgLayer');
-            const dustEffect = document.getElementById('dustEffect');
-            const controlsGroup = document.getElementById('controlsGroup');
-
-            btnContainer.classList.add('hide');
-            initialNotice.classList.add('hide');
-
-            if (bgm) {
-                bgm.volume = parseFloat(volumeSlider.value);
-                setTimeout(() => {
-                    bgm.play().catch(e => console.log(e));
-                }, 700);
-            }
-
-            if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
-            if (wordSfx) wordSfx.volume = parseFloat(seSlider.value);
-            if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
-
-            setTimeout(() => bgLayer.classList.add('active'), 300);
-            setTimeout(() => dustEffect.classList.add('active'), 500);
-            setTimeout(() => grailWrapper.classList.add('animate'), 1400);
-            setTimeout(() => mainTitle.classList.add('animate'), 2200);
-
-            setTimeout(() => {
-                subTitle.classList.add('animate');
-                introNotice.classList.add('animate');
-                controlsGroup.classList.add('animate');
-            }, 2800);
-
-            setTimeout(() => pressStartWrapper.classList.add('animate'), 3500);
-        });
-    </script>
-</body>
-</html>
+            color: rgba(230, 220, 205,
