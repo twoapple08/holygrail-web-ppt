@@ -208,9 +208,10 @@
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: opacity 0.6s ease-out;
             transform: translateX(2px);
             position: relative;
+            display: inline-block;
         }
 
         .press-start-wrapper.animate {
@@ -232,6 +233,8 @@
             outline: none;
             cursor: pointer;
             user-select: none;
+            position: relative;
+            z-index: 2;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
@@ -245,10 +248,27 @@
             transform: scale(1.08);
         }
 
-        /* --- 프투스 전용 강렬한 '파지직' 푸른 고전압 전격 소멸 클래스 --- */
-        .press-start-wrapper.electric-exit {
-            animation: intense-electric-crackle 0.45s ease-out forwards !important;
-            pointer-events: none !important;
+        /* --- 푸른 전깃줄 & 섬광 이펙트 전용 오버레이 --- */
+        .electric-spark-overlay {
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 140%;
+            height: 200%;
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0;
+            background: transparent;
+        }
+
+        /* 클릭 시 '파지직' 번개/전기 섬광 및 아크 오버레이 발동 */
+        .press-start-wrapper.active-spark .electric-spark-overlay {
+            animation: spark-burst-effect 0.45s ease-out forwards;
+        }
+
+        /* 전기가 튀고 난 후 프투스 사라짐 */
+        .press-start-wrapper.active-spark .press-start-btn {
+            animation: press-disappear 0.45s ease-out forwards !important;
         }
 
         /* --- 성배 및 제목 전용 후속 부드러운 페이드아웃 퇴장 클래스 --- */
@@ -340,56 +360,54 @@
 
         /* --- 키프레임 애니메이션 정의 --- */
 
-        /* 정밀 '파지직' 고주파 푸른 전격 스파크 키프레임 */
-        @keyframes intense-electric-crackle {
+        /* 푸른 번개 및 전기 아크 파지직 오버레이 이펙트 */
+        @keyframes spark-burst-effect {
             0% {
-                opacity: 1;
-                filter: brightness(1);
-                transform: translateX(2px) scale(1);
+                opacity: 0;
+                background: radial-gradient(ellipse at center, rgba(0, 225, 255, 0.9) 0%, rgba(0, 100, 255, 0.6) 30%, transparent 70%);
+                box-shadow: inset 0 0 15px #00ffff, 0 0 25px #00aaff;
             }
-            10% {
+            15% {
                 opacity: 1;
-                color: #ffffff;
-                filter: brightness(5) drop-shadow(0 0 10px #00ffff) drop-shadow(0 0 20px #0088ff);
-                transform: translate3d(-3px, 1px, 0) scale(1.15);
-            }
-            20% {
-                opacity: 0.4;
-                filter: brightness(2) drop-shadow(0 0 5px #00e1ff);
-                transform: translate3d(4px, -2px, 0) scale(0.95);
+                background: radial-gradient(ellipse at center, rgba(255, 255, 255, 1) 0%, rgba(0, 210, 255, 0.9) 40%, rgba(0, 50, 255, 0.4) 80%, transparent 100%);
+                box-shadow: 0 0 40px #ffffff, 0 0 80px #00d2ff, 0 0 120px #0044ff;
             }
             30% {
-                opacity: 1;
-                color: #e6ffff;
-                filter: brightness(8) drop-shadow(0 0 25px #ffffff) drop-shadow(0 0 45px #00d2ff) drop-shadow(0 0 60px #0033ff);
-                transform: translate3d(-5px, 2px, 0) scale(1.22);
+                opacity: 0.3;
+                background: radial-gradient(ellipse at center, rgba(0, 255, 255, 0.8) 0%, transparent 60%);
+                box-shadow: none;
             }
-            40% {
-                opacity: 0.2;
-                filter: brightness(1.5);
-                transform: translate3d(3px, 1px, 0) scale(1.02);
-            }
-            55% {
+            45% {
                 opacity: 1;
-                color: #ffffff;
-                filter: brightness(10) drop-shadow(0 0 30px #ffffff) drop-shadow(0 0 50px #00ffff);
-                transform: translate3d(-2px, -3px, 0) scale(1.18);
+                background: radial-gradient(ellipse at center, rgba(255, 255, 255, 1) 10%, rgba(0, 220, 255, 0.95) 50%, transparent 85%);
+                box-shadow: 0 0 50px #ffffff, 0 0 90px #00e1ff;
             }
             70% {
-                opacity: 0.6;
-                filter: brightness(3) drop-shadow(0 0 15px #0088ff);
-                transform: translate3d(4px, 2px, 0) scale(0.88);
-            }
-            85% {
-                opacity: 1;
-                color: #ffffff;
-                filter: brightness(12) drop-shadow(0 0 40px #ffffff) drop-shadow(0 0 70px #00d2ff);
-                transform: translate3d(-1px, 1px, 0) scale(1.05);
+                opacity: 0.8;
+                background: radial-gradient(ellipse at center, rgba(0, 210, 255, 0.8) 0%, transparent 70%);
             }
             100% {
                 opacity: 0;
-                filter: brightness(15) drop-shadow(0 0 50px #ffffff);
-                transform: translate3d(0, 0, 0) scale(0.5);
+                background: transparent;
+                box-shadow: none;
+            }
+        }
+
+        /* 전깃줄 터진 후 버튼 실체 소멸 키프레임 */
+        @keyframes press-disappear {
+            0% {
+                opacity: 1;
+                color: #ffffff;
+            }
+            45% {
+                opacity: 1;
+                color: #e0f7ff;
+                text-shadow: 0 0 25px #ffffff, 0 0 45px #00d2ff;
+            }
+            100% {
+                opacity: 0;
+                color: #transparent;
+                text-shadow: none;
             }
         }
 
@@ -465,8 +483,9 @@
 
         <p class="sub-title" id="subTitle">온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전</p>
 
-        <!-- 소제목 아래 위치한 회색 PRESS TO START 버튼 (페이드인 래퍼) -->
+        <!-- 소제목 아래 위치한 회색 PRESS TO START 버튼 (전기 이펙트 레이어 내장) -->
         <div class="press-start-wrapper" id="pressStartWrapper">
+            <div class="electric-spark-overlay"></div>
             <button class="press-start-btn" id="pressStartBtn">- PRESS TO START -</button>
         </div>
     </main>
@@ -499,9 +518,9 @@
             }
         });
 
-        // 프투스 클릭 시 연출: pst.mp3 재생 -> '파지직' 푸른 전격 소멸 -> 성배 및 제목 페이드아웃
+        // 프투스 클릭 시 연출: pst.mp3 재생 -> 푸른 전깃줄/섬광 이펙트 사방으로 폭발 -> 성배 및 제목 페이드아웃
         pressStartBtn.addEventListener('click', function() {
-            // 1. 클릭 효과음 즉시 재생
+            // 1. 효과음 출력
             if (pstSfx) {
                 pstSfx.currentTime = 0;
                 pstSfx.play().catch(error => {
@@ -509,10 +528,10 @@
                 });
             }
 
-            // 2. 프투스 버튼 전용 '파지직' 푸른 전격 소멸 이펙트 발동 (0.0초)
-            pressStartWrapper.classList.add('electric-exit');
+            // 2. 푸른 전기 섬광 오버레이 폭발 및 프투스 소멸 (0.0초)
+            pressStartWrapper.classList.add('active-spark');
 
-            // 3. 전격 소멸 연출 직후(0.4초 뒤) 성배 이미지 및 제목들 부드럽게 페이드아웃
+            // 3. 전극 소멸 직후(0.4초 뒤) 성배 이미지 및 제목들 페이드아웃
             setTimeout(() => {
                 grailWrapper.classList.add('fade-out-exit');
                 mainTitle.classList.add('fade-out-exit');
