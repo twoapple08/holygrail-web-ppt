@@ -127,7 +127,7 @@
             pointer-events: none !important;
         }
 
-        /* --- 어록 속성 (최상위 레이어 격리 및 터치/클릭 우선권 완벽 보정) --- */
+        /* --- 어록 속성 --- */
         .description-quote {
             font-style: italic;
             color: rgba(200, 190, 175, 0.75);
@@ -135,7 +135,7 @@
             cursor: pointer !important;
             pointer-events: auto !important;
             position: relative;
-            z-index: 10000 !important;
+            z-index: 1000;
             user-select: none;
             animation: quote-gentle-glow 2.5s infinite alternate ease-in-out;
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
@@ -350,7 +350,7 @@
             animation: pure-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 탭 선택창 --- */
+        /* --- 4. 마력 회로 전용 캔버스 레이아웃 --- */
         .tab-selection-container {
             position: absolute;
             z-index: 30;
@@ -360,13 +360,12 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 1.0s ease-in-out;
-            width: 90%;
-            max-width: 1400px;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 25px;
         }
 
         .tab-selection-container.show {
@@ -374,37 +373,81 @@
             pointer-events: auto;
         }
 
-        .tab-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 35px;
+        /* 마력 회로 SVG 오버레이 */
+        .magic-circuit-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            flex-wrap: nowrap;
+            height: 100%;
+            pointer-events: none;
+            z-index: 31;
         }
 
-        /* 페이드인 모션 클래스 */
-        .tab-item-wrapper {
-            position: relative;
-            display: inline-block;
+        .circuit-line {
+            stroke: #ff1a1a;
+            stroke-width: 3.5px;
+            fill: none;
+            stroke-dasharray: 400;
+            stroke-dashoffset: 400;
+            filter: drop-shadow(0 0 8px #ff0000) drop-shadow(0 0 15px rgba(255, 30, 30, 0.8));
+            transition: stroke-dashoffset 1.0s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .circuit-line.active {
+            stroke-dashoffset: 0;
+        }
+
+        /* 샤방 섬광 이펙트 */
+        .circuit-flash-glow {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 230, 120, 1) 0%, rgba(255, 50, 50, 0.8) 50%, transparent 80%);
+            box-shadow: 0 0 40px rgba(255, 220, 100, 1), 0 0 80px rgba(255, 30, 30, 0.9);
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 32;
+        }
+
+        .circuit-flash-glow.spark {
+            animation: flash-sparkle 0.8s ease-out forwards;
+        }
+
+        @keyframes flash-sparkle {
+            0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(2.2); opacity: 1; filter: brightness(2); }
+            100% { transform: translate(-50%, -50%) scale(1.0); opacity: 0; }
+        }
+
+        /* 개별 탭 배치 래퍼 */
+        .circuit-node-box {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 33;
+            transition: opacity 0.8s ease-in-out, transform 1.2s cubic-bezier(0.25, 1, 0.25, 1);
+        }
+
+        .circuit-node-box.hidden-node {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .circuit-node-box.summon-node {
             opacity: 1;
-            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.25, 1);
-        }
-
-        .tab-item-wrapper.prepare-fade-in {
-            opacity: 0 !important;
-        }
-
-        .tab-item-wrapper.fade-in-active {
-            opacity: 1 !important;
+            pointer-events: auto;
         }
 
         .tab-item-btn {
             font-family: 'Song Myung', serif;
-            font-size: 4.2rem;
+            font-size: 4.5rem;
             font-weight: 700;
             color: #fffdfa;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
             background: transparent;
             border: none;
             outline: none;
@@ -417,7 +460,7 @@
                 1px -1px 0px #700000, 
                 -1px 1px 0px #700000,
                 0 0 40px rgba(255, 215, 0, 0.8);
-            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease, font-size 0.3s ease;
+            transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
         .tab-item-btn:hover {
@@ -426,17 +469,7 @@
             text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
         }
 
-        .tab-item-wrapper.fade-out-stay {
-            opacity: 0 !important;
-            pointer-events: none !important;
-        }
-
-        .tab-item-wrapper.hidden-original {
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* --- 클론 비행 텍스트 스타일 --- */
+        /* 클론 비행 텍스트 스타일 */
         .ghost-tab-clone {
             position: fixed;
             z-index: 999;
@@ -444,7 +477,7 @@
             font-family: 'Song Myung', serif;
             font-weight: 700;
             color: #fffdfa;
-            letter-spacing: 8px;
+            letter-spacing: 12px;
             white-space: nowrap;
             text-shadow: 
                 3px 3px 0px #700000, 
@@ -457,8 +490,8 @@
                         left 1.3s cubic-bezier(0.25, 1, 0.25, 1), 
                         transform 1.3s cubic-bezier(0.25, 1, 0.25, 1),
                         filter 1.3s ease-in-out,
-                        opacity 0.8s ease-in-out;
-            will-change: top, left, transform, opacity;
+                        opacity 0.6s ease-in-out;
+            will-change: top, left, transform;
         }
 
         .ghost-tab-clone.move-to-target {
@@ -736,7 +769,13 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <div class="tab-selection-container" id="tabSelectionContainer"></div>
+    <div class="tab-selection-container" id="tabSelectionContainer">
+        <svg class="magic-circuit-svg" id="circuitSvg">
+            <path id="circuitPath" class="circuit-line" d="M 0 0 L 0 0"></path>
+        </svg>
+        <div id="flashGlow" class="circuit-flash-glow"></div>
+        <div id="circuitNodesBox"></div>
+    </div>
 
     <section class="tab-detail-view" id="tabDetail_sung">
         <div class="detail-left-box">
@@ -832,6 +871,9 @@
             const introNotice = document.getElementById('introNotice');
 
             const tabSelectionContainer = document.getElementById('tabSelectionContainer');
+            const circuitNodesBox = document.getElementById('circuitNodesBox');
+            const circuitPath = document.getElementById('circuitPath');
+            const flashGlow = document.getElementById('flashGlow');
             const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
@@ -858,7 +900,7 @@
                 });
             }
 
-            // ★ 어록 터치/클릭 재생 전용 최우선 독립 핸들러 ★
+            // ★ 어록 터치/클릭 우선 재생 핸들러 ★
             function handleKotomineVoicePlay(targetEl) {
                 if (!targetEl.classList.contains('glow-fade-out')) {
                     targetEl.classList.add('glow-fade-out');
@@ -866,11 +908,10 @@
                 if (kotomineSfx) {
                     kotomineSfx.volume = parseFloat(voiceSlider.value);
                     kotomineSfx.currentTime = 0;
-                    kotomineSfx.play().catch(err => console.log("보이스 재생 예외:", err));
+                    kotomineSfx.play().catch(err => console.log("보이스 재생 오류:", err));
                 }
             }
 
-            // pointerdown & click 이중 안전 수신
             ['pointerdown', 'click'].forEach(evtType => {
                 document.addEventListener(evtType, function(e) {
                     const quoteTarget = e.target.closest('#kotomineTrigger');
@@ -931,66 +972,54 @@
                 }, true);
             });
 
-            // 탭 선택창 렌더링 엔진
-            function renderTabSelectionWindow(isPrepareFadeIn = false) {
-                tabSelectionContainer.innerHTML = '';
+            // ★ 마력 회로 전용 캔버스 렌더링 ★
+            function renderCircuitCanvas() {
+                circuitNodesBox.innerHTML = '';
+                circuitPath.classList.remove('active');
+                
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-                
-                const possessedIds = [];
-                orderList.forEach(id => {
-                    if (sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id] && !possessedIds.includes(id)) {
-                        possessedIds.push(id);
+                const possessedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
+
+                const hasSungbwar = possessedIds.includes('sungbwar');
+
+                // 1. 성배 노드 생성 (중앙)
+                const sungBox = document.createElement('div');
+                sungBox.className = 'circuit-node-box';
+                sungBox.id = 'circuitNode_sung';
+                sungBox.style.top = hasSungbwar ? '35%' : '50%';
+                sungBox.style.left = '50%';
+                sungBox.style.transform = 'translate(-50%, -50%)';
+
+                const sungBtn = document.createElement('button');
+                sungBtn.className = 'tab-item-btn';
+                sungBtn.innerText = '성배';
+                sungBtn.addEventListener('click', () => openTabDetailView('sung', sungBox, sungBtn));
+
+                sungBox.appendChild(sungBtn);
+                circuitNodesBox.appendChild(sungBox);
+
+                // 2. 성배전쟁 노드 생성 (성배 아래)
+                if (hasSungbwar) {
+                    const warBox = document.createElement('div');
+                    warBox.className = 'circuit-node-box hidden-node';
+                    warBox.id = 'circuitNode_sungbwar';
+                    warBox.style.top = '65%';
+                    warBox.style.left = '50%';
+                    warBox.style.transform = 'translate(-50%, -50%)';
+
+                    const warBtn = document.createElement('button');
+                    warBtn.className = 'tab-item-btn';
+                    warBtn.style.fontSize = '3.5rem';
+                    warBtn.innerText = '성배전쟁';
+                    warBtn.addEventListener('click', () => openTabDetailView('sungbwar', warBox, warBtn));
+
+                    warBox.appendChild(warBtn);
+                    circuitNodesBox.appendChild(warBox);
+
+                    if (!document.getElementById('tabDetail_sungbwar')) {
+                        createPlaceholderTabDetailView('sungbwar');
                     }
-                });
-
-                if (possessedIds.length === 0) return;
-
-                const totalTabs = possessedIds.length;
-                let maxCharCountInRow = 0;
-                
-                const rows = [];
-                for (let i = 0; i < possessedIds.length; i += 6) {
-                    rows.push(possessedIds.slice(i, i + 6));
                 }
-
-                rows.forEach(row => {
-                    const rowChars = row.reduce((acc, id) => acc + CONCEPT_REGISTRY[id].name.length, 0);
-                    if (rowChars > maxCharCountInRow) maxCharCountInRow = rowChars;
-                });
-
-                let fontSizeRem = 4.2;
-                if (totalTabs > 4 || maxCharCountInRow > 12) {
-                    fontSizeRem = Math.max(2.0, 4.2 - (totalTabs * 0.25) - (maxCharCountInRow * 0.08));
-                }
-
-                rows.forEach(rowIds => {
-                    const rowDiv = document.createElement('div');
-                    rowDiv.className = 'tab-row';
-
-                    rowIds.forEach(id => {
-                        const wrapperDiv = document.createElement('div');
-                        wrapperDiv.className = 'tab-item-wrapper';
-                        if (isPrepareFadeIn) {
-                            wrapperDiv.classList.add('prepare-fade-in'); // 초기 투명화
-                        }
-                        wrapperDiv.id = 'tabWrapper_' + id;
-
-                        const btn = document.createElement('button');
-                        btn.className = 'tab-item-btn';
-                        btn.innerText = CONCEPT_REGISTRY[id].name;
-                        btn.style.fontSize = fontSizeRem + 'rem';
-                        btn.addEventListener('click', (e) => openTabDetailView(id, wrapperDiv, btn));
-                        
-                        wrapperDiv.appendChild(btn);
-                        rowDiv.appendChild(wrapperDiv);
-
-                        if (id !== 'sung' && !document.getElementById('tabDetail_' + id)) {
-                            createPlaceholderTabDetailView(id);
-                        }
-                    });
-
-                    tabSelectionContainer.appendChild(rowDiv);
-                });
             }
 
             function createPlaceholderTabDetailView(id) {
@@ -1008,7 +1037,7 @@
                 dynamicTabDetailViews.appendChild(viewSection);
             }
 
-            function openTabDetailView(selectedId, selectedWrapper, selectedBtn) {
+            function openTabDetailView(selectedId, selectedBox, selectedBtn) {
                 history.pushState({ stage: 3, id: selectedId }, '', '');
 
                 if (pstSfx) {
@@ -1023,18 +1052,18 @@
                 const ghostClone = document.createElement('div');
                 ghostClone.className = 'ghost-tab-clone';
                 ghostClone.innerText = selectedBtn.innerText;
-                ghostClone.style.fontSize = selectedBtn.style.fontSize;
+                ghostClone.style.fontSize = selectedBtn.style.fontSize || '4.5rem';
                 ghostClone.style.top = rect.top + 'px';
                 ghostClone.style.left = rect.left + 'px';
                 document.body.appendChild(ghostClone);
 
                 activeGhostClone = ghostClone;
 
-                selectedWrapper.classList.add('hidden-original');
-                const allWrappers = document.querySelectorAll('.tab-item-wrapper');
-                allWrappers.forEach(wrap => {
-                    if (wrap !== selectedWrapper) {
-                        wrap.classList.add('fade-out-stay');
+                selectedBox.style.opacity = '0';
+                const allNodes = document.querySelectorAll('.circuit-node-box');
+                allNodes.forEach(node => {
+                    if (node !== selectedBox) {
+                        node.style.opacity = '0';
                     }
                 });
 
@@ -1066,7 +1095,10 @@
                 }, 250);
 
                 setTimeout(() => {
-                    renderTabSelectionWindow();
+                    renderCircuitCanvas();
+                    const sungNode = document.getElementById('circuitNode_sung');
+                    if (sungNode) sungNode.classList.add('summon-node');
+                    
                     tabSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
@@ -1077,7 +1109,7 @@
                 history.back();
             });
 
-            // ★ 복귀 시 '전체 선택지 동시 페이드인 연출 엔진' 전면 결합 ★
+            // ★ 4단계 시차 타임라인: 착륙 -> 마력 회로 전개 -> 샤방 섬광 -> 신규 선택지 소환 ★
             window.addEventListener('popstate', function(event) {
                 const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
 
@@ -1100,32 +1132,79 @@
                         if (activeView) activeView.classList.remove('show');
                     }
 
-                    // 1. 좌측 상단 비행 클론 텍스트 부드러운 소멸
-                    if (activeGhostClone) {
-                        activeGhostClone.style.opacity = '0';
-                        setTimeout(() => {
-                            if (activeGhostClone) {
-                                activeGhostClone.remove();
-                                activeGhostClone = null;
-                            }
-                        }, 500);
-                    }
-
-                    // 2. 복귀 시 탭 선택창을 '전체 페이드인 준비 상태(prepare-fade-in)'로 렌더링
                     if (targetStage === 2) {
-                        renderTabSelectionWindow(true);
+                        renderCircuitCanvas();
                         tabSelectionContainer.classList.add('show');
                     }
 
-                    // 3. 약간의 시간차($0.1$초) 후, 새로 생긴 탭을 포함한 전체 선택지들이 동시에 완만하게 페이드인
+                    const targetBox = document.getElementById('circuitNode_' + currentActiveTabId);
+                    let targetRect = null;
+                    if (targetBox) {
+                        const targetBtn = targetBox.querySelector('.tab-item-btn');
+                        if (targetBtn) {
+                            targetRect = targetBtn.getBoundingClientRect();
+                        }
+                    }
+
+                    // 1단계: 원래 제자리로 착륙 복귀 비행 ($1.3$초)
+                    if (activeGhostClone && targetRect) {
+                        activeGhostClone.classList.remove('move-to-target');
+                        activeGhostClone.style.top = targetRect.top + 'px';
+                        activeGhostClone.style.left = targetRect.left + 'px';
+                        activeGhostClone.style.transform = 'scale(1)';
+                        activeGhostClone.style.filter = 'brightness(1)';
+                    }
+
+                    // 착륙이 끝난 직후 연출 가동
                     setTimeout(() => {
-                        const allWrappers = document.querySelectorAll('.tab-item-wrapper');
-                        allWrappers.forEach(wrap => {
-                            wrap.classList.remove('hidden-original');
-                            wrap.classList.remove('prepare-fade-in');
-                            wrap.classList.remove('fade-out-stay');
-                            wrap.classList.add('fade-in-active'); // 동시에 스르륵 페이드인
-                        });
+                        if (activeGhostClone) {
+                            activeGhostClone.remove();
+                            activeGhostClone = null;
+                        }
+
+                        const sungNode = document.getElementById('circuitNode_sung');
+                        if (sungNode) sungNode.style.opacity = '1';
+
+                        const hasSungbwar = (sessionStorage.getItem('fate_concept_sungbwar') === 'true');
+
+                        if (hasSungbwar && targetStage === 2) {
+                            // 2단계: 붉은 마력 회로 선이 아래로 길게 그어짐 ($1.0$초)
+                            const sungRect = sungNode.getBoundingClientRect();
+                            const startX = sungRect.left + sungRect.width / 2;
+                            const startY = sungRect.top + sungRect.height;
+                            const endY = window.innerHeight * 0.65;
+
+                            circuitPath.setAttribute('d', `M ${startX} ${startY} L ${startX} ${endY}`);
+                            circuitPath.classList.add('active');
+
+                            if (wordSfx) {
+                                wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 3.0);
+                                wordSfx.currentTime = 0;
+                                wordSfx.play().catch(e => console.log(e));
+                            }
+
+                            // 3단계: 회로 끝점에서 샤방 섬광 이펙트 ($0.8$초)
+                            setTimeout(() => {
+                                flashGlow.style.left = startX + 'px';
+                                flashGlow.style.top = endY + 'px';
+                                flashGlow.classList.add('spark');
+
+                                // 4단계: 신규 '성배전쟁' 선택지 소환 (페이드인)
+                                setTimeout(() => {
+                                    const warNode = document.getElementById('circuitNode_sungbwar');
+                                    if (warNode) {
+                                        warNode.classList.remove('hidden-node');
+                                        warNode.classList.add('summon-node');
+                                    }
+                                    flashGlow.classList.remove('spark');
+                                }, 400);
+
+                            }, 800);
+                        } else {
+                            // 신규 개념이 없는 일반 복귀
+                            const allNodes = document.querySelectorAll('.circuit-node-box');
+                            allNodes.forEach(node => node.style.opacity = '1');
+                        }
 
                         if (targetStage === 1) {
                             tabSelectionContainer.classList.remove('show');
@@ -1138,7 +1217,8 @@
                             pressStartWrapper.style.pointerEvents = 'auto';
                         }
                         currentActiveTabId = null;
-                    }, 100);
+
+                    }, 1300); // 1.3초 착륙 직후 가동
 
                 } else if (currentStage === 2 && targetStage === 1) {
                     currentStage = 1;
