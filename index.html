@@ -271,12 +271,16 @@
             margin: 0 2px;
         }
 
+        /* [메인화면] 상호작용 영역 강제 확장을 위한 래퍼 Z축 최상위 고정 */
         .press-start-wrapper {
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease-out;
             position: relative;
-            z-index: 100;
+            z-index: 9999;
+            width: 100%;
+            display: flex;
+            justify-content: center;
         }
 
         .press-start-wrapper.animate {
@@ -284,7 +288,7 @@
             pointer-events: auto !important;
         }
 
-        /* [메인화면] PRESS TO START 버튼 (클릭 시 탭 선택 창으로 진입) */
+        /* [메인화면] PRESS TO START 버튼 */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -302,9 +306,8 @@
             pointer-events: auto !important;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
-            /* 버그 수정: 레이어 최상단 고정을 통한 클릭 영역 무결성 확보 */
             position: relative;
-            z-index: 200;
+            z-index: 9999; /* 클릭 영역 최상단 보장 */
         }
 
         .press-start-btn:hover {
@@ -438,6 +441,20 @@
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
+        /* [(단어) 탭] 성배 탭 전용 골드 계열 글로우 */
+        .tab-item-btn.gold-glow-btn {
+            text-shadow:
+                3px 3px 0px #705000,
+                -1px -1px 0px #705000,
+                1px -1px 0px #705000,
+                -1px 1px 0px #705000,
+                0 0 35px rgba(255, 215, 0, 0.95),
+                0 0 15px rgba(200, 150, 0, 0.8);
+        }
+        .tab-item-btn.gold-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9);
+        }
+
         /* [(단어) 탭] 성배전쟁 탭 전용 붉은 계열 글로우 */
         .tab-item-btn.red-glow-btn {
             text-shadow: 
@@ -448,7 +465,6 @@
                 0 0 35px rgba(255, 50, 50, 0.95),
                 0 0 15px rgba(200, 0, 0, 0.8);
         }
-
         .tab-item-btn.red-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
@@ -463,7 +479,6 @@
                 0 0 35px rgba(255, 255, 255, 0.95),
                 0 0 15px rgba(200, 200, 200, 0.8);
         }
-
         .tab-item-btn.white-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 25px rgba(200, 200, 255, 0.9);
         }
@@ -490,6 +505,13 @@
             z-index: 55 !important;
             opacity: 1;
             pointer-events: auto;
+        }
+
+        /* [설명창] 성배전쟁 전용 중앙 정렬 스타일 */
+        #tabDetail_sungbwar {
+            justify-content: center;
+            padding-left: 0;
+            gap: 0;
         }
 
         /* [설명창] 정적 탭 타이틀 영역 */
@@ -538,6 +560,7 @@
             color: rgba(215, 205, 190, 0.65);
             letter-spacing: 2px;
             text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5);
+            text-align: center;
         }
 
         /* [설명창] 본문 내용을 담고 있는 우측 설명 상자 */
@@ -711,7 +734,6 @@
             30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
             100% { opacity: 0; filter: brightness(8); color: #ffffff; transform: translateX(2px) scale(0.95); }
         }
-        /* 수정사항 1 적용: 깜빡임 투명도 수치 상향 조정 */
         @keyframes slow-blink-loop { 0% { opacity: 0.5; } 50% { opacity: 1.0; } 100% { opacity: 0.5; } }
         @keyframes grail-smooth-fadein { 0% { opacity: 0; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes grail-gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
@@ -786,7 +808,7 @@
                 <div class="description-content">
                     <span class="description-quote" id="kotomineTrigger">"성배란, 어떤 소원이라도 이루어주는 원망기다."</span>
                     <span class="description-quote-author">- 코토미네 키레이</span>
-                    <p style="margin-top: 12px;">성배란 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매이다.</p>
+                    <p style="margin-top: 12px;"><span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>이 일어나기 위한 촉매.</p>
                 </div>
             </div>
         </section>
@@ -794,9 +816,7 @@
         <!-- [설명창] 성배전쟁 단어 탭 선택 시 나타나는 성배전쟁 설명창 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
             <div class="static-tab-title">성배전쟁</div>
-            <div class="detail-left-box">
-                <img src="img/img-sungbwar.png" alt="Holy Grail War Detail" class="detail-img">
-            </div>
+            <!-- 이미지 영역 제거 및 중앙 정렬 적용 -->
             <div class="detail-right-box">
                 <h2 class="description-title">성배전쟁이란?</h2>
                 <div class="description-content">
@@ -816,6 +836,9 @@
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title">마술사</div>
             <div class="detail-left-box">
+                <!-- 이미지 및 설명 양식 추가 -->
+                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img">
+                <span class="detail-sub-label">제 5차 성배전쟁 참여 마술사 토오사카 린</span>
             </div>
             <div class="detail-right-box">
                 <h2 class="description-title">마술사란?</h2>
@@ -852,6 +875,9 @@
 
     <!-- [자바스크립트] 시스템 로직 및 인터랙션 제어 엔진 -->
     <script>
+        // 전역 트랜지션 락 변수: 화면 전환 중 중복 입력 방지 시스템 가동
+        let isTransitioning = false;
+
         // ★ [탭 선택 창 데이터베이스] 마인드맵 트리 구조 내 단어 탭 및 계층 정의 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 35 },
@@ -922,11 +948,11 @@
             let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
 
-            // BGM 슬라이더 이벤트: 실시간 볼륨 동기화 (기본값 0.4 기반)
+            // BGM 슬라이더 이벤트: 실시간 볼륨 동기화 (2번 테마곡은 70% 출력 감소 적용)
             volumeSlider.addEventListener('input', function() { 
                 const targetVol = parseFloat(this.value);
                 if (bgmMain) bgmMain.volume = targetVol;
-                if (bgmTheme2) bgmTheme2.volume = targetVol;
+                if (bgmTheme2) bgmTheme2.volume = targetVol * 0.7; 
             });
 
             // SFX 슬라이더 이벤트: 효과음 볼륨 동기화 및 배율 계산
@@ -937,11 +963,12 @@
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
 
-            // VOICE 슬라이더 이벤트: 성우 보이스 볼륨 동기화
+            // VOICE 슬라이더 이벤트: 성우 보이스 볼륨 동기화 (기본 볼륨의 120% 증폭 적용)
             voiceSlider.addEventListener('input', function() { 
-                if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); 
-                if (kiritsuguSfx) kiritsuguSfx.volume = parseFloat(this.value);
-                if (fateVoice) fateVoice.volume = parseFloat(this.value) * 0.45;
+                const voiceVol = Math.min(1.0, parseFloat(this.value) * 1.2);
+                if (kotomineSfx) kotomineSfx.volume = voiceVol; 
+                if (kiritsuguSfx) kiritsuguSfx.volume = voiceVol;
+                if (fateVoice) fateVoice.volume = voiceVol * 0.45;
             });
 
             seSlider.addEventListener('change', function() {
@@ -969,7 +996,7 @@
                         clearInterval(fadeInterval);
                         audioEl.pause();
                         audioEl.currentTime = 0;
-                        audioEl.volume = parseFloat(volumeSlider.value);
+                        audioEl.volume = startVol; // 추후 재사용을 위해 목표 볼륨 롤백
                     }
                 }, stepTime);
             }
@@ -1022,7 +1049,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // [설명창 어록] 성우 어록 클릭 시 보이스 재생 (코토미네 & 키리츠구 통합 제어 + 폴백 오디오 보장)
+            // [설명창 어록] 성우 어록 클릭 시 보이스 재생 (음성 출력 1.2배 증폭 적용)
             document.addEventListener('click', function(e) {
                 const kotomineTarget = e.target.closest('#kotomineTrigger');
                 if (kotomineTarget) {
@@ -1034,10 +1061,11 @@
                     if (kotomineSfx) {
                         kotomineSfx.pause();
                         kotomineSfx.currentTime = 0;
-                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                        kotomineSfx.volume = voiceVol;
                         kotomineSfx.play().catch(err => {
                             const fb = new Audio('voice/voice-holygrail-kotomine.mp3');
-                            fb.volume = parseFloat(voiceSlider.value);
+                            fb.volume = voiceVol;
                             fb.play().catch(ex => console.log('Kotomine fallback error:', ex));
                         });
                     }
@@ -1053,10 +1081,11 @@
                     if (kiritsuguSfx) {
                         kiritsuguSfx.pause();
                         kiritsuguSfx.currentTime = 0;
-                        kiritsuguSfx.volume = parseFloat(voiceSlider.value);
+                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                        kiritsuguSfx.volume = voiceVol;
                         kiritsuguSfx.play().catch(err => {
                             const fb = new Audio('voice/voice-sungbwar-kiritsugu.mp3');
-                            fb.volume = parseFloat(voiceSlider.value);
+                            fb.volume = voiceVol;
                             fb.play().catch(ex => console.log('Kiritsugu fallback error:', ex));
                         });
                     }
@@ -1192,6 +1221,7 @@
                         line.setAttribute('stroke', `url(#${gradId})`);
 
                         line.onclick = () => {
+                            if (isTransitioning) return;
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
                                 moveSfx.pause();
@@ -1200,7 +1230,9 @@
                                 const p = moveSfx.play();
                                 if (p !== undefined) p.catch(()=>{});
                             }
+                            isTransitioning = true;
                             focusToNode(nextFocus);
+                            setTimeout(() => { isTransitioning = false; }, 800);
                         };
 
                         treeSvg.appendChild(line);
@@ -1220,7 +1252,9 @@
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
                     
-                    if (id === 'sungbwar') {
+                    if (id === 'sung') {
+                        btn.classList.add('gold-glow-btn');
+                    } else if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
                     } else if (id === 'ma') {
                         btn.classList.add('white-glow-btn');
@@ -1230,6 +1264,8 @@
                     btn.innerText = nodeInfo.name;
                     
                     btn.onclick = () => {
+                        if (isTransitioning) return;
+                        
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
                                 moveSfx.pause();
@@ -1238,8 +1274,11 @@
                                 const p = moveSfx.play();
                                 if (p !== undefined) p.catch(()=>{});
                             }
+                            isTransitioning = true;
                             focusToNode(id);
+                            setTimeout(() => { isTransitioning = false; }, 800);
                         } else {
+                            isTransitioning = true;
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
                                 pstSfx.pause();
@@ -1257,6 +1296,7 @@
                                 setTimeout(() => {
                                     targetView.classList.add('show');
                                     currentStage = 3;
+                                    isTransitioning = false;
                                 }, 600);
                             }
                         }
@@ -1269,6 +1309,9 @@
 
             // --- [라우팅] 메인화면의 PRESS TO START 버튼 클릭 시 탭 선택 창 진입 ---
             pressStartBtn.addEventListener('click', function() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+
                 history.pushState({ stage: 2 }, '', '');
                 
                 if (pstSfx) {
@@ -1295,17 +1338,25 @@
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
 
-                    // 탭 선택 창 진입 시 BGM-theme2 페이드 인 가동
+                    // 탭 선택 창 진입 시 BGM-theme2 페이드 인 가동 (70% 출력 적용)
                     if (bgmTheme2) {
-                        fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value), 1000);
+                        fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value) * 0.7, 1000);
                     }
+                    isTransitioning = false;
                 }, 1450);
             });
 
-            backBtn.addEventListener('click', function() { history.back(); });
+            // 백 버튼 입력 시 트랜지션 락오프 적용
+            backBtn.addEventListener('click', function() { 
+                if (isTransitioning) return;
+                history.back(); 
+            });
 
             // --- [라우팅] 스테이지 기반 순차 뒤로가기(popstate) 처리 아키텍처 ---
             window.addEventListener('popstate', function(event) {
+                if (isTransitioning) return;
+                isTransitioning = true;
+
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
 
@@ -1327,6 +1378,7 @@
                         renderTreeGrid(false);
                         treeSelectionContainer.classList.add('show');
                         currentActiveTabId = null;
+                        isTransitioning = false;
                     }, 600); 
 
                 } else if (currentStage === 2) {
@@ -1363,12 +1415,18 @@
                         void pressStartWrapper.offsetWidth;
                         pressStartWrapper.style.opacity = '1';
                         pressStartWrapper.style.pointerEvents = 'auto';
+                        isTransitioning = false;
                     }, 1400);
+                } else {
+                    isTransitioning = false;
                 }
             });
 
             // --- [시작하기 창] '시작하기' 버튼 클릭 시 메인화면 연출 진입 ---
             startBtn.addEventListener('click', function() {
+                if (isTransitioning) return;
+                isTransitioning = true;
+
                 unlockAllAudioPolicy(); 
                 
                 const btnContainer = document.getElementById('btnContainer');
@@ -1388,10 +1446,12 @@
 
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
-                if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
-                if (kiritsuguSfx) kiritsuguSfx.volume = parseFloat(voiceSlider.value);
+                
+                const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                if (kotomineSfx) kotomineSfx.volume = baseVoiceVol;
+                if (kiritsuguSfx) kiritsuguSfx.volume = baseVoiceVol;
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value) * 0.45;
+                if (fateVoice) fateVoice.volume = baseVoiceVol * 0.45;
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
@@ -1414,10 +1474,12 @@
                     controlsGroup.classList.add('animate');
                 }, 2200);
 
-                setTimeout(() => pressStartWrapper.classList.add('animate'), 3000);
+                setTimeout(() => {
+                    pressStartWrapper.classList.add('animate');
+                    isTransitioning = false;
+                }, 3000);
             });
         });
     </script>
 </body>
 </html>
-```》
