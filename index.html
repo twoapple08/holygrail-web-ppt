@@ -8,205 +8,80 @@
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
         /* [CSS] 전역 초기화 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
-        body {
-            font-family: 'Song Myung', serif;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-            background-color: #000000;
-        }
-
-        /* [메인화면 배경] */
-        .main-background-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('first-background.png');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
-            z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
-        }
+        /* [메인화면 배경 및 이펙트] */
+        .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
-
-        /* [메인화면 이펙트] */
-        .red-dust-effect {
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 55%;
-            background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%);
-            z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out;
-        }
-        .red-dust-effect.active {
-            opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
-        }
+        .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
+        .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         /* [알림] 토스트 컨테이너 */
-        #acquireToastContainer {
-            position: absolute; top: 150px; left: 50%; transform: translateX(-50%);
-            z-index: 9999; pointer-events: none; width: auto;
-            display: flex; flex-direction: column-reverse; align-items: center; gap: 10px;
-        }
-
-        .word-toast-item {
-            color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px;
-            opacity: 0; animation: float-fade-smooth 1.8s forwards linear;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6);
-            user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px;
-        }
-
-        @keyframes float-fade-smooth {
-            0% { transform: translateY(35px); opacity: 0; }
-            50% { transform: translateY(0px); opacity: 1; }
-            100% { transform: translateY(-35px); opacity: 0; }
-        }
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; width: auto; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; }
+        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.8s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
+        @keyframes float-fade-smooth { 0% { transform: translateY(35px); opacity: 0; } 50% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-35px); opacity: 0; } }
 
         /* [신규개념] 키워드 */
-        .interactive-keyword {
-            color: #ffd700; font-weight: 700; cursor: pointer;
-            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-            user-select: none; display: inline-block; position: relative; z-index: 1000; pointer-events: auto;
-        }
-        .interactive-keyword:hover {
-            color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
-        }
-        .interactive-keyword.clicked {
-            color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important;
-            text-shadow: none !important; pointer-events: none !important;
-        }
+        .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: color 0.3s ease, text-shadow 0.3s ease; user-select: none; display: inline-block; position: relative; z-index: 1000; pointer-events: auto; }
+        .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
+        .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
-        /* 신규개념 획득 방해 점멸 효과 */
-        @keyframes keyword-error-shake {
-            0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; }
-            25% { transform: translateX(-3px); }
-            50% { transform: translateX(3px); }
-            75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; }
-            100% { transform: translateX(0); }
-        }
+        @keyframes keyword-error-shake { 0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; } 100% { transform: translateX(0); } }
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
         /* [설명창] 성우 어록 */
-        .description-quote {
-            font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block;
-            cursor: pointer; position: relative; z-index: 1000; user-select: none;
-            animation: quote-gentle-glow 1.2s infinite alternate ease-in-out;
-            transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease; pointer-events: auto;
-        }
-        .description-quote:hover {
-            color: #ffffff !important; transform: scale(1.02);
-            text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important;
-        }
+        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 1000; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease; pointer-events: auto; }
+        .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
-        @keyframes quote-gentle-glow {
-            0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); }
-            100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
-        }
+        @keyframes quote-gentle-glow { 0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); } 100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); } }
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
         /* --- [시작하기 창] --- */
-        .start-btn-container {
-            position: absolute; z-index: 50; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; gap: 70px;
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s;
-        }
-        .fate-start-btn {
-            font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6;
-            background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px;
-            margin-right: -6px; cursor: pointer; outline: none; position: relative;
-            box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase;
-        }
-        .fate-start-btn:hover {
-            color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222;
-            box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05);
-        }
+        .start-btn-container { position: absolute; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s; }
+        .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; margin-right: -6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
+        .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
         .start-btn-container.hide { opacity: 0; transform: scale(0.9); visibility: hidden; pointer-events: none; }
-        .initial-notice-center {
-            font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: none;
-        }
+        .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: none; }
 
         /* --- [메인화면] --- */
-        .content-container {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center; width: 100%; max-width: 700px; padding: 0 20px; position: relative;
-            z-index: 10; pointer-events: none; transform: translateY(-10px);
-        }
+        .content-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; max-width: 700px; padding: 0 20px; position: relative; z-index: 10; pointer-events: none; transform: translateY(-10px); }
         .holy-grail-wrapper { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; opacity: 0; }
         .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .fate-logo-img { width: 270px; height: auto; animation: grail-gentle-float 3s infinite ease-in-out; filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85)); }
-        .sub-title {
-            font-size: 1.3rem; font-weight: 700; color: #ffffff; letter-spacing: 1.5px; line-height: 1.6;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 2px 10px rgba(0, 0, 0, 1); margin-bottom: 35px; opacity: 0;
-        }
+        .sub-title { font-size: 1.3rem; font-weight: 700; color: #ffffff; letter-spacing: 1.5px; line-height: 1.6; text-shadow: 0 0 12px rgba(255, 255, 255, 0.8), 0 2px 10px rgba(0, 0, 0, 1); margin-bottom: 35px; opacity: 0; }
         .sub-title.animate { animation: fade-in 1.0s ease-out forwards; }
         .extended-dash { letter-spacing: 4px; margin: 0 2px; }
 
-        .press-start-wrapper {
-            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.8s ease-out, visibility 0.8s step-end;
-            position: relative; width: 100%; display: flex; justify-content: center;
-        }
+        .press-start-wrapper { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.8s ease-out, visibility 0.8s step-end; position: relative; width: 100%; display: flex; justify-content: center; }
         .press-start-wrapper.animate { opacity: 1; visibility: visible; pointer-events: auto !important; transition: opacity 0.8s ease-out, visibility 0.8s step-start; }
-        .press-start-btn {
-            font-family: 'Song Myung', serif; font-size: 1.25rem; font-weight: 700; color: #a0a0aa; letter-spacing: 5px;
-            text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5); background: transparent; border: none;
-            padding: 30px 60px; cursor: pointer; outline: none; display: inline-block; white-space: nowrap; pointer-events: auto !important;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease; animation: slow-blink-loop 2.8s infinite alternate ease-in-out; position: relative;
-        }
-        .press-start-btn:hover {
-            animation-play-state: paused !important; opacity: 1 !important; color: #ffffff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9); transform: scale(1.08);
-        }
+        .press-start-btn { font-family: 'Song Myung', serif; font-size: 1.25rem; font-weight: 700; color: #a0a0aa; letter-spacing: 5px; text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5); background: transparent; border: none; padding: 30px 60px; cursor: pointer; outline: none; display: inline-block; white-space: nowrap; pointer-events: auto !important; transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease; animation: slow-blink-loop 2.8s infinite alternate ease-in-out; position: relative; }
+        .press-start-btn:hover { animation-play-state: paused !important; opacity: 1 !important; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9); transform: scale(1.08); }
         .press-start-wrapper.flash-exit { animation: simple-flash-fade 0.25s ease-out forwards !important; pointer-events: none !important; }
 
         @keyframes smooth-scale-fade-out { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.9); } }
         .slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; pointer-events: none !important; }
-
-        .intro-notice-left {
-            position: absolute; bottom: 25px; left: 25px; z-index: 20; max-width: 500px; font-size: 1.05rem;
-            color: rgba(230, 220, 205, 0.65); letter-spacing: 1px; line-height: 1.45; user-select: none;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.6); opacity: 0; pointer-events: none; word-break: keep-all;
-        }
+        .intro-notice-left { position: absolute; bottom: 25px; left: 25px; z-index: 20; max-width: 500px; font-size: 1.05rem; color: rgba(230, 220, 205, 0.65); letter-spacing: 1px; line-height: 1.45; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.6); opacity: 0; pointer-events: none; word-break: keep-all; }
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
         /* --- [탭 선택 창] --- */
-        .tree-selection-container {
-            position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh;
-            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
-        }
+        .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
-        .tree-matrix-world {
-            position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1);
-        }
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1); }
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; }
         
         /* 뷰박스 삭제 후 두께 복원 (2px) */
-        .tree-branch-line {
-            stroke-width: 2px;
-            fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85));
-            cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out;
-        }
+        .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out; }
         .tree-branch-line.drawn { opacity: 1; }
 
-        .tree-node-box {
-            position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease;
-        }
+        .tree-node-box { position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease; }
         .tree-node-box.focused { z-index: 35; }
         .tree-node-box.focused .tab-item-btn { transform: scale(1.15); }
 
-        .tab-item-btn {
-            font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px;
-            display: flex; justify-content: center; align-items: center; background: transparent; border: none;
-            outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
-        }
+        .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; position: relative; }
         
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
@@ -227,20 +102,12 @@
         .color-gold { color: #ffd700 !important; }
 
         /* --- [설명창] --- */
-        .tab-detail-view {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; 
-            display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%;
-            opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
-        }
+        .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
 
         #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class { justify-content: center; padding-left: 0; gap: 0; }
 
-        .static-tab-title {
-            position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700;
-            letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75);
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10;
-        }
+        .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; }
 
         .title-yellow { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .title-red { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8); }
@@ -250,8 +117,8 @@
         .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
         .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
 
-        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; }
-        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; }
+        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; }
+        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; }
 
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
@@ -260,129 +127,70 @@
         .img-glow-rj { filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.7)); } 
         .img-glow-gam { filter: drop-shadow(0 0 30px rgba(40, 40, 40, 0.9)); } 
 
-        .detail-sub-label {
-            margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px;
-            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center;
-        }
+        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; }
 
-        .detail-right-box {
-            flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8);
-            border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5);
-            backdrop-filter: blur(4px); position: relative; z-index: 5;
-        }
+        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; }
 
-        .description-title {
-            font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px;
-            border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7);
-        }
-
-        .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; }
-
-        .description-quote-author {
-            font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none;
-        }
+        .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; }
+        .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; }
+        .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; }
 
         /* --- [주석효과 (툴팁) 모듈] --- */
-        .annotation-word {
-            text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative;
-            animation: anno-pulse 2s infinite; transition: text-decoration-color 0.3s; pointer-events: auto;
-        }
+        .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: text-decoration-color 0.3s; pointer-events: auto; z-index: 1000; }
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
-        #tooltipBox {
-            position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px;
-            font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6;
-        }
+        #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; }
         #tooltipBox.show { display: block; opacity: 1; }
         
         /* 툴팁 꼬리 방향 역전 알고리즘 기반 화살표 방향 설정 */
-        #tooltipBox::after {
-            content: ''; position: absolute; border-width: 8px; border-style: solid; 
-            border-color: transparent transparent #ffd700 transparent; /* 기본: 아래에서 위를 가리킴 (툴팁이 아래에 있을 때) */
-            top: -16px; left: 50%; transform: translateX(-50%); bottom: auto;
-        }
-        #tooltipBox.bottom-arrow::after { 
-            border-color: #ffd700 transparent transparent transparent; /* bottom-arrow: 위에서 아래를 가리킴 (툴팁이 위에 있을 때) */
-            bottom: -16px; top: auto;
-        }
+        #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
+        #tooltipBox.bottom-arrow::after { border-color: #ffd700 transparent transparent transparent; bottom: -16px; top: auto; }
 
-        /* --- [안내창 가이드 튜토리얼 시스템] --- */
-        #tutorialOverlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); 
-            z-index: 9000; opacity: 0; visibility: hidden; transition: opacity 0.5s; pointer-events: none;
-        }
-        #tutorialOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        /* --- [가이드 튜토리얼 마스킹 및 전용 조명 엔진] --- */
+        body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
+        body.tut-active .tree-selection-container.show, body.tut-active .tab-detail-view.show, body.tut-active .bottom-left-controls.show, body.tut-active #acquireToastContainer { z-index: 9001 !important; }
+
+        /* 비타겟 요소 강제 딤 처리 */
+        .dim-target { opacity: 0.2 !important; filter: brightness(0.4) !important; pointer-events: none !important; transition: all 0.3s; }
+
+        /* 타겟 요소 독립 조명 (명도 복원 및 박스 쉐도우) */
+        .highlight-element { z-index: 9010 !important; position: relative !important; opacity: 1 !important; filter: none !important; pointer-events: auto !important; transition: all 0.3s; }
         
-        #tutorialGuide {
-            position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; 
-            background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px;
-            border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); 
-            opacity: 0; visibility: hidden; transition: opacity 0.5s; font-size: 1.3rem; 
-            line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column;
-        }
+        /* 상세창 테두리 강조 전용 */
+        .detail-right-box.highlight-element { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; background: rgba(30, 10, 10, 0.95) !important; }
+
+        /* 이미지 강조 전용 패딩 확장 */
+        img.highlight-element { filter: drop-shadow(0 0 40px rgba(255,255,255,0.9)) !important; transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; }
+        
+        /* 텍스트(주석/신규개념) 및 버튼 강조 전용 */
+        .highlight-text { background-color: rgba(255,255,255,0.2) !important; padding: 2px 8px !important; border-radius: 6px !important; box-shadow: 0 0 15px rgba(255,255,255,0.6) !important; color: #ffffff !important; }
+        .highlight-btn { box-shadow: 0 0 35px rgba(255,255,255,0.7) !important; }
+
+        /* 튜토리얼 중 뒤로가기 버튼 호버 무효화 */
+        body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
+
+        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 9000; opacity: 0; visibility: hidden; transition: opacity 0.5s; pointer-events: none; }
+        
+        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
-        .guide-btn {
-            padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer;
-            font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s;
-        }
+        .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
 
-        /* 하이라이트 엘리먼트 100% 명도 복원 및 독립 조명 효과 */
-        .highlight-element {
-            z-index: 9010 !important; position: relative !important; pointer-events: auto !important;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) !important; opacity: 1 !important;
-        }
-        
-        /* 상세창 테두리 강조 전용 */
-        .detail-right-box.highlight-element {
-            box-shadow: 0 0 30px rgba(255,255,255,0.6), inset 0 0 15px rgba(255,255,255,0.3) !important;
-            background: rgba(40, 20, 20, 0.9) !important;
-        }
-
-        /* 이미지 강조 전용 패딩 확장 */
-        img.highlight-element {
-            filter: drop-shadow(0 0 40px rgba(255,255,255,0.8)) !important;
-            transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px;
-        }
-        
-        /* 텍스트(주석/신규개념) 강조 전용 */
-        span.highlight-element { background-color: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
-        
-        /* 알림창 토스트 전용 */
-        #acquireToastContainer.highlight-element { z-index: 9010 !important; position: absolute !important; }
-
-        /* 튜토리얼 활성화 중 뒤로가기 버튼 호버 무효화 */
-        body.tut-active .fate-back-btn:hover {
-            transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important;
-            border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important;
-        }
-
-        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
-        #tutorialArrow {
-            position: absolute; font-size: 5rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
-            z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none;
-        }
+        /* 뒤로가기 화살표 Y축 강하 애니메이션 (버튼과 겹침 소멸) */
+        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
-        @keyframes point-down { 0% { transform: translateY(0); } 100% { transform: translateY(15px); } }
+        @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
         /* --- [뒤로가기 버튼] --- */
-        .bottom-left-controls {
-            position: absolute; bottom: 20px; left: 25px; z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out;
-        }
+        .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
-        .fate-back-btn {
-            font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6);
-            border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.3s ease;
-        }
+        .fate-back-btn { font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.3s ease; position: relative; z-index: 10; }
 
         /* --- [오디오 컨트롤러] --- */
-        .bottom-right-controls {
-            position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 60; opacity: 0; pointer-events: none;
-        }
+        .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999; opacity: 0; pointer-events: none; }
         .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
         .volume-control-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
@@ -497,7 +305,7 @@
             </div>
         </section>
 
-        <!-- 3. 마술사 (수동 파싱 완료) -->
+        <!-- 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
@@ -523,7 +331,7 @@
             </div>
         </section>
         
-        <!-- 4. 령주 (수동 파싱 완료) -->
+        <!-- 4. 령주 -->
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
@@ -552,7 +360,7 @@
             </div>
         </section>
 
-        <!-- 5. 마스터 (수동 파싱 완료) -->
+        <!-- 5. 마스터 -->
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
@@ -577,7 +385,7 @@
             </div>
         </section>
 
-        <!-- 6. 서번트 (수동 파싱 완료) -->
+        <!-- 6. 서번트 -->
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
@@ -603,7 +411,7 @@
             </div>
         </section>
 
-        <!-- 7. 감독관 (수동 파싱 완료) -->
+        <!-- 7. 감독관 -->
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
@@ -700,7 +508,7 @@
         let isTutorialActive = false;
         let tutState = { seq: 0, step: 0 };
 
-        // ★ [방사형 좌표계 로직] 중앙 50,45 기점 완벽한 원형 궤도 산출 ★
+        // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 반경 30% 유지 / 16:9 뷰포트 대비 스케일 오차 보정 완료 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -956,8 +764,51 @@
             function positionArrow(targetEl) {
                 const arrow = document.getElementById('tutorialArrow');
                 const rect = targetEl.getBoundingClientRect();
+                // 위에서 아래를 가리키도록 Y축 상단 배치 (겹침 버그 소멸)
                 arrow.style.left = (rect.left + rect.width / 2 - 20) + 'px';
-                arrow.style.top = (rect.top - 60) + 'px';
+                arrow.style.top = (rect.top - 65) + 'px';
+            }
+
+            function applyHighlights(els) {
+                // 전체를 강제 딤 처리하기 위해 클래스 추가
+                document.querySelectorAll('.tree-node-box, .tree-branch-line, .detail-left-box > *, .detail-right-box, .static-tab-title, .fate-back-btn, .word-toast-item').forEach(el => {
+                    el.classList.add('dim-target');
+                });
+                
+                // 타겟 엘리먼트와 그 부모들의 딤을 해제하고 명도 100% 복원 조명 부여
+                if (els) {
+                    let targets = els instanceof NodeList || Array.isArray(els) ? els : [els];
+                    targets.forEach(el => {
+                        if (el) {
+                            el.classList.remove('dim-target');
+                            el.classList.add('highlight-element');
+                            
+                            // 텍스트/버튼 전용 추가 하이라이트 스타일링
+                            if (el.classList.contains('interactive-keyword') || el.classList.contains('annotation-word')) {
+                                el.classList.add('highlight-text');
+                                const pNode = el.closest('p');
+                                if (pNode) pNode.classList.remove('dim-target');
+                                const boxNode = el.closest('.detail-right-box');
+                                if (boxNode) boxNode.classList.remove('dim-target');
+                            }
+                            if (el.classList.contains('tab-item-btn')) {
+                                el.classList.add('highlight-btn');
+                                const boxNode = el.closest('.tree-node-box');
+                                if (boxNode) boxNode.classList.remove('dim-target');
+                            }
+                        }
+                    });
+                }
+            }
+
+            function clearHighlights() {
+                document.querySelectorAll('.dim-target').forEach(el => el.classList.remove('dim-target'));
+                document.querySelectorAll('.highlight-element').forEach(el => {
+                    el.classList.remove('highlight-element');
+                    el.classList.remove('highlight-text');
+                    el.classList.remove('highlight-btn');
+                });
+                document.getElementById('tutorialArrow').classList.remove('active');
             }
 
             function showTutorialGuide(text, btnText, callback, highlightEls, isSungbwarTab = false) {
@@ -974,6 +825,7 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
+                // 성배전쟁 탭 가이드를 제외하고 모두 하단(10%) 고정
                 if (isSungbwarTab) {
                     guide.style.bottom = 'auto';
                     guide.style.top = '10%';
@@ -982,32 +834,10 @@
                     guide.style.bottom = '10%';
                 }
                 
-                let container = document.body;
+                applyHighlights(highlightEls);
                 
-                if (highlightEls) {
-                    let els = highlightEls instanceof NodeList || Array.isArray(highlightEls) ? highlightEls : [highlightEls];
-                    els.forEach(el => {
-                        if(el) el.classList.add('highlight-element');
-                    });
-                    
-                    if (els[0]) {
-                        const view = els[0].closest('.tab-detail-view.show');
-                        const tree = els[0].closest('.tree-selection-container.show');
-                        container = view || tree || document.body;
-                    }
-                }
-                
-                container.appendChild(overlay);
                 overlay.classList.add('active');
                 guide.classList.add('active');
-            }
-
-            function clearHighlights() {
-                document.querySelectorAll('.highlight-element').forEach(el => {
-                    el.classList.remove('highlight-element');
-                });
-                document.getElementById('tutorialArrow').classList.remove('active');
-                document.body.appendChild(document.getElementById('tutorialOverlay'));
             }
 
             function endTutorial() {
@@ -1064,10 +894,11 @@
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) {
-                        const target = document.getElementById('acquireToastContainer');
+                        // 알림창 내부 텍스트 박스만 타겟으로 지정하여 100% 비율 맞춤
+                        const target = document.querySelector('.word-toast-item');
                         showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 1) {
-                        const backBtn = document.getElementById('backBtnWrapper');
+                        const backBtn = document.querySelector('.fate-back-btn');
                         document.getElementById('tutorialArrow').classList.add('active');
                         positionArrow(backBtn);
                         showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { 
@@ -1083,7 +914,7 @@
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq4', 'done');
                             endTutorial(); 
-                        }, target, true); // 성배전쟁 탭 한정 상단 회피 가이드
+                        }, target, true); // 성배전쟁만 상단 회피 허용
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) {
@@ -1290,12 +1121,20 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // [연결선 렌더링 - 대각선 3차 베지어 곡선 및 두께 2px 복원]
+                // SVG 가상 픽셀 연산을 통한 100% 뷰박스 분리 및 두께 롤백
+                const svgW = treeSvg.clientWidth || window.innerWidth;
+                const svgH = treeSvg.clientHeight || window.innerHeight;
+
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
                         const pNode = CONCEPT_REGISTRY[parentId];
                         const cNode = CONCEPT_REGISTRY[id];
+
+                        const px = (pNode.x / 100) * svgW;
+                        const py = (pNode.y / 100) * svgH;
+                        const cx = (cNode.x / 100) * svgW;
+                        const cy = (cNode.y / 100) * svgH;
 
                         const gradId = `fadeGrad_${parentId}_${id}`;
                         const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
@@ -1324,19 +1163,19 @@
 
                         let branchObj;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
-                            // 대각선: 3차 베지어 곡선 적용
+                            // 대각선: 3차 베지어 곡선 (절대 좌표 픽셀화)
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
-                            const midX = (pNode.x + cNode.x) / 2;
-                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${midX} ${pNode.y}, ${midX} ${cNode.y}, ${cNode.x} ${cNode.y}`);
+                            const midX = (px + cx) / 2;
+                            branchObj.setAttribute('d', `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`);
                         } else {
-                            // 수직/수평: 직선 적용
+                            // 수직/수평: 직선 
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
-                            branchObj.setAttribute('x1', pNode.x + '%');
-                            branchObj.setAttribute('y1', pNode.y + '%');
-                            branchObj.setAttribute('x2', cNode.x + '%');
-                            branchObj.setAttribute('y2', cNode.y + '%');
+                            branchObj.setAttribute('x1', px);
+                            branchObj.setAttribute('y1', py);
+                            branchObj.setAttribute('x2', cx);
+                            branchObj.setAttribute('y2', cy);
                         }
                         
                         branchObj.setAttribute('stroke', `url(#${gradId})`);
@@ -1394,7 +1233,8 @@
                     btn.innerHTML = nodeInfo.name;
                     
                     btn.onclick = () => {
-                        if (isTransitioning || isTutorialActive) return;
+                        if (isTransitioning) return;
+                        if (isTutorialActive && localStorage.getItem('tut_seq2') === 'done' && id !== 'sungbwar') return;
                         
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
@@ -1408,6 +1248,14 @@
                             focusToNode(id);
                             setTimeout(() => { isTransitioning = false; }, 800);
                         } else {
+                            if (isTutorialActive && localStorage.getItem('tut_seq1') === 'done' && localStorage.getItem('tut_seq3')) {
+                                hideTutorialGuide();
+                                isTutorialActive = false;
+                                document.body.classList.remove('tut-active');
+                                clearHighlights();
+                                localStorage.setItem('tut_seq4', 'done');
+                            }
+
                             isTransitioning = true;
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
@@ -1448,7 +1296,7 @@
                                         runTutStep();
                                     }
 
-                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6')) {
+                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
                                         setTimeout(() => {
                                             if(!isTutorialActive) {
                                                 isTutorialActive = true;
@@ -1471,6 +1319,13 @@
                     requestAnimationFrame(() => focusToNode(currentFocusedId));
                 }
             }
+
+            // 창크기 조절 시 라인 좌표 재갱신을 위한 리스너
+            window.addEventListener('resize', () => {
+                if (currentStage === 2 && !isTransitioning) {
+                    renderTreeGrid(false);
+                }
+            });
 
             pressStartBtn.addEventListener('click', function() {
                 if (isTransitioning || isTutorialActive) return;
