@@ -284,7 +284,7 @@
             pointer-events: auto !important;
         }
 
-        /* [CSS] PRESS TO START 버튼 (텍스트 전체를 완벽히 감싸는 히트박스 패딩 및 배경 박스 적용) */
+        /* [CSS] PRESS TO START 버튼 (줄바꿈 방지 및 확장된 패딩으로 전체 인식 범위 확보) */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -292,15 +292,15 @@
             color: #a0a0aa;
             letter-spacing: 5px;
             text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5);
-            background: rgba(20, 0, 0, 0.5);
-            border: 1px solid rgba(140, 0, 0, 0.5);
-            padding: 18px 42px;
-            border-radius: 4px;
+            background: transparent;
+            border: none;
+            padding: 30px 60px;
             cursor: pointer;
             outline: none;
             display: inline-block;
+            white-space: nowrap;
             pointer-events: auto !important;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease, background 0.3s ease, border-color 0.3s ease;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
 
@@ -308,10 +308,8 @@
             animation-play-state: paused !important;
             opacity: 1 !important;
             color: #ffffff;
-            background: rgba(60, 0, 0, 0.8);
-            border-color: #ff2222;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9);
-            transform: scale(1.05);
+            transform: scale(1.08);
         }
 
         .press-start-wrapper.flash-exit {
