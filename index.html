@@ -40,10 +40,7 @@
             pointer-events: none;
             transition: opacity 1.5s ease-in-out;
         }
-
-        .main-background-layer.active {
-            opacity: 1;
-        }
+        .main-background-layer.active { opacity: 1; }
 
         .red-dust-effect {
             position: absolute;
@@ -57,16 +54,12 @@
             opacity: 0;
             transition: opacity 1.8s ease-in-out;
         }
-
         .red-dust-effect.active {
             opacity: 0.55;
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
 
-        @keyframes dust-fade-soft {
-            0% { opacity: 0.5; }
-            100% { opacity: 0.75; }
-        }
+        @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         #acquireToastContainer {
             position: absolute;
@@ -112,12 +105,10 @@
             z-index: 1000;
             pointer-events: auto;
         }
-
         .interactive-keyword:hover {
             color: #ffffff !important;
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
         }
-
         .interactive-keyword.clicked {
             color: #d0c5b5 !important;
             font-weight: 400 !important;
@@ -133,7 +124,6 @@
             75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; }
             100% { transform: translateX(0); }
         }
-
         .keyword-error {
             animation: keyword-error-shake 0.3s ease-in-out;
             display: inline-block;
@@ -151,18 +141,15 @@
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
             pointer-events: auto;
         }
-
         .description-quote:hover {
             color: #ffffff !important;
             transform: scale(1.02);
             text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important;
         }
-
         .description-quote.glow-fade-out {
             animation: none !important;
             text-shadow: none !important;
         }
-
         @keyframes quote-gentle-glow {
             0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); }
             100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
@@ -180,7 +167,6 @@
             gap: 70px;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s;
         }
-
         .fate-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.5rem;
@@ -198,7 +184,6 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
         }
-
         .fate-start-btn:hover {
             color: #ffffff;
             background: rgba(60, 0, 0, 0.95);
@@ -206,14 +191,12 @@
             box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8);
             transform: scale(1.05);
         }
-
         .start-btn-container.hide {
             opacity: 0;
             transform: scale(0.9);
             visibility: hidden;
             pointer-events: none;
         }
-
         .initial-notice-center {
             font-size: 0.95rem;
             color: rgba(215, 205, 190, 0.7);
@@ -238,7 +221,6 @@
             pointer-events: none;
             transform: translateY(-10px);
         }
-
         .holy-grail-wrapper {
             display: flex;
             justify-content: center;
@@ -246,16 +228,13 @@
             margin-bottom: 25px;
             opacity: 0;
         }
-
         .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-
         .fate-logo-img {
             width: 270px;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
             filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85));
         }
-
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -266,9 +245,7 @@
             margin-bottom: 35px;
             opacity: 0;
         }
-
         .sub-title.animate { animation: fade-in 1.0s ease-out forwards; }
-
         .extended-dash { letter-spacing: 4px; margin: 0 2px; }
 
         .press-start-wrapper {
@@ -281,14 +258,12 @@
             display: flex;
             justify-content: center;
         }
-
         .press-start-wrapper.animate {
             opacity: 1;
             visibility: visible;
             pointer-events: auto !important;
             transition: opacity 0.8s ease-out, visibility 0.8s step-start;
         }
-
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -308,7 +283,6 @@
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
             position: relative;
         }
-
         .press-start-btn:hover {
             animation-play-state: paused !important;
             opacity: 1 !important;
@@ -316,7 +290,6 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
         }
-
         .press-start-wrapper.flash-exit {
             animation: simple-flash-fade 0.25s ease-out forwards !important;
             pointer-events: none !important;
@@ -326,7 +299,6 @@
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
         }
-
         .slow-fade-out {
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
@@ -348,7 +320,6 @@
             pointer-events: none;
             word-break: keep-all;
         }
-
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
@@ -365,14 +336,12 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
-
         .tree-selection-container.show {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
-
         .tree-matrix-world {
             position: absolute;
             top: 0;
@@ -381,7 +350,6 @@
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1);
         }
-
         .tree-svg-layer {
             position: absolute;
             top: 0;
@@ -391,7 +359,6 @@
             pointer-events: none;
             z-index: 31;
         }
-
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
@@ -401,7 +368,6 @@
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
-
         .tree-branch-line.drawn { opacity: 1; }
 
         .tree-node-box {
@@ -413,16 +379,9 @@
             align-items: center;
             transition: transform 0.3s ease;
         }
+        .tree-node-box.focused { z-index: 35; }
+        .tree-node-box.focused .tab-item-btn { transform: scale(1.15); }
 
-        /* 포커싱 스케일 효과 */
-        .tree-node-box.focused {
-            z-index: 35;
-        }
-        .tree-node-box.focused .tab-item-btn {
-            transform: scale(1.15);
-        }
-
-        /* 탭 버튼 고정 사이즈 */
         .tab-item-btn {
             font-family: 'Song Myung', serif;
             font-size: 3.8rem;
@@ -439,6 +398,14 @@
             user-select: none;
             white-space: nowrap;
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+        }
+        
+        /* 커스텀 버튼 디자인 (sso 전용) */
+        .btn-sso {
+            font-size: 2.5rem !important;
+            text-align: center;
+            line-height: 1.2;
+            flex-direction: column;
         }
 
         .yellow-glow-btn {
@@ -490,11 +457,15 @@
             text-shadow: 0 0 50px rgba(80, 80, 80, 1), 0 0 25px rgba(150, 150, 150, 0.9);
             transform: scale(1.05);
         }
-        
-        /* 특수 컬러 */
-        .color-gold {
-            color: #ffd700 !important;
+        .blue-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 35px rgba(50, 50, 255, 0.95), 0 0 15px rgba(0, 0, 200, 0.8);
         }
+        .blue-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(100, 100, 255, 1), 0 0 25px rgba(255, 255, 255, 0.9);
+            transform: scale(1.05);
+        }
+        .color-gold { color: #ffd700 !important; }
 
         /* --- [설명창] --- */
         .tab-detail-view {
@@ -514,7 +485,6 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
-
         .tab-detail-view.show {
             z-index: 55 !important;
             opacity: 1;
@@ -523,7 +493,6 @@
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
 
-        /* 중앙 정렬 필요 탭들 */
         #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class {
             justify-content: center;
             padding-left: 0;
@@ -546,30 +515,13 @@
             z-index: 10;
         }
 
-        .title-yellow {
-            color: #fffdfa;
-            text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
-        }
-        .title-red {
-            color: #fffdfa;
-            text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8);
-        }
-        .title-white {
-            color: #fffdfa;
-            text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 40px rgba(255, 255, 255, 0.8);
-        }
-        .title-brightred {
-            color: #990000;
-            text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 40px rgba(255, 50, 50, 0.95);
-        }
-        .title-skyblue {
-            color: #fffdfa;
-            text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8);
-        }
-        .title-black {
-            color: #fffdfa;
-            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9);
-        }
+        .title-yellow { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
+        .title-red { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8); }
+        .title-white { color: #fffdfa; text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 40px rgba(255, 255, 255, 0.8); }
+        .title-brightred { color: #990000; text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 40px rgba(255, 50, 50, 0.95); }
+        .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8); }
+        .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
+        .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
 
         .detail-left-box {
             display: flex;
@@ -699,7 +651,7 @@
             bottom: auto;
         }
 
-        /* --- [안내창 가이드 튜토리얼 시스템] (사이즈 롤백 완료) --- */
+        /* --- [안내창 가이드 튜토리얼 시스템] --- */
         #tutorialOverlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -708,6 +660,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s;
+            pointer-events: none; /* 토글 시 auto로 변경 */
         }
         #tutorialOverlay.active {
             opacity: 1;
@@ -726,7 +679,7 @@
             color: #f5f0e6;
             padding: 30px;
             border-radius: 10px;
-            text-align: center;
+            text-align: left;
             z-index: 9005;
             box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); 
             opacity: 0;
@@ -735,14 +688,20 @@
             font-size: 1.3rem; 
             line-height: 1.7;
             word-break: keep-all;
+            display: flex;
+            flex-direction: column;
         }
         #tutorialGuide.active {
             opacity: 1;
             visibility: visible;
         }
         
-        .guide-btn {
+        .guide-btn-wrapper {
+            display: flex;
+            justify-content: flex-end;
             margin-top: 25px;
+        }
+        .guide-btn {
             padding: 10px 30px;
             background: #444;
             color: #fff;
@@ -754,16 +713,20 @@
         }
         .guide-btn:hover { background: #777; }
 
+        /* 하이라이트 엘리먼트 가시성 강화 (오버레이 위로 띄움 + 독립 빛 부여) */
         .highlight-element {
             z-index: 9010 !important;
             position: relative;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3); 
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        .interactive-highlight {
             pointer-events: auto !important;
         }
 
         #tutorialArrow {
             position: fixed;
-            bottom: 30px;
-            left: 170px;
             font-size: 5rem;
             color: #ffffff;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
@@ -926,6 +889,7 @@
     <audio id="tosarinSfx" src="voice/voice-juju-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
+    <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
 
     <!-- [메인화면] -->
     <div class="main-background-layer" id="bgLayer"></div>
@@ -955,7 +919,7 @@
     <!-- [탭 선택 창] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
-            <svg class="tree-svg-layer" id="treeSvg"></svg>
+            <svg class="tree-svg-layer" id="treeSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
             <div id="treeNodesBox"></div>
         </div>
     </div>
@@ -1009,12 +973,14 @@
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며, <span class="annotation-word" data-tooltip="추가예정">근원</span>을 추구하는 자를 일컫는다.<br>
-                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
+                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며, 근원을 추구하는 자를 일컫는다.<br>
+                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면<br>
+                        집안이 마술사 가문이어야 한다.<br>
                         마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="추가예정">마술각인</span>을 이어받는다.<br>
                         대부분의 마술사는 <span class="annotation-word" data-tooltip="추가예정">마술협회</span>에 소속되어 있다.<br>
                         성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
-                        성배전쟁에 참여한 것만으로도 마술사는 마술사로서 큰 명예를 얻는다.<br>
+                        성배전쟁에 참여한 것만으로도 마술사는<br>
+                        마술사로서 큰 명예를 얻는다.<br>
                         마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
                     </p>
                 </div>
@@ -1034,12 +1000,15 @@
                     <span class="description-quote" id="tosarinTrigger">"세트, 영주에 고하노니 성배의 규율에 따르라.<br>이자 나의 서번트에게 징계의 법을 내리라!"</span>
                     <span class="description-quote-author">-토오사카 린</span>
                     <p style="margin-top: 12px;">
-                        서번트와 계약한 마스터가 3회에 걸쳐 서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
-                        그 형태는 신체 어딘가에 나타나는 3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며 세부적인 형태는 마스터마다 전부 다르다.<br>
+                        서번트와 계약한 마스터가 3회에 걸쳐<br>
+                        서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
+                        그 형태는 신체 어딘가에 나타나는<br>
+                        3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며<br>
+                        세부적인 형태는 마스터마다 전부 다르다.<br>
                         성배가 주는 강대한 마력 덩어리로 특정 명령을 강제하는 힘을 가졌다.<br>
                         서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만<br>
-                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에 <ruby>령주<rt>令呪</rt></ruby>를 사용하면<br>
-                        그 강대한 마력을 강화용으로 사용할 수 있다.<br>
+                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에<br>
+                        <ruby>령주<rt>令呪</rt></ruby>를 사용하면 그 강대한 마력을 강화용으로 사용할 수 있다.<br>
                         여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.
                     </p>
                 </div>
@@ -1079,11 +1048,15 @@
                 <h2 class="description-title">서번트란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="interactive-keyword" data-key="yong">영령</span>이라는 기록체를 마력으로 실체화시킨 것으로, 일종의 고차원 생명체다.<br>
-                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만 원본은 따로 있다.<br>
-                        본래는 소환이나 사역도 불가능하지만 성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
-                        서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중 적성에 맞는 클래스가 부여된다.<br>
-                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu">보구</span>나 스킬을 가지고 있으며<br>
+                        <span class="interactive-keyword" data-key="yong">영령</span>이라는 기록체를 마력으로 실체화시킨 것으로,<br>
+                        일종의 고차원 생명체다.<br>
+                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만<br>
+                        원본은 따로 있다.<br>
+                        본래는 소환이나 사역도 불가능하지만<br>
+                        성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
+                        서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중<br>
+                        적성에 맞는 클래스가 부여된다.<br>
+                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu">보구</span>나 <span class="annotation-word" data-tooltip="추가예정">스킬</span>을 가지고 있으며<br>
                         한 개체 개체가 어마무시한 힘을 가지고 있다.
                     </p>
                 </div>
@@ -1115,7 +1088,7 @@
 
         <!-- [신규] 서번트 소환 의식 -->
         <section class="tab-detail-view" id="tabDetail_sso">
-            <div class="static-tab-title title-skyblue">서번트 소환 의식</div>
+            <div class="static-tab-title title-blue">서번트 소환 의식</div>
             <div class="detail-right-box">
                 <h2 class="description-title">서번트 소환 의식이란?</h2>
                 <div class="description-content">
@@ -1126,7 +1099,7 @@
 
         <!-- [신규] 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
-            <div class="static-tab-title title-skyblue">영령</div>
+            <div class="static-tab-title title-blue">영령</div>
             <div class="detail-right-box">
                 <h2 class="description-title">영령이란?</h2>
                 <div class="description-content">
@@ -1184,23 +1157,22 @@
         let isTransitioning = false;
         let isToastActive = false;
         let isTutorialActive = false;
+        
+        let tutState = { seq: 0, step: 0 };
 
-        // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 반경(R) 배치 및 크기 통일화 ★
-        // Center: sungbwar (50, 45) -> 반경 28
-        // 서번트의 중심 좌표 (50, 73) -> 반경 18
-        // 마스터의 중심 좌표 (30, 65) -> 반경 18
+        // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 원형/격자 혼합 배치 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 22, y: 45 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 78, y: 45 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 30, y: 65 }, 
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 73 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 70, y: 65 },
-            'sso': { name: '서번트 소환 의식', parent: 'master', x: 10, y: 65 },
-            'yong': { name: '영령', parent: 'suv', x: 35, y: 90 },
-            'class': { name: '클래스', parent: 'suv', x: 50, y: 93 },
-            'bogu': { name: '보구', parent: 'suv', x: 65, y: 90 }
+            'ma': { name: '마술사', parent: 'sungbwar', x: 18, y: 45 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 82, y: 45 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 26, y: 75 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 75 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 74, y: 75 },
+            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 5, y: 75 },
+            'yong': { name: '영령', parent: 'suv', x: 26, y: 105 },
+            'class': { name: '클래스', parent: 'suv', x: 50, y: 105 },
+            'bogu': { name: '보구', parent: 'suv', x: 74, y: 105 }
         };
 
         (function checkReloadAndReset() {
@@ -1211,8 +1183,11 @@
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
-                localStorage.removeItem('fate_main_tut');
-                localStorage.removeItem('fate_anno_tut');
+                localStorage.removeItem('tut_seq1');
+                localStorage.removeItem('tut_seq2');
+                localStorage.removeItem('tut_seq3');
+                localStorage.removeItem('tut_seq4');
+                localStorage.removeItem('tut_seq5');
             }
         })();
 
@@ -1238,6 +1213,7 @@
             const tosarinSfx = document.getElementById('tosarinSfx');
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
+            const anneSfx = document.getElementById('anneSfx');
 
             const volumeSlider = document.getElementById('volumeSlider');
             const seSlider = document.getElementById('seSlider');
@@ -1275,6 +1251,7 @@
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
+                if (anneSfx) anneSfx.volume = parseFloat(this.value);
             });
 
             voiceSlider.addEventListener('input', function() { 
@@ -1339,7 +1316,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, moveSfx, fateVoice].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -1424,37 +1401,160 @@
                 }
             });
 
-            function showTutorialGuide(text, showBtn, btnText, callback, highlightEl) {
+            // [가이드 시스템 튜토리얼 렌더링 엔진]
+            function playAnneSfx() {
+                if (anneSfx) {
+                    anneSfx.pause();
+                    anneSfx.volume = parseFloat(seSlider.value);
+                    anneSfx.currentTime = 0;
+                    const p = anneSfx.play();
+                    if (p !== undefined) p.catch(()=>{});
+                }
+            }
+
+            function positionArrow(targetEl) {
+                const arrow = document.getElementById('tutorialArrow');
+                const rect = targetEl.getBoundingClientRect();
+                arrow.style.left = (rect.right + 10) + 'px';
+                arrow.style.top = (rect.top + rect.height/2 - 40) + 'px';
+            }
+
+            function showTutorialGuide(text, btnText, callback, topAlign = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 
                 guide.innerHTML = `<p>${text}</p>`;
-                if (showBtn) {
-                    const btn = document.createElement('button');
-                    btn.className = 'guide-btn';
-                    btn.innerText = btnText;
-                    btn.onclick = () => { if (callback) callback(); };
-                    guide.appendChild(btn);
-                }
+                const btnWrapper = document.createElement('div');
+                btnWrapper.className = 'guide-btn-wrapper';
+                const btn = document.createElement('button');
+                btn.className = 'guide-btn';
+                btn.innerText = btnText;
+                btn.onclick = () => { if (callback) callback(); };
+                btnWrapper.appendChild(btn);
+                guide.appendChild(btnWrapper);
                 
-                guide.style.top = 'auto';
-                guide.style.bottom = '15%';
-                if (highlightEl) {
-                    const rect = highlightEl.getBoundingClientRect();
-                    if (rect.bottom > window.innerHeight * 0.5) {
-                        guide.style.bottom = 'auto';
-                        guide.style.top = '15%';
-                    }
+                if (topAlign) {
+                    guide.style.bottom = 'auto';
+                    guide.style.top = '15%';
+                } else {
+                    guide.style.top = 'auto';
+                    guide.style.bottom = '10%'; // 알림창(top 150px) 간섭 회피
                 }
                 
                 overlay.classList.add('active');
                 guide.classList.add('active');
             }
 
-            function hideTutorialGuide() {
+            function clearHighlights() {
+                document.querySelectorAll('.highlight-element').forEach(el => {
+                    el.classList.remove('highlight-element');
+                    el.classList.remove('interactive-highlight');
+                });
+                document.getElementById('tutorialArrow').classList.remove('active');
+            }
+
+            function endTutorial() {
+                clearHighlights();
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
+                isTutorialActive = false;
             }
+
+            function runTutStep() {
+                clearHighlights();
+                if (tutState.seq === 1) { 
+                    if (tutState.step === 0) {
+                        showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 1) {
+                        showTutorialGuide("이곳은 개념들을 나열해두는 장소 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 2) {
+                        document.querySelector('.tree-node-box[data-id="sung"]').classList.add('highlight-element');
+                        showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 3) {
+                        document.querySelector('.tree-node-box[data-id="sung"]').classList.add('highlight-element');
+                        showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { 
+                            playAnneSfx(); 
+                            localStorage.setItem('tut_seq1', 'done');
+                            endTutorial(); 
+                        });
+                    }
+                } else if (tutState.seq === 2) { 
+                    if (tutState.step === 0) {
+                        showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 1) {
+                        document.querySelector('#tabDetail_sung .detail-img').classList.add('highlight-element');
+                        showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 2) {
+                        document.querySelector('#tabDetail_sung .detail-sub-label').classList.add('highlight-element');
+                        showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 3) {
+                        document.querySelector('#tabDetail_sung .detail-right-box').classList.add('highlight-element');
+                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 4) {
+                        document.querySelector('#tabDetail_sung .description-quote').classList.add('highlight-element');
+                        showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 5) {
+                        document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]').classList.add('highlight-element');
+                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념(노란색) 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 6) {
+                        document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]').classList.add('highlight-element');
+                        showTutorialGuide("단어를 누르는 것으로 신규개념(노란색)을 획득합니다.", "확인", () => { 
+                            playAnneSfx(); 
+                            localStorage.setItem('tut_seq2', 'done');
+                            endTutorial(); 
+                        });
+                    }
+                } else if (tutState.seq === 3) { 
+                    if (tutState.step === 0) {
+                        showTutorialGuide("신규개념(노란색)을 획득했습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 1) {
+                        document.getElementById('acquireToastContainer').classList.add('highlight-element');
+                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 2) {
+                        const backBtn = document.getElementById('backBtnWrapper');
+                        backBtn.classList.add('highlight-element');
+                        document.getElementById('tutorialArrow').classList.add('active');
+                        positionArrow(backBtn);
+                        showTutorialGuide("뒤로가기를 눌러 단어 선택 창으로 돌아갑시다.", "확인", () => { 
+                            playAnneSfx(); 
+                            localStorage.setItem('tut_seq3', 'done');
+                            endTutorial(); 
+                        });
+                    }
+                } else if (tutState.seq === 4) { 
+                    if (tutState.step === 0) {
+                        document.querySelector('.tree-node-box[data-id="sungbwar"]').classList.add('highlight-element');
+                        showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
+                            playAnneSfx(); 
+                            localStorage.setItem('tut_seq4', 'done');
+                            endTutorial(); 
+                        }, true); // top align
+                    }
+                } else if (tutState.seq === 5) { 
+                    if (tutState.step === 0) {
+                        showTutorialGuide("이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", "확인", () => { 
+                            playAnneSfx(); 
+                            endTutorial(); 
+                        });
+                    }
+                } else if (tutState.seq === 6) { 
+                    if (tutState.step === 0) {
+                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
+                        showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 1) {
+                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
+                        showTutorialGuide("신규개념(노란색)보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                    } else if (tutState.step === 2) {
+                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
+                        showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { 
+                            playAnneSfx(); 
+                            localStorage.setItem('tut_seq5', 'done');
+                            endTutorial(); 
+                        });
+                    }
+                }
+            }
+
 
             // [동적 프레임 연산 기반 토스트 타이머 제어 알고리즘]
             let toastEl = null;
@@ -1509,7 +1609,6 @@
                             const p = noshinSfx.play();
                             if (p !== undefined) p.catch(()=>{});
                         }
-                        // 방해 효과: 점멸 및 진동 애니메이션 부여
                         keyTarget.classList.remove('keyword-error');
                         void keyTarget.offsetWidth; 
                         keyTarget.classList.add('keyword-error');
@@ -1538,16 +1637,11 @@
                         }
                         spawnAcquireToast(keyTarget.innerHTML.trim());
 
-                        if (!localStorage.getItem('fate_main_tut')) {
-                            localStorage.setItem('fate_main_tut', 'step1');
+                        if (!localStorage.getItem('tut_seq3')) {
                             setTimeout(() => {
                                 isTutorialActive = true;
-                                backBtnWrapper.classList.add('highlight-element');
-                                document.getElementById('tutorialArrow').classList.add('active');
-                                showTutorialGuide(
-                                    "신규개념을 획득 했습니다. 뒤로가기 버튼 혹은 Esc를 눌러봅시다", 
-                                    false, "", null, backBtnWrapper
-                                );
+                                tutState = { seq: 3, step: 0 };
+                                runTutStep();
                             }, 500);
                         }
                     }
@@ -1609,7 +1703,6 @@
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
                 
-                // 포커싱 스케일 효과를 위한 클래스 토글
                 const oldFocused = document.querySelector('.tree-node-box.focused');
                 if (oldFocused) oldFocused.classList.remove('focused');
                 
@@ -1632,7 +1725,7 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // [연결선 렌더링 - 대각선 3차 베지어 곡선 연산 포함]
+                // [연결선 2 알고리즘 병합]
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1668,8 +1761,23 @@
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
+                            
                             const midY = (pNode.y + cNode.y) / 2;
-                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
+                            const signX = Math.sign(cNode.x - pNode.x);
+                            const signY = Math.sign(cNode.y - pNode.y);
+                            
+                            let rX = 3 * signX;
+                            let rY = 3 * signY;
+                            if (Math.abs(pNode.x - cNode.x) < 6) rX = (cNode.x - pNode.x) / 2;
+                            if (Math.abs(midY - pNode.y) < 6) rY = (midY - pNode.y) / 2;
+                            
+                            const dPath = `M ${pNode.x} ${pNode.y} 
+                                         L ${pNode.x} ${midY - rY} 
+                                         Q ${pNode.x} ${midY} ${pNode.x + rX} ${midY} 
+                                         L ${cNode.x - rX} ${midY} 
+                                         Q ${cNode.x} ${midY} ${cNode.x} ${midY + rY} 
+                                         L ${cNode.x} ${cNode.y}`;
+                            branchObj.setAttribute('d', dPath);
                         } else {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
@@ -1722,17 +1830,19 @@
                         if (id === 'class') btn.classList.add('color-gold');
                     } else if (id === 'rj') {
                         btn.classList.add('brightred-glow-btn');
-                    } else if (id === 'suv' || id === 'sso' || id === 'yong') {
+                    } else if (id === 'suv' || id === 'yong') {
                         btn.classList.add('skyblue-glow-btn');
                     } else if (id === 'gam') {
                         btn.classList.add('black-glow-btn');
+                    } else if (id === 'sso') {
+                        btn.classList.add('blue-glow-btn');
+                        btn.classList.add('btn-sso');
                     }
 
                     btn.innerHTML = nodeInfo.name;
                     
                     btn.onclick = () => {
-                        if (isTransitioning) return;
-                        if (isTutorialActive && localStorage.getItem('fate_main_tut') === 'step2' && id !== 'sungbwar') return;
+                        if (isTransitioning || isTutorialActive) return;
                         
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
@@ -1746,13 +1856,6 @@
                             focusToNode(id);
                             setTimeout(() => { isTransitioning = false; }, 800);
                         } else {
-                            if (isTutorialActive && localStorage.getItem('fate_main_tut') === 'step2') {
-                                hideTutorialGuide();
-                                isTutorialActive = false;
-                                document.querySelector('.tree-node-box[data-id="sungbwar"]').classList.remove('highlight-element');
-                                localStorage.setItem('fate_main_tut', 'step3');
-                            }
-
                             isTransitioning = true;
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
@@ -1766,7 +1869,6 @@
                             currentActiveTabId = id;
                             treeSelectionContainer.classList.remove('show');
                             
-                            // 클래스 특수 뷰포트 라우팅 배경 페이드 아웃 로직
                             if (id === 'class') {
                                 document.getElementById('bgLayer').style.opacity = '0';
                                 document.getElementById('dustEffect').style.opacity = '0';
@@ -1782,31 +1884,21 @@
                                     currentStage = 3;
                                     isTransitioning = false;
 
-                                    if (localStorage.getItem('fate_main_tut') === 'step3') {
-                                        setTimeout(() => {
-                                            isTutorialActive = true;
-                                            showTutorialGuide(
-                                                "이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", 
-                                                true, "확인", () => {
-                                                    hideTutorialGuide();
-                                                    isTutorialActive = false;
-                                                    localStorage.setItem('fate_main_tut', 'done');
-                                                }
-                                            );
-                                        }, 800);
+                                    if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
+                                        isTutorialActive = true;
+                                        tutState = { seq: 2, step: 0 };
+                                        runTutStep();
+                                    } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
+                                        isTutorialActive = true;
+                                        tutState = { seq: 5, step: 0 };
+                                        runTutStep();
                                     }
 
-                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('fate_anno_tut')) {
+                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq5')) {
                                         setTimeout(() => {
                                             isTutorialActive = true;
-                                            showTutorialGuide(
-                                                "이것은 주석이 달린 단어입니다. 클릭하여 주석을 확인해봅시다.<br>주석은 신규개념보다는 작은 규모의 고유명사의 뜻을 해설해줍니다. 재클릭하는것으로 주석창을 접을 수 있습니다.", 
-                                                true, "확인", () => {
-                                                    hideTutorialGuide();
-                                                    isTutorialActive = false;
-                                                    localStorage.setItem('fate_anno_tut', 'done');
-                                                }
-                                            );
+                                            tutState = { seq: 6, step: 0 };
+                                            runTutStep();
                                         }, 1000); 
                                     }
                                 }, 600);
@@ -1818,7 +1910,9 @@
                     treeNodesBox.appendChild(nodeBox);
                 });
 
-                if (resetFocus) focusToNode(currentFocusedId);
+                if (resetFocus) {
+                    requestAnimationFrame(() => focusToNode(currentFocusedId));
+                }
             }
 
             pressStartBtn.addEventListener('click', function() {
@@ -1854,45 +1948,29 @@
                         fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value) * 0.7, 1000);
                     }
                     isTransitioning = false;
+
+                    if (!localStorage.getItem('tut_seq1')) {
+                        isTutorialActive = true;
+                        tutState = { seq: 1, step: 0 };
+                        runTutStep();
+                    }
                 }, 1450);
             });
 
             backBtn.addEventListener('click', function() { 
-                if (isTransitioning) return;
-
-                if (isTutorialActive && localStorage.getItem('fate_main_tut') === 'step1') {
-                    backBtnWrapper.classList.remove('highlight-element');
-                    document.getElementById('tutorialArrow').classList.remove('active');
-                    isTutorialActive = false;
-                    localStorage.setItem('fate_main_tut', 'step2');
-                    setTimeout(() => {
-                        isTutorialActive = true;
-                        const sbNode = document.querySelector('.tree-node-box[data-id="sungbwar"]');
-                        if (sbNode) sbNode.classList.add('highlight-element');
-                        showTutorialGuide(
-                            "신규개념을 획득하면 알림과 노드가 추가됩니다.<br>(화면터치)성배전쟁 탭을 들어가봅시다.",
-                            true, "다음", () => {
-                                hideTutorialGuide();
-                                isTutorialActive = false;
-                            }, sbNode
-                        );
-                    }, 800);
-                } else if (isTutorialActive) {
-                    return; 
-                }
-
+                if (isTransitioning || isTutorialActive) return;
                 history.back(); 
             });
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
-                    if (isTransitioning || currentStage <= 1 || (isTutorialActive && localStorage.getItem('fate_main_tut') !== 'step1')) return;
+                    if (isTransitioning || currentStage <= 1 || isTutorialActive) return;
                     backBtn.click();
                 }
             });
 
             window.addEventListener('popstate', function(event) {
-                if (isTransitioning) return;
+                if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
 
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
@@ -1916,7 +1994,6 @@
                     tooltipBox.classList.remove('show');
                     activeAnnotation = null;
 
-                    // 배경 투명도 롤백
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
 
@@ -1925,6 +2002,12 @@
                         treeSelectionContainer.classList.add('show');
                         currentActiveTabId = null;
                         isTransitioning = false;
+
+                        if (localStorage.getItem('tut_seq3') && !localStorage.getItem('tut_seq4')) {
+                            isTutorialActive = true;
+                            tutState = { seq: 4, step: 0 };
+                            runTutStep();
+                        }
                     }, 600); 
 
                 } else if (currentStage === 2) {
