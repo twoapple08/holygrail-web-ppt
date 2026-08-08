@@ -684,7 +684,7 @@
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
-    <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
+    <audio id="kotomineSfx" src="voice/voice-hloygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
@@ -1211,7 +1211,6 @@
                     introNotice.classList.add('animate');
                     controlsGroup.classList.add('animate');
                     
-                    // 최초 메인 화면 진입 시 1회만 보이스 재생
                     if (!sessionStorage.getItem('fate_voice_played')) {
                         sessionStorage.setItem('fate_voice_played', 'true');
                         if (fateVoice) {
