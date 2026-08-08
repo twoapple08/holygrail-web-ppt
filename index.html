@@ -281,6 +281,7 @@
             pointer-events: auto;
         }
 
+        /* PRESS TO START 버튼 (히트박스 확장 패딩 적용) */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -290,7 +291,9 @@
             text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5);
             background: transparent;
             border: none;
+            padding: 16px 36px;
             cursor: pointer;
+            outline: none;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
@@ -1114,6 +1117,8 @@
             // --- 단계별 상태 트랜지션 (크로스 페이드) ---
             pressStartBtn.addEventListener('click', function() {
                 history.pushState({ stage: 2 }, '', '');
+                
+                // ★ sfx-pst 효과음 재생 위치 (PRESS TO START 클릭 시 재생) ★
                 if (pstSfx) {
                     pstSfx.volume = parseFloat(seSlider.value);
                     pstSfx.currentTime = 0;
@@ -1201,13 +1206,6 @@
                 const controlsGroup = document.getElementById('controlsGroup');
 
                 btnContainer.classList.add('hide');
-
-                // ★ sfx-pst 효과음 재생 복구 ★
-                if (pstSfx) {
-                    pstSfx.volume = parseFloat(seSlider.value);
-                    pstSfx.currentTime = 0;
-                    pstSfx.play().catch(()=>{});
-                }
 
                 if (bgm) {
                     bgm.volume = Math.min(1, parseFloat(volumeSlider.value) * 1.15);
