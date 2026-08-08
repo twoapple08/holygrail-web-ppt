@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
-    <!-- [FONT] 구글 웹 폰트 'Song Myung (송명체)' 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
-        /* [CSS] 전역 초기화 및 모바일 탭 터치 하이라이트 제거 */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -27,7 +25,6 @@
             background-color: #000000;
         }
 
-        /* [메인화면 배경] 메인 배경 이미지 레이어 */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -43,9 +40,11 @@
             pointer-events: none;
             transition: opacity 1.5s ease-in-out;
         }
-        .main-background-layer.active { opacity: 1; }
 
-        /* [메인화면 이펙트] 붉은 먼지 */
+        .main-background-layer.active {
+            opacity: 1;
+        }
+
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -58,13 +57,17 @@
             opacity: 0;
             transition: opacity 1.8s ease-in-out;
         }
+
         .red-dust-effect.active {
             opacity: 0.55;
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
-        @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [알림] 신규개념 획득 토스트 알림 컨테이너 */
+        @keyframes dust-fade-soft {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.75; }
+        }
+
         #acquireToastContainer {
             position: absolute;
             top: 150px;
@@ -97,7 +100,6 @@
             100% { transform: translateY(-35px); opacity: 0; }
         }
 
-        /* [신규개념] 본문 내 하이라이트 상호작용 키워드 */
         .interactive-keyword {
             color: #ffd700;
             font-weight: 700;
@@ -110,10 +112,12 @@
             z-index: 1000;
             pointer-events: auto;
         }
+
         .interactive-keyword:hover {
             color: #ffffff !important;
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
         }
+
         .interactive-keyword.clicked {
             color: #d0c5b5 !important;
             font-weight: 400 !important;
@@ -122,7 +126,19 @@
             pointer-events: none !important;
         }
 
-        /* [설명창] 성우 어록 스타일 */
+        @keyframes keyword-error-shake {
+            0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; }
+            25% { transform: translateX(-3px); }
+            50% { transform: translateX(3px); }
+            75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; }
+            100% { transform: translateX(0); }
+        }
+
+        .keyword-error {
+            animation: keyword-error-shake 0.3s ease-in-out;
+            display: inline-block;
+        }
+
         .description-quote {
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
@@ -135,15 +151,18 @@
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
             pointer-events: auto;
         }
+
         .description-quote:hover {
             color: #ffffff !important;
             transform: scale(1.02);
             text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important;
         }
+
         .description-quote.glow-fade-out {
             animation: none !important;
             text-shadow: none !important;
         }
+
         @keyframes quote-gentle-glow {
             0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); }
             100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
@@ -151,7 +170,6 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
-        /* --- [시작하기 창] --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -162,6 +180,7 @@
             gap: 70px;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s;
         }
+
         .fate-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.5rem;
@@ -179,6 +198,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
         }
+
         .fate-start-btn:hover {
             color: #ffffff;
             background: rgba(60, 0, 0, 0.95);
@@ -186,12 +206,14 @@
             box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8);
             transform: scale(1.05);
         }
+
         .start-btn-container.hide {
             opacity: 0;
             transform: scale(0.9);
             visibility: hidden;
             pointer-events: none;
         }
+
         .initial-notice-center {
             font-size: 0.95rem;
             color: rgba(215, 205, 190, 0.7);
@@ -202,7 +224,6 @@
             pointer-events: none;
         }
 
-        /* --- [메인화면] --- */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -217,6 +238,7 @@
             pointer-events: none;
             transform: translateY(-10px);
         }
+
         .holy-grail-wrapper {
             display: flex;
             justify-content: center;
@@ -224,13 +246,16 @@
             margin-bottom: 25px;
             opacity: 0;
         }
+
         .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+
         .fate-logo-img {
             width: 270px;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
             filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85));
         }
+
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -241,7 +266,9 @@
             margin-bottom: 35px;
             opacity: 0;
         }
+
         .sub-title.animate { animation: fade-in 1.0s ease-out forwards; }
+
         .extended-dash { letter-spacing: 4px; margin: 0 2px; }
 
         .press-start-wrapper {
@@ -254,12 +281,14 @@
             display: flex;
             justify-content: center;
         }
+
         .press-start-wrapper.animate {
             opacity: 1;
             visibility: visible;
             pointer-events: auto !important;
             transition: opacity 0.8s ease-out, visibility 0.8s step-start;
         }
+
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -279,6 +308,7 @@
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
             position: relative;
         }
+
         .press-start-btn:hover {
             animation-play-state: paused !important;
             opacity: 1 !important;
@@ -286,18 +316,22 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
         }
+
         .press-start-wrapper.flash-exit {
             animation: simple-flash-fade 0.25s ease-out forwards !important;
             pointer-events: none !important;
         }
+
         @keyframes smooth-scale-fade-out {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
         }
+
         .slow-fade-out {
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
         }
+
         .intro-notice-left {
             position: absolute;
             bottom: 25px;
@@ -314,6 +348,7 @@
             pointer-events: none;
             word-break: keep-all;
         }
+
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
@@ -330,12 +365,14 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
+
         .tree-selection-container.show {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
+
         .tree-matrix-world {
             position: absolute;
             top: 0;
@@ -344,6 +381,7 @@
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1);
         }
+
         .tree-svg-layer {
             position: absolute;
             top: 0;
@@ -353,6 +391,7 @@
             pointer-events: none;
             z-index: 31;
         }
+
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
@@ -362,7 +401,9 @@
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
+
         .tree-branch-line.drawn { opacity: 1; }
+
         .tree-node-box {
             position: absolute;
             transform: translate(-50%, -50%);
@@ -370,9 +411,18 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: transform 0.3s ease;
         }
 
-        /* [(단어) 탭] 크기 완전 동일화 및 정렬 */
+        /* 포커싱 스케일 효과 */
+        .tree-node-box.focused {
+            z-index: 35;
+        }
+        .tree-node-box.focused .tab-item-btn {
+            transform: scale(1.15);
+        }
+
+        /* 탭 버튼 고정 사이즈 */
         .tab-item-btn {
             font-family: 'Song Myung', serif;
             font-size: 3.8rem;
@@ -440,6 +490,11 @@
             text-shadow: 0 0 50px rgba(80, 80, 80, 1), 0 0 25px rgba(150, 150, 150, 0.9);
             transform: scale(1.05);
         }
+        
+        /* 특수 컬러 */
+        .color-gold {
+            color: #ffd700 !important;
+        }
 
         /* --- [설명창] --- */
         .tab-detail-view {
@@ -459,6 +514,7 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
+
         .tab-detail-view.show {
             z-index: 55 !important;
             opacity: 1;
@@ -466,7 +522,9 @@
             pointer-events: auto;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
-        #tabDetail_sungbwar {
+
+        /* 중앙 정렬 필요 탭들 */
+        #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class {
             justify-content: center;
             padding-left: 0;
             gap: 0;
@@ -487,6 +545,7 @@
             pointer-events: none;
             z-index: 10;
         }
+
         .title-yellow {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
@@ -520,7 +579,6 @@
             min-width: 280px;
         }
 
-        /* 30% 증가 연산 적용 280px -> 364px */
         .detail-img {
             width: 364px;
             max-width: 100%;
@@ -641,7 +699,7 @@
             bottom: auto;
         }
 
-        /* --- [안내창 가이드 튜토리얼 시스템] --- */
+        /* --- [안내창 가이드 튜토리얼 시스템] (사이즈 롤백 완료) --- */
         #tutorialOverlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -659,22 +717,22 @@
         
         #tutorialGuide {
             position: fixed;
-            bottom: 35%; /* 화면 중간과 하단 사이 */
+            bottom: 35%; 
             left: 50%;
             transform: translateX(-50%);
-            width: 825px; /* 기존 대비 50% 확장 연산 적용 */
+            width: 550px; 
             background: rgba(30, 30, 30, 0.95);
-            border: 3px solid #ffffff; /* 백색 테두리 */
+            border: 3px solid #ffffff; 
             color: #f5f0e6;
-            padding: 45px;
+            padding: 30px;
             border-radius: 10px;
             text-align: center;
             z-index: 9005;
-            box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); /* 백색 글로우 */
+            box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); 
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s, top 0.5s, bottom 0.5s;
-            font-size: 1.95rem; /* 기존 대비 50% 확장 연산 적용 */
+            font-size: 1.3rem; 
             line-height: 1.7;
             word-break: keep-all;
         }
@@ -684,14 +742,14 @@
         }
         
         .guide-btn {
-            margin-top: 30px;
-            padding: 15px 40px;
+            margin-top: 25px;
+            padding: 10px 30px;
             background: #444;
             color: #fff;
             border: 2px solid #aaa;
             cursor: pointer;
             font-family: 'Song Myung', serif;
-            font-size: 1.5rem;
+            font-size: 1.15rem;
             transition: background 0.3s;
         }
         .guide-btn:hover { background: #777; }
@@ -702,7 +760,6 @@
             pointer-events: auto !important;
         }
 
-        /* 화살표 가이드 객체 */
         #tutorialArrow {
             position: fixed;
             bottom: 30px;
@@ -855,10 +912,10 @@
     <!-- [툴팁 박스] -->
     <div id="tooltipBox"></div>
 
-    <!-- [알림] 신규개념 획득 토스트 알림을 화면에 띄우는 컨테이너 -->
+    <!-- [알림] 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
-    <!-- [오디오 자산] 배경음악 및 효과음, 성우 보이스 엘리먼트 정의 -->
+    <!-- [오디오 자산] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -870,11 +927,10 @@
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
-    <!-- [메인화면] 배경 및 안개 이펙트 레이어 -->
+    <!-- [메인화면] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- [시작하기 창] '시작하기' 버튼이 위치하는 최초 시작 창 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
@@ -882,7 +938,6 @@
         </div>
     </div>
 
-    <!-- [메인화면] 페이트 로고, 서브 타이틀, PRESS TO START 버튼이 배치된 메인화면 영역 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="img/img-Fate.png" alt="Fate Logo" class="fate-logo-img">
@@ -893,25 +948,22 @@
         </div>
     </main>
 
-    <!-- [메인화면] 유입자 안내 문구 -->
     <div class="intro-notice-left" id="introNotice">
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 창] 마인드맵 트리 구조가 렌더링되는 탭 선택 창 컨테이너 -->
+    <!-- [탭 선택 창] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
-            <!-- [연결선] 개념 간의 관계를 이어주는 SVG 마력 연결선 레이어 -->
             <svg class="tree-svg-layer" id="treeSvg"></svg>
-            <!-- [탭] 사용자가 선택할 수 있는 단어 탭들이 동적으로 생성되는 박스 -->
             <div id="treeNodesBox"></div>
         </div>
     </div>
 
-    <!-- [설명창] 각 단어별 상세 정보 및 성우 어록을 보여주는 설명창 보관소 -->
+    <!-- [설명창] -->
     <div id="dynamicTabDetailViews">
         
-        <!-- [설명창] 1. 성배 -->
+        <!-- 1. 성배 -->
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
@@ -928,7 +980,7 @@
             </div>
         </section>
 
-        <!-- [설명창] 2. 성배전쟁 -->
+        <!-- 2. 성배전쟁 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
             <div class="static-tab-title title-red">성배전쟁</div>
             <div class="detail-right-box">
@@ -937,16 +989,16 @@
                     <span class="description-quote" id="kiritsuguTrigger">"온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전. 그게 성배전쟁이다."</span>
                     <span class="description-quote-author">-에미야 키리츠구</span>
                     <p style="margin-top: 12px;">
-                        성배의 소유권을 둘러싸고 벌이는 전쟁.
-                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 내려
-                        <span class="interactive-keyword" data-key="master">마스터</span>의 역할과 <span class="interactive-keyword" data-key="suv">서번트</span> 소환 자격을 부여하고
+                        성배의 소유권을 둘러싸고 벌이는 전쟁.<br>
+                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 내려<br>
+                        <span class="interactive-keyword" data-key="master">마스터</span>의 역할과 <span class="interactive-keyword" data-key="suv">서번트</span> 소환 자격을 부여하고<br>
                         <span class="interactive-keyword" data-key="gam">감독관</span>의 감독하에 진행이 되는 전쟁.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [설명창] 3. 마술사 -->
+        <!-- 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
@@ -957,19 +1009,19 @@
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며, <span class="annotation-word" data-tooltip="추가예정">근원</span>을 추구하는 자를 일컫는다.
-                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.
-                        마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="추가예정">마술각인</span>을 이어받는다.
-                        대부분의 마술사는 <span class="annotation-word" data-tooltip="추가예정">마술협회</span>에 소속되어 있다.
-                        성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻는 자이다.
-                        성배전쟁에 참여한 것만으로도 마술사는 마술사로서 큰 명예를 얻는다.
+                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며, <span class="annotation-word" data-tooltip="추가예정">근원</span>을 추구하는 자를 일컫는다.<br>
+                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
+                        마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="추가예정">마술각인</span>을 이어받는다.<br>
+                        대부분의 마술사는 <span class="annotation-word" data-tooltip="추가예정">마술협회</span>에 소속되어 있다.<br>
+                        성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
+                        성배전쟁에 참여한 것만으로도 마술사는 마술사로서 큰 명예를 얻는다.<br>
                         마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
                     </p>
                 </div>
             </div>
         </section>
         
-        <!-- [설명창] 4. 령주 -->
+        <!-- 4. 령주 -->
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
@@ -982,19 +1034,19 @@
                     <span class="description-quote" id="tosarinTrigger">"세트, 영주에 고하노니 성배의 규율에 따르라.<br>이자 나의 서번트에게 징계의 법을 내리라!"</span>
                     <span class="description-quote-author">-토오사카 린</span>
                     <p style="margin-top: 12px;">
-                        서번트와 계약한 마스터가 3회에 걸쳐 서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.
-                        그 형태는 신체 어딘가에 나타나는 3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며 세부적인 형태는 마스터마다 전부 다르다.
-                        성배가 주는 강대한 마력 덩어리, 특정 명령을 강제하는 힘을 가졌다.
-                        서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만
-                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에
-                        <ruby>령주<rt>令呪</rt></ruby>를 사용하면 그 강대한 마력을 강화용으로 사용할 수 있다.
+                        서번트와 계약한 마스터가 3회에 걸쳐 서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
+                        그 형태는 신체 어딘가에 나타나는 3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며 세부적인 형태는 마스터마다 전부 다르다.<br>
+                        성배가 주는 강대한 마력 덩어리로 특정 명령을 강제하는 힘을 가졌다.<br>
+                        서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만<br>
+                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에 <ruby>령주<rt>令呪</rt></ruby>를 사용하면<br>
+                        그 강대한 마력을 강화용으로 사용할 수 있다.<br>
                         여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [설명창] 5. 마스터 -->
+        <!-- 5. 마스터 -->
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
@@ -1005,18 +1057,18 @@
                 <h2 class="description-title">마스터란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.
-                        성배전쟁에서 선출되는 마스터는 보통은 7명이며 이 중 3~4명은
-                        <span class="annotation-word" data-tooltip="추가예정">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="추가예정">마술협회</span> 측에서 한 명씩 선출해 등록할 수 있는 권한을 가지고 있다.
-                        나머지는 성배가 알아서 배분한다.
-                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며 <ruby>령주<rt>令呪</rt></ruby>가 있으면 서번트 소환 의식을 치루고 소환된 서번트와 계약을 맺을 수 있다.
+                        성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.<br>
+                        성배전쟁에서 선출되는 마스터는 보통은 7명이며 이 중 3~4명은<br>
+                        <span class="annotation-word" data-tooltip="추가예정">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="추가예정">마술협회</span> 측에서 한 명씩 선출해 등록할 수 있는 권한을 가지고 있다.<br>
+                        나머지는 성배가 알아서 배분한다.<br>
+                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며 <ruby>령주<rt>令呪</rt></ruby>가 있으면 <span class="interactive-keyword" data-key="sso">서번트 소환 의식</span>을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
                         계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며, 마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [설명창] 6. 서번트 -->
+        <!-- 6. 서번트 -->
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
@@ -1027,18 +1079,18 @@
                 <h2 class="description-title">서번트란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        영령이라는 기록체를 마력으로 실체화시킨 것으로, 일종의 고차원 생명체다.
-                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만 원본은 따로 있다.
-                        본래는 소환이나 사역도 불가능하지만 성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.
-                        서번트는 각기 다른 7개의 클래스 중 하나로 정해진다.
-                        강력한 무기가 될 수 있는 보구나 스킬을 가지고 있으며
+                        <span class="interactive-keyword" data-key="yong">영령</span>이라는 기록체를 마력으로 실체화시킨 것으로, 일종의 고차원 생명체다.<br>
+                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만 원본은 따로 있다.<br>
+                        본래는 소환이나 사역도 불가능하지만 성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
+                        서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중 적성에 맞는 클래스가 부여된다.<br>
+                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu">보구</span>나 스킬을 가지고 있으며<br>
                         한 개체 개체가 어마무시한 힘을 가지고 있다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [설명창] 7. 감독관 -->
+        <!-- 7. 감독관 -->
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
@@ -1049,15 +1101,56 @@
                 <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">서방교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.
-                        성배전쟁을 참여하길 거부하거나 서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.
-                        성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며
-                        다음 성배전쟁이 시작되면 성당교회에서 파견된
-                        감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.
-                        감독관의 재량에 따라 다른 사람에게 양도하거나
+                        <span class="annotation-word" data-tooltip="추가예정">서방교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
+                        성배전쟁을 참여하길 거부하거나 서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
+                        성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며<br>
+                        다음 성배전쟁이 시작되면 성당교회에서 파견된<br>
+                        감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.<br>
+                        감독관의 재량에 따라 다른 사람에게 양도하거나<br>
                         다른 용도로 사용하는 것이 가능하다.
                     </p>
                 </div>
+            </div>
+        </section>
+
+        <!-- [신규] 서번트 소환 의식 -->
+        <section class="tab-detail-view" id="tabDetail_sso">
+            <div class="static-tab-title title-skyblue">서번트 소환 의식</div>
+            <div class="detail-right-box">
+                <h2 class="description-title">서번트 소환 의식이란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [신규] 영령 -->
+        <section class="tab-detail-view" id="tabDetail_yong">
+            <div class="static-tab-title title-skyblue">영령</div>
+            <div class="detail-right-box">
+                <h2 class="description-title">영령이란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [신규] 보구 -->
+        <section class="tab-detail-view" id="tabDetail_bogu">
+            <div class="static-tab-title title-yellow">보구</div>
+            <div class="detail-right-box">
+                <h2 class="description-title">보구란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [신규] 클래스 (특수 라우팅) -->
+        <section class="tab-detail-view" id="tabDetail_class">
+            <div class="static-tab-title title-white color-gold">클래스</div>
+            <div class="detail-right-box" style="background: transparent; border: none; box-shadow: none; text-align: center;">
+                <p style="font-size: 1.8rem; color: #ffd700; font-style: italic;">[신규 클래스 전용 페이지 개발 예정]</p>
             </div>
         </section>
     </div>
@@ -1092,15 +1185,22 @@
         let isToastActive = false;
         let isTutorialActive = false;
 
-        // ★ [탭 선택 창 데이터베이스] 균등 매트릭스 20/50/80 좌표계 재설정 적용 ★
+        // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 반경(R) 배치 및 크기 통일화 ★
+        // Center: sungbwar (50, 45) -> 반경 28
+        // 서번트의 중심 좌표 (50, 73) -> 반경 18
+        // 마스터의 중심 좌표 (30, 65) -> 반경 18
         const CONCEPT_REGISTRY = {
-            'sung': { name: '성배', parent: null, x: 50, y: 20 },
-            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 50 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 50 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 50 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 20, y: 80 }, 
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 80 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 80, y: 80 } 
+            'sung': { name: '성배', parent: null, x: 50, y: 15 },
+            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
+            'ma': { name: '마술사', parent: 'sungbwar', x: 22, y: 45 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 78, y: 45 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 30, y: 65 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 73 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 70, y: 65 },
+            'sso': { name: '서번트 소환 의식', parent: 'master', x: 10, y: 65 },
+            'yong': { name: '영령', parent: 'suv', x: 35, y: 90 },
+            'class': { name: '클래스', parent: 'suv', x: 50, y: 93 },
+            'bogu': { name: '보구', parent: 'suv', x: 65, y: 90 }
         };
 
         (function checkReloadAndReset() {
@@ -1111,6 +1211,8 @@
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
+                localStorage.removeItem('fate_main_tut');
+                localStorage.removeItem('fate_anno_tut');
             }
         })();
 
@@ -1322,7 +1424,6 @@
                 }
             });
 
-            // [가이드 시스템 튜토리얼 렌더링]
             function showTutorialGuide(text, showBtn, btnText, callback, highlightEl) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
@@ -1337,12 +1438,10 @@
                 }
                 
                 guide.style.top = 'auto';
-                guide.style.bottom = '35%';
+                guide.style.bottom = '15%';
                 if (highlightEl) {
                     const rect = highlightEl.getBoundingClientRect();
-                    if (rect.top > window.innerHeight * 0.4 && rect.top < window.innerHeight * 0.7) {
-                         guide.style.bottom = '15%';
-                    } else if (rect.bottom > window.innerHeight * 0.7) {
+                    if (rect.bottom > window.innerHeight * 0.5) {
                         guide.style.bottom = 'auto';
                         guide.style.top = '15%';
                     }
@@ -1410,6 +1509,11 @@
                             const p = noshinSfx.play();
                             if (p !== undefined) p.catch(()=>{});
                         }
+                        // 방해 효과: 점멸 및 진동 애니메이션 부여
+                        keyTarget.classList.remove('keyword-error');
+                        void keyTarget.offsetWidth; 
+                        keyTarget.classList.add('keyword-error');
+                        setTimeout(() => keyTarget.classList.remove('keyword-error'), 300);
                         return;
                     }
 
@@ -1504,6 +1608,16 @@
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
+                
+                // 포커싱 스케일 효과를 위한 클래스 토글
+                const oldFocused = document.querySelector('.tree-node-box.focused');
+                if (oldFocused) oldFocused.classList.remove('focused');
+                
+                setTimeout(() => {
+                    const newFocused = document.querySelector(`.tree-node-box[data-id="${targetId}"]`);
+                    if (newFocused) newFocused.classList.add('focused');
+                }, 100);
+
                 currentFocusedId = targetId;
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
@@ -1518,9 +1632,7 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                if (resetFocus) currentFocusedId = 'sung';
-                focusToNode(currentFocusedId);
-
+                // [연결선 렌더링 - 대각선 3차 베지어 곡선 연산 포함]
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1601,15 +1713,16 @@
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
                     
-                    if (id === 'sung') {
+                    if (id === 'sung' || id === 'bogu') {
                         btn.classList.add('yellow-glow-btn');
                     } else if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
-                    } else if (id === 'ma' || id === 'master') {
+                    } else if (id === 'ma' || id === 'master' || id === 'class') {
                         btn.classList.add('white-glow-btn');
+                        if (id === 'class') btn.classList.add('color-gold');
                     } else if (id === 'rj') {
                         btn.classList.add('brightred-glow-btn');
-                    } else if (id === 'suv') {
+                    } else if (id === 'suv' || id === 'sso' || id === 'yong') {
                         btn.classList.add('skyblue-glow-btn');
                     } else if (id === 'gam') {
                         btn.classList.add('black-glow-btn');
@@ -1653,6 +1766,15 @@
                             currentActiveTabId = id;
                             treeSelectionContainer.classList.remove('show');
                             
+                            // 클래스 특수 뷰포트 라우팅 배경 페이드 아웃 로직
+                            if (id === 'class') {
+                                document.getElementById('bgLayer').style.opacity = '0';
+                                document.getElementById('dustEffect').style.opacity = '0';
+                            } else {
+                                document.getElementById('bgLayer').style.opacity = '1';
+                                document.getElementById('dustEffect').style.opacity = '0.55';
+                            }
+
                             const targetView = document.getElementById('tabDetail_' + id);
                             if (targetView) {
                                 setTimeout(() => {
@@ -1695,6 +1817,8 @@
                     nodeBox.appendChild(btn);
                     treeNodesBox.appendChild(nodeBox);
                 });
+
+                if (resetFocus) focusToNode(currentFocusedId);
             }
 
             pressStartBtn.addEventListener('click', function() {
@@ -1791,6 +1915,10 @@
                     const tooltipBox = document.getElementById('tooltipBox');
                     tooltipBox.classList.remove('show');
                     activeAnnotation = null;
+
+                    // 배경 투명도 롤백
+                    document.getElementById('bgLayer').style.opacity = '1';
+                    document.getElementById('dustEffect').style.opacity = '0.55';
 
                     setTimeout(() => {
                         renderTreeGrid(false);
