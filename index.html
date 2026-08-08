@@ -27,7 +27,7 @@
             background-color: #000000;
         }
 
-        /* [메인화면 배경] 메인 배경 이미지 레이어 */
+        /* [메인화면 배경] 메인 배경 이미지 레이어 (페이드 인 아키텍처) */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -48,7 +48,7 @@
             opacity: 1;
         }
 
-        /* [메인화면 이펙트] 붉은 안개 연출 이펙트 */
+        /* [메인화면 이펙트] 붉은 먼지 및 안개 연출 이펙트 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -72,7 +72,7 @@
             100% { opacity: 0.75; }
         }
 
-        /* [알림] 신규개념 획득 토스트 알림 컨테이너 */
+        /* [알림] 신규개념 획득 토스트 알림 컨테이너 (상단 배치) */
         #acquireToastContainer {
             position: absolute;
             top: 150px;
@@ -105,7 +105,7 @@
             100% { transform: translateY(-35px); opacity: 0; }
         }
 
-        /* [신규개념] 상호작용 키워드 */
+        /* [신규개념] 본문 내 하이라이트 상호작용 키워드 (클릭 시 신규개념 획득 발생) */
         .interactive-keyword {
             color: #ffd700;
             font-weight: 700;
@@ -132,7 +132,7 @@
             pointer-events: none !important;
         }
 
-        /* [설명창] 성우 어록 스타일 */
+        /* [설명창] 성우 어록 스타일 (클릭 시 보이스 재생 및 네온 글로우) */
         .description-quote {
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
@@ -162,18 +162,13 @@
             100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
         }
 
-        /* [루비 태그] 한자 덧말 전용 스타일 */
-        ruby {
-            ruby-align: center;
-        }
+        /* [Ruby] 한자 덧말(루비) 폰트 사이즈 조정 */
         rt {
-            font-size: 0.5em;
-            text-shadow: none;
-            letter-spacing: 0;
-            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.45em;
+            letter-spacing: 0px;
         }
 
-        /* --- [시작하기 창] --- */
+        /* --- [시작하기 창] 첫 시작 버튼이 있는 곳 스타일 정의 --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -228,7 +223,7 @@
             pointer-events: none;
         }
 
-        /* --- [메인화면] --- */
+        /* --- [메인화면] 로고, 부제목, PRESS TO START 버튼이 위치하는 메인화면 영역 스타일 --- */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -283,6 +278,7 @@
             margin: 0 2px;
         }
 
+        /* [메인화면] 버튼 영역 - visibility 속성 활용하여 클릭 간섭 원천 차단 */
         .press-start-wrapper {
             opacity: 0;
             visibility: hidden;
@@ -301,6 +297,7 @@
             transition: opacity 0.8s ease-out, visibility 0.8s step-start;
         }
 
+        /* [메인화면] PRESS TO START 버튼 */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -334,6 +331,7 @@
             pointer-events: none !important;
         }
 
+        /* [메인화면 이펙트] 스케일 축소형 그라데이션 페이드 아웃 아키텍처 */
         @keyframes smooth-scale-fade-out {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
@@ -344,6 +342,7 @@
             pointer-events: none !important;
         }
 
+        /* [메인화면 안내] 유입자 안내 문구 영역 */
         .intro-notice-left {
             position: absolute;
             bottom: 25px;
@@ -368,7 +367,7 @@
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- [탭 선택 창] --- */
+        /* --- [탭 선택 창] 마인드맵 트리 컨테이너 영역 스타일 --- */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -408,6 +407,7 @@
             z-index: 31;
         }
 
+        /* [연결선] 탭 선택 창 내 개념 노드들을 이어주는 마력 연결선 (SVG Line/Path) */
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
@@ -431,6 +431,7 @@
             align-items: center;
         }
 
+        /* [(단어) 탭] 탭 선택 창 내부에서 클릭하여 상세 뷰(설명창)로 진입하는 탭 버튼 기본 속성 */
         .tab-item-btn {
             font-family: 'Song Myung', serif;
             font-size: 4.5rem;
@@ -444,57 +445,57 @@
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        /* [(단어) 탭] 색상별 커스텀 글로우 클래스 (버튼 및 탭 제목 통합) */
-        .theme-yellow {
+        /* [(단어) 탭] 색상별 커스텀 글로우 클래스 아키텍처 */
+        .yellow-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
         }
-        .tab-item-btn.theme-yellow:hover {
+        .yellow-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 255, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        .theme-red {
+        .red-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
         }
-        .tab-item-btn.theme-red:hover {
+        .red-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        .theme-white {
+        .white-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 35px rgba(255, 255, 255, 0.95), 0 0 15px rgba(200, 200, 200, 0.8);
         }
-        .tab-item-btn.theme-white:hover {
+        .white-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 25px rgba(200, 200, 255, 0.9);
         }
 
-        .theme-brightred {
-            color: #800000;
-            text-shadow: 3px 3px 0px #300000, -1px -1px 0px #300000, 1px -1px 0px #300000, -1px 1px 0px #300000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
+        .brightred-glow-btn {
+            color: #990000;
+            text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
         }
-        .tab-item-btn.theme-brightred:hover {
+        .brightred-glow-btn:hover {
             color: #ff3333;
             text-shadow: 0 0 50px rgba(255, 50, 50, 1), 0 0 25px rgba(255, 100, 100, 0.9);
         }
 
-        .theme-skyblue {
+        .skyblue-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 35px rgba(135, 206, 235, 0.95), 0 0 15px rgba(100, 180, 220, 0.8);
         }
-        .tab-item-btn.theme-skyblue:hover {
+        .skyblue-glow-btn:hover {
             text-shadow: 0 0 50px rgba(135, 206, 235, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        .theme-black {
+        .black-glow-btn {
             color: #fffdfa;
-            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 35px rgba(0, 0, 0, 1), 0 0 15px rgba(30, 30, 30, 0.8);
+            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 35px rgba(0, 0, 0, 1), 0 0 15px rgba(40, 40, 40, 0.9);
         }
-        .tab-item-btn.theme-black:hover {
-            text-shadow: 0 0 50px rgba(50, 50, 50, 1), 0 0 25px rgba(150, 150, 150, 0.9);
+        .black-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(80, 80, 80, 1), 0 0 25px rgba(150, 150, 150, 0.9);
         }
 
-        /* --- [설명창] --- */
+        /* --- [설명창] 각 단어(개념)별 상세 내용이 출력되는 설명창 컨테이너 --- */
         .tab-detail-view {
             position: absolute;
             top: 0;
@@ -521,12 +522,14 @@
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
 
+        /* [설명창] 성배전쟁 전용 중앙 정렬 스타일 */
         #tabDetail_sungbwar {
             justify-content: center;
             padding-left: 0;
             gap: 0;
         }
 
+        /* [설명창] 정적 탭 타이틀 영역 기본 뼈대 */
         .static-tab-title {
             position: absolute;
             top: 7vh;
@@ -538,9 +541,35 @@
             white-space: nowrap;
             transform-origin: top left;
             transform: scale(0.75);
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
             pointer-events: none;
             z-index: 10;
+        }
+
+        /* [설명창] 탭 제목 동기화 컬러 클래스 */
+        .title-yellow {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
+        }
+        .title-red {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8);
+        }
+        .title-white {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 40px rgba(255, 255, 255, 0.8);
+        }
+        .title-brightred {
+            color: #990000;
+            text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 40px rgba(255, 50, 50, 0.95);
+        }
+        .title-skyblue {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8);
+        }
+        .title-black {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9);
         }
 
         .detail-left-box {
@@ -558,13 +587,13 @@
             animation: grail-gentle-float 3.5s infinite ease-in-out;
         }
 
-        /* [이미지 글로우] 각 테마별 독립 렌더링 클래스 */
-        .glow-brightred { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); }
-        .glow-gray { filter: drop-shadow(0 0 30px rgba(150, 150, 150, 0.7)); }
-        .glow-brightgreen { filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.7)); }
-        .glow-red { filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.7)); }
-        .glow-black { filter: drop-shadow(0 0 30px rgba(0, 0, 0, 0.9)); }
-        .glow-yellow { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); }
+        /* [설명창] 전용 이미지 필터 클래스 */
+        .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } /* 성배 (기본) */
+        .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } /* 마술사 (밝은 붉은색) */
+        .img-glow-master { filter: drop-shadow(0 0 30px rgba(150, 150, 150, 0.7)); } /* 마스터 (회색) */
+        .img-glow-suv { filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.7)); } /* 서번트 (밝은 초록색) */
+        .img-glow-rj { filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.7)); } /* 령주 (빨강) */
+        .img-glow-gam { filter: drop-shadow(0 0 30px rgba(40, 40, 40, 0.9)); } /* 감독관 (검정) */
 
         .detail-sub-label {
             margin-top: 15px;
@@ -575,6 +604,7 @@
             text-align: center;
         }
 
+        /* [설명창] 본문 내용을 담고 있는 우측 설명 상자 */
         .detail-right-box {
             flex: 1;
             max-width: 650px;
@@ -619,7 +649,7 @@
             user-select: none;
         }
 
-        /* --- [컨트롤러] --- */
+        /* --- [뒤로가기 버튼] 탭 선택 창 및 설명창에서 이전 화면으로 돌아가는 버튼 컨트롤러 --- */
         .bottom-left-controls {
             position: absolute;
             bottom: 20px;
@@ -657,6 +687,7 @@
             transform: scale(1.03);
         }
 
+        /* --- [오디오 컨트롤러] 우측 하단 볼륨 조절 패널 및 워터마크 --- */
         .bottom-right-controls {
             position: absolute;
             bottom: 20px;
@@ -754,7 +785,7 @@
     <!-- [알림] 신규개념 획득 토스트 알림을 화면에 띄우는 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
-    <!-- [오디오 자산] -->
+    <!-- [오디오 자산] 배경음악 및 효과음, 성우 보이스 엘리먼트 정의 -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -762,15 +793,15 @@
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
-    <audio id="tosarinJujuSfx" src="voice/voice-juju-tosarin.mp3" preload="auto"></audio>
+    <audio id="tosarinSfx" src="voice/voice-juju-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
-    <!-- [메인화면] 배경 및 안개 이펙트 -->
+    <!-- [메인화면] 배경 및 안개 이펙트 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
-    <!-- [시작하기 창] -->
+    <!-- [시작하기 창] '시작하기' 버튼이 위치하는 최초 시작 창 컨테이너 -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
@@ -778,7 +809,7 @@
         </div>
     </div>
 
-    <!-- [메인화면] -->
+    <!-- [메인화면] 페이트 로고, 서브 타이틀, PRESS TO START 버튼이 배치된 메인화면 영역 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="img/img-Fate.png" alt="Fate Logo" class="fate-logo-img">
@@ -794,22 +825,24 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 창] -->
+    <!-- [탭 선택 창] 마인드맵 트리 구조가 렌더링되는 탭 선택 창 컨테이너 -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
+            <!-- [연결선] 개념 간의 관계를 이어주는 SVG 마력 연결선 레이어 -->
             <svg class="tree-svg-layer" id="treeSvg"></svg>
+            <!-- [탭] 사용자가 선택할 수 있는 단어 탭들이 동적으로 생성되는 박스 -->
             <div id="treeNodesBox"></div>
         </div>
     </div>
 
-    <!-- [설명창 보관소] -->
+    <!-- [설명창] 각 단어별 상세 정보 및 성우 어록을 보여주는 설명창 보관소 -->
     <div id="dynamicTabDetailViews">
         
-        <!-- 1. 성배 -->
+        <!-- [설명창] 1. 성배 -->
         <section class="tab-detail-view" id="tabDetail_sung">
-            <div class="static-tab-title theme-yellow">성배</div>
+            <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
-                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img glow-yellow">
+                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img img-glow-default">
                 <span class="detail-sub-label">소(小)성배</span>
             </div>
             <div class="detail-right-box">
@@ -822,9 +855,9 @@
             </div>
         </section>
 
-        <!-- 2. 성배전쟁 -->
+        <!-- [설명창] 2. 성배전쟁 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
-            <div class="static-tab-title theme-red">성배전쟁</div>
+            <div class="static-tab-title title-red">성배전쟁</div>
             <div class="detail-right-box">
                 <h2 class="description-title">성배전쟁이란?</h2>
                 <div class="description-content">
@@ -840,121 +873,128 @@
             </div>
         </section>
 
-        <!-- 3. 마술사 -->
+        <!-- [설명창] 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
-            <div class="static-tab-title theme-white">마술사</div>
+            <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
-                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img glow-brightred">
+                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img img-glow-ma">
                 <span class="detail-sub-label">제 5차 성배전쟁 참여 마술사 토오사카 린</span>
             </div>
             <div class="detail-right-box">
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
-                    마술(魔術)을 탐구하고 마도(魔道)를 걸으며, 근원을 추구하는 자를 일컫는다.<br>
-                    마술사는 되고싶다고 되는것이 아니고 특수한 경우를 제외하면 집안이 마술사 가문이여야한다.<br>
-                    마술사는 가계로부터 대대로 마술각인을 이어받는다.<br>
-                    대부분의 마술사는 마술협회에 소속되어있다.<br>
-                    성배로 부터 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 받아 <span class="interactive-keyword" data-key="master">마스터</span> 자격을 얻는 자이다.<br>
-                    <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>에 참여한 것 만으로도 마술사는 마술사로써 큰 명예를 얻는다.<br>
-                    마술사는 일반인에게 마술의 존재를 은폐하며 살아야하는 철칙이 있다.
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        마술(魔術)을 탐구하고 마도(魔道)를 걸으며, 근원을 추구하는 자를 일컫는다.<br>
+                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
+                        마술사는 가계로부터 대대로 마술각인을 이어받는다.<br>
+                        대부분의 마술사는 마술협회에 소속되어 있다.<br>
+                        성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻는 자이다.<br>
+                        성배전쟁에 참여한 것만으로도 마술사는 마술사로서 큰 명예를 얻는다.<br>
+                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
+                    </p>
                 </div>
             </div>
         </section>
         
-        <!-- 4. 마스터 -->
-        <section class="tab-detail-view" id="tabDetail_master">
-            <div class="static-tab-title theme-white">마스터</div>
-            <div class="detail-left-box">
-                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img glow-gray">
-                <span class="detail-sub-label">제 4차 성배전쟁 참가자 에미야 키리츠구</span>
-            </div>
-            <div class="detail-right-box">
-                <h2 class="description-title">마스터란?</h2>
-                <div class="description-content">
-                    <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>에 참가해 성배를 쟁취하기 위해 <span class="interactive-keyword" data-key="suv">서번트</span>를 소환해 싸우는 <span class="interactive-keyword" data-key="ma">마술사</span>.<br>
-                    성배전쟁에서 선출되는 마스터는 보통은 7명이며 이중 3~4명은<br>
-                    시작의 세 가문과 마술협회측에서 한명씩 선출해 등록할 수 있는 권한을 가지고있다.<br>
-                    나머지는 성배가 알아서 배분한다.<br>
-                    마스터의 증표로는 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>가 있으며 령주가 있으면 서번트 소환 의식을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
-                    계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며, 마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
-                </div>
-            </div>
-        </section>
-
-        <!-- 5. 서번트 -->
-        <section class="tab-detail-view" id="tabDetail_suv">
-            <div class="static-tab-title theme-skyblue">서번트</div>
-            <div class="detail-left-box">
-                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img glow-brightgreen">
-                <span class="detail-sub-label">제 5차 성배전쟁에서 소환된 서번트</span>
-            </div>
-            <div class="detail-right-box">
-                <h2 class="description-title">서번트란?</h2>
-                <div class="description-content">
-                    영령이라는 기록체를 마력으로 실체화시킨 것으로, 일종의 고차원 생명체다.<br>
-                    성배의 힘을 빌려 소환, <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>의 전투원으로 사역되지만 원본은 따로 있다.<br>
-                    본래는 소환이나 사역도 불가능하지만 성배가 그것을 특수한 방법으로 <span class="interactive-keyword" data-key="master">마스터</span>들에 한해서 가능하게 한다.<br>
-                    서번트는 각기 다른 7개의 클래스 중 하나로 정해진다.<br>
-                    강력한 무기가 될 수 있는 보구나 스킬을 가지고있으며<br>
-                    한개체 개체가 어마무시한 힘을 가지고있다.
-                </div>
-            </div>
-        </section>
-
-        <!-- 6. 령주 -->
+        <!-- [설명창] 4. 령주 -->
         <section class="tab-detail-view" id="tabDetail_rj">
-            <div class="static-tab-title theme-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
+            <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
-                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img glow-red">
+                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img img-glow-rj">
                 <span class="detail-sub-label">제 4차 성배전쟁 참여자 에미야 키리츠구의 령주</span>
             </div>
             <div class="detail-right-box">
-                <h2 class="description-title">령주(令呪)란?</h2>
+                <h2 class="description-title">령주란?</h2>
                 <div class="description-content">
-                    <span class="description-quote" id="tosarinJujuTrigger">"세트, 영주에 고하노니 성배의 규율에 따르라.<br>이자 나의 서번트에게 징계의 법을 내리라!"</span>
+                    <span class="description-quote" id="tosarinTrigger">"세트, 영주에 고하노니 성배의 규율에 따르라.<br>이자 나의 서번트에게 징계의 법을 내리라!"</span>
                     <span class="description-quote-author">-토오사카 린</span>
-                    <p style="margin-top: 16px;">
-                        <span class="interactive-keyword" data-key="suv">서번트</span>와 계약한 <span class="interactive-keyword" data-key="master">마스터</span>가 3회에 걸쳐 서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        서번트와 계약한 마스터가 3회에 걸쳐 서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
                         그 형태는 신체 어딘가에 나타나는 3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며 세부적인 형태는 마스터마다 전부 다르다.<br>
                         성배가 주는 강대한 마력 덩어리, 특정 명령을 강제하는 힘을 가졌다.<br>
                         서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만<br>
                         이를 역으로 이용해서 서번트의 의사와 일치하는 행동에<br>
-                        <ruby>영주<rt>令呪</rt></ruby>를 사용하면 그 강대한 마력을 강화용으로 사용할 수 있다.<br>
+                        <ruby>령주<rt>令呪</rt></ruby>를 사용하면 그 강대한 마력을 강화용으로 사용할 수 있다.<br>
                         여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- 7. 감독관 -->
-        <section class="tab-detail-view" id="tabDetail_gam">
-            <div class="static-tab-title theme-black">감독관</div>
+        <!-- [설명창] 5. 마스터 -->
+        <section class="tab-detail-view" id="tabDetail_master">
+            <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
-                <img src="img/img-gam-kiri.png" alt="Kotomine Kirei" class="detail-img glow-black">
+                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img img-glow-master">
+                <span class="detail-sub-label">제 4차 성배전쟁 참가자 에미야 키리츠구</span>
+            </div>
+            <div class="detail-right-box">
+                <h2 class="description-title">마스터란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.<br>
+                        성배전쟁에서 선출되는 마스터는 보통은 7명이며 이 중 3~4명은<br>
+                        시작의 세 가문과 마술협회 측에서 한 명씩 선출해 등록할 수 있는 권한을 가지고 있다.<br>
+                        나머지는 성배가 알아서 배분한다.<br>
+                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며 <ruby>령주<rt>令呪</rt></ruby>가 있으면 서번트 소환 의식을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
+                        계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며, 마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 6. 서번트 -->
+        <section class="tab-detail-view" id="tabDetail_suv">
+            <div class="static-tab-title title-skyblue">서번트</div>
+            <div class="detail-left-box">
+                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img img-glow-suv">
+                <span class="detail-sub-label">제 5차 성배전쟁에서 소환된 서번트</span>
+            </div>
+            <div class="detail-right-box">
+                <h2 class="description-title">서번트란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        영령이라는 기록체를 마력으로 실체화시킨 것으로, 일종의 고차원 생명체다.<br>
+                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만 원본은 따로 있다.<br>
+                        본래는 소환이나 사역도 불가능하지만 성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
+                        서번트는 각기 다른 7개의 클래스 중 하나로 정해진다.<br>
+                        강력한 무기가 될 수 있는 보구나 스킬을 가지고 있으며<br>
+                        한 개체 개체가 어마무시한 힘을 가지고 있다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 7. 감독관 -->
+        <section class="tab-detail-view" id="tabDetail_gam">
+            <div class="static-tab-title title-black">감독관</div>
+            <div class="detail-left-box">
+                <img src="img/img-gam-kotomine.png" alt="Kotomine Kirei" class="detail-img img-glow-gam">
                 <span class="detail-sub-label">제 5차 성배전쟁 감독관 코토미네 키레이</span>
             </div>
             <div class="detail-right-box">
                 <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
-                    서방교회에서 <span class="interactive-keyword" data-key="sungbwar">성배전쟁</span>의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
-                    성배전쟁을 참여하길 거부하거나 <span class="interactive-keyword" data-key="suv">서번트</span>를 잃어버려 탈락해버린 <span class="interactive-keyword" data-key="master">마스터</span>를 보호할 의무가 있다.<br>
-                    성배전쟁에서 다 사용하지 못한 영주는 기본적으로 성배가 회수하며<br>
-                    다음 성배전쟁이 시작되면 성당교회에서 파견된<br>
-                    감독역이 받아서 보관 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>의 형태로 관리한다.<br>
-                    감독관의 재량에 따라 다른 사람에게 양도하거나<br>
-                    다른 용도로 사용하는 것이 가능하다.
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        서방교회에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
+                        성배전쟁을 참여하길 거부하거나 서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
+                        성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며<br>
+                        다음 성배전쟁이 시작되면 성당교회에서 파견된<br>
+                        감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.<br>
+                        감독관의 재량에 따라 다른 사람에게 양도하거나<br>
+                        다른 용도로 사용하는 것이 가능하다.
+                    </p>
                 </div>
             </div>
         </section>
-
     </div>
 
-    <!-- [컨트롤러] 뒤로가기 -->
+    <!-- [뒤로가기 버튼] 탭 선택 창 또는 설명창에서 상위 화면으로 복귀하는 뒤로가기 버튼 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- [컨트롤러] 오디오 -->
+    <!-- [오디오 컨트롤러] 우측 하단 볼륨 조절 패널 및 워터마크 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -973,21 +1013,23 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
+    <!-- [자바스크립트] 시스템 로직 및 인터랙션 제어 엔진 -->
     <script>
         let isTransitioning = false;
         let isToastActive = false;
 
-        // ★ [데이터베이스] 마인드맵 트리 구조: Y축 30 간격 및 X축 비율 정밀 배치 ★
+        // ★ [탭 선택 창 데이터베이스] 마인드맵 트리 구조 내 단어 탭 및 계층 정의 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 35 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 65 },
-            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 65 },
-            'master': { name: '마스터', parent: 'sungbwar', x: 20, y: 95 }, // 좌측 하단 스와프 배치
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 95 }, // 중앙 하단 스와프 배치
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 80, y: 95 } // 우측 하단 배치
+            'ma': { name: '마술사', parent: 'sungbwar', x: 15, y: 65 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 85, y: 65 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 15, y: 95 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 95 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 85, y: 95 } 
         };
 
+        // 새로고침 시 세션 스토리지 초기화 및 상태 보호 모듈
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -1018,7 +1060,7 @@
             const noshinSfx = document.getElementById('noshinSfx');
             const kotomineSfx = document.getElementById('kotomineSfx');
             const kiritsuguSfx = document.getElementById('kiritsuguSfx');
-            const tosarinJujuSfx = document.getElementById('tosarinJujuSfx');
+            const tosarinSfx = document.getElementById('tosarinSfx');
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
 
@@ -1040,8 +1082,10 @@
             const treeMatrixWorld = document.getElementById('treeMatrixWorld');
             const treeSvg = document.getElementById('treeSvg');
             const treeNodesBox = document.getElementById('treeNodesBox');
-            
-            let currentStage = 1;
+            const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
+            const backBtnWrapper = document.getElementById('backBtnWrapper');
+
+            let currentStage = 1;       
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
 
@@ -1062,7 +1106,7 @@
                 const voiceVol = Math.min(1.0, parseFloat(this.value) * 1.2);
                 if (kotomineSfx) kotomineSfx.volume = voiceVol; 
                 if (kiritsuguSfx) kiritsuguSfx.volume = voiceVol;
-                if (tosarinJujuSfx) tosarinJujuSfx.volume = voiceVol;
+                if (tosarinSfx) tosarinSfx.volume = voiceVol;
                 if (fateVoice) fateVoice.volume = voiceVol * 0.45;
             });
 
@@ -1090,7 +1134,7 @@
                         clearInterval(fadeInterval);
                         audioEl.pause();
                         audioEl.currentTime = 0;
-                        audioEl.volume = startVol;
+                        audioEl.volume = startVol; 
                     }
                 }, stepTime);
             }
@@ -1120,7 +1164,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinJujuSfx, moveSfx, fateVoice].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, moveSfx, fateVoice].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -1142,58 +1186,71 @@
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
             document.addEventListener('click', function(e) {
-                // 코토미네 어록 보이스 처리
                 const kotomineTarget = e.target.closest('#kotomineTrigger');
                 if (kotomineTarget) {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (!kotomineTarget.classList.contains('glow-fade-out')) kotomineTarget.classList.add('glow-fade-out');
+                    if (!kotomineTarget.classList.contains('glow-fade-out')) {
+                        kotomineTarget.classList.add('glow-fade-out');
+                    }
                     if (kotomineSfx) {
                         kotomineSfx.pause();
                         kotomineSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                         kotomineSfx.volume = voiceVol;
-                        kotomineSfx.play().catch(()=>{});
+                        kotomineSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-holygrail-kotomine.mp3');
+                            fb.volume = voiceVol;
+                            fb.play().catch(ex => console.log('Kotomine fallback error:', ex));
+                        });
                     }
                 }
 
-                // 키리츠구 어록 보이스 처리
                 const kiritsuguTarget = e.target.closest('#kiritsuguTrigger');
                 if (kiritsuguTarget) {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (!kiritsuguTarget.classList.contains('glow-fade-out')) kiritsuguTarget.classList.add('glow-fade-out');
+                    if (!kiritsuguTarget.classList.contains('glow-fade-out')) {
+                        kiritsuguTarget.classList.add('glow-fade-out');
+                    }
                     if (kiritsuguSfx) {
                         kiritsuguSfx.pause();
                         kiritsuguSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                         kiritsuguSfx.volume = voiceVol;
-                        kiritsuguSfx.play().catch(()=>{});
+                        kiritsuguSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-sungbwar-kiritsugu.mp3');
+                            fb.volume = voiceVol;
+                            fb.play().catch(ex => console.log('Kiritsugu fallback error:', ex));
+                        });
                     }
                 }
-
-                // 토오사카 린(령주) 어록 보이스 처리
-                const tosarinJujuTarget = e.target.closest('#tosarinJujuTrigger');
-                if (tosarinJujuTarget) {
+                
+                const tosarinTarget = e.target.closest('#tosarinTrigger');
+                if (tosarinTarget) {
                     e.preventDefault();
                     e.stopPropagation();
-                    if (!tosarinJujuTarget.classList.contains('glow-fade-out')) tosarinJujuTarget.classList.add('glow-fade-out');
-                    if (tosarinJujuSfx) {
-                        tosarinJujuSfx.pause();
-                        tosarinJujuSfx.currentTime = 0;
+                    if (!tosarinTarget.classList.contains('glow-fade-out')) {
+                        tosarinTarget.classList.add('glow-fade-out');
+                    }
+                    if (tosarinSfx) {
+                        tosarinSfx.pause();
+                        tosarinSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                        tosarinJujuSfx.volume = voiceVol;
-                        tosarinJujuSfx.play().catch(()=>{});
+                        tosarinSfx.volume = voiceVol;
+                        tosarinSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-juju-tosarin.mp3');
+                            fb.volume = voiceVol;
+                            fb.play().catch(ex => console.log('Tosarin fallback error:', ex));
+                        });
                     }
                 }
             });
 
             function spawnAcquireToast(wordText) {
-                // 루비 태그가 포함되어 있을 수 있으므로 정규식을 통해 태그를 제거하고 순수 텍스트만 추출
-                const plainText = wordText.replace(/<[^>]*>?/gm, '');
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
-                toastEl.innerText = `—${plainText}을(를) 획득했습니다—`;
+                toastEl.innerHTML = `—${wordText}을(를) 획득했습니다—`;
                 acquireToastContainer.appendChild(toastEl);
 
                 setTimeout(() => {
@@ -1260,6 +1317,7 @@
                 if (!nodeInfo) return;
 
                 currentFocusedId = targetId;
+
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
@@ -1276,7 +1334,6 @@
                 if (resetFocus) currentFocusedId = 'sung';
                 focusToNode(currentFocusedId);
 
-                // [연결선 렌더링 엔진] 3차 함수 기반 곡선 베지어 알고리즘 가동
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1309,15 +1366,11 @@
                         svgDefs.appendChild(linearGrad);
 
                         let branchObj;
-                        if (id === 'rj' || id === 'suv') {
+                        if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             const midY = (pNode.y + cNode.y) / 2;
-                            if (pNode.x === cNode.x) {
-                                branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x - 20} ${midY}, ${cNode.x + 20} ${midY}, ${cNode.x} ${cNode.y}`);
-                            } else {
-                                branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
-                            }
+                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
                         } else {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
@@ -1351,6 +1404,7 @@
 
                 unlockedIds.forEach(id => {
                     const nodeInfo = CONCEPT_REGISTRY[id];
+
                     const nodeBox = document.createElement('div');
                     nodeBox.className = 'tree-node-box';
                     nodeBox.style.left = nodeInfo.x + '%';
@@ -1360,20 +1414,19 @@
                     btn.className = 'tab-item-btn';
                     
                     if (id === 'sung') {
-                        btn.classList.add('theme-yellow');
+                        btn.classList.add('yellow-glow-btn');
                     } else if (id === 'sungbwar') {
-                        btn.classList.add('theme-red');
+                        btn.classList.add('red-glow-btn');
                     } else if (id === 'ma' || id === 'master') {
-                        btn.classList.add('theme-white');
+                        btn.classList.add('white-glow-btn');
                     } else if (id === 'rj') {
-                        btn.classList.add('theme-brightred');
+                        btn.classList.add('brightred-glow-btn');
                     } else if (id === 'suv') {
-                        btn.classList.add('theme-skyblue');
+                        btn.classList.add('skyblue-glow-btn');
                     } else if (id === 'gam') {
-                        btn.classList.add('theme-black');
+                        btn.classList.add('black-glow-btn');
                     }
 
-                    // 루비 태그 렌더링을 위해 innerHTML을 사용하여 텍스트 데이터 파싱
                     btn.innerHTML = nodeInfo.name;
                     
                     btn.onclick = () => {
@@ -1474,7 +1527,7 @@
 
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
-                if (tosarinJujuSfx) { tosarinJujuSfx.pause(); tosarinJujuSfx.currentTime = 0; }
+                if (tosarinSfx) { tosarinSfx.pause(); tosarinSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
                     currentStage = 2;
@@ -1562,7 +1615,7 @@
                 const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                 if (kotomineSfx) kotomineSfx.volume = baseVoiceVol;
                 if (kiritsuguSfx) kiritsuguSfx.volume = baseVoiceVol;
-                if (tosarinJujuSfx) tosarinJujuSfx.volume = baseVoiceVol;
+                if (tosarinSfx) tosarinSfx.volume = baseVoiceVol;
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                 if (fateVoice) fateVoice.volume = baseVoiceVol * 0.45;
 
