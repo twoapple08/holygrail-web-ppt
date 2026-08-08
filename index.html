@@ -27,7 +27,7 @@
             background-color: #000000;
         }
 
-        /* [메인화면 배경] 메인 배경 이미지 레이어 (페이드 인 아키텍처) */
+        /* [메인화면 배경] 메인 배경 이미지 레이어 */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -43,12 +43,9 @@
             pointer-events: none;
             transition: opacity 1.5s ease-in-out;
         }
+        .main-background-layer.active { opacity: 1; }
 
-        .main-background-layer.active {
-            opacity: 1;
-        }
-
-        /* [메인화면 이펙트] 붉은 먼지 및 안개 연출 이펙트 */
+        /* [메인화면 이펙트] 붉은 먼지 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -61,16 +58,11 @@
             opacity: 0;
             transition: opacity 1.8s ease-in-out;
         }
-
         .red-dust-effect.active {
             opacity: 0.55;
             animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s;
         }
-
-        @keyframes dust-fade-soft {
-            0% { opacity: 0.5; }
-            100% { opacity: 0.75; }
-        }
+        @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         /* [알림] 신규개념 획득 토스트 알림 컨테이너 */
         #acquireToastContainer {
@@ -118,12 +110,10 @@
             z-index: 1000;
             pointer-events: auto;
         }
-
         .interactive-keyword:hover {
             color: #ffffff !important;
             text-shadow: 0 0 12px rgba(255, 255, 255, 0.9);
         }
-
         .interactive-keyword.clicked {
             color: #d0c5b5 !important;
             font-weight: 400 !important;
@@ -145,28 +135,21 @@
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
             pointer-events: auto;
         }
-
         .description-quote:hover {
             color: #ffffff !important;
             transform: scale(1.02);
             text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important;
         }
-
         .description-quote.glow-fade-out {
             animation: none !important;
             text-shadow: none !important;
         }
-
         @keyframes quote-gentle-glow {
             0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); }
             100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
         }
 
-        /* [Ruby] 한자 덧말(루비) 폰트 사이즈 조정 */
-        rt {
-            font-size: 0.45em;
-            letter-spacing: 0px;
-        }
+        rt { font-size: 0.45em; letter-spacing: 0px; }
 
         /* --- [시작하기 창] --- */
         .start-btn-container {
@@ -179,7 +162,6 @@
             gap: 70px;
             transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s;
         }
-
         .fate-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.5rem;
@@ -197,7 +179,6 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
         }
-
         .fate-start-btn:hover {
             color: #ffffff;
             background: rgba(60, 0, 0, 0.95);
@@ -205,14 +186,12 @@
             box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8);
             transform: scale(1.05);
         }
-
         .start-btn-container.hide {
             opacity: 0;
             transform: scale(0.9);
             visibility: hidden;
             pointer-events: none;
         }
-
         .initial-notice-center {
             font-size: 0.95rem;
             color: rgba(215, 205, 190, 0.7);
@@ -238,7 +217,6 @@
             pointer-events: none;
             transform: translateY(-10px);
         }
-
         .holy-grail-wrapper {
             display: flex;
             justify-content: center;
@@ -246,18 +224,13 @@
             margin-bottom: 25px;
             opacity: 0;
         }
-
-        .holy-grail-wrapper.animate {
-            animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
+        .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .fate-logo-img {
             width: 270px;
             height: auto;
             animation: grail-gentle-float 3s infinite ease-in-out;
             filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85));
         }
-
         .sub-title {
             font-size: 1.3rem;
             font-weight: 700;
@@ -268,15 +241,8 @@
             margin-bottom: 35px;
             opacity: 0;
         }
-
-        .sub-title.animate {
-            animation: fade-in 1.0s ease-out forwards;
-        }
-
-        .extended-dash {
-            letter-spacing: 4px;
-            margin: 0 2px;
-        }
+        .sub-title.animate { animation: fade-in 1.0s ease-out forwards; }
+        .extended-dash { letter-spacing: 4px; margin: 0 2px; }
 
         .press-start-wrapper {
             opacity: 0;
@@ -288,14 +254,12 @@
             display: flex;
             justify-content: center;
         }
-
         .press-start-wrapper.animate {
             opacity: 1;
             visibility: visible;
             pointer-events: auto !important;
             transition: opacity 0.8s ease-out, visibility 0.8s step-start;
         }
-
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -315,7 +279,6 @@
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
             position: relative;
         }
-
         .press-start-btn:hover {
             animation-play-state: paused !important;
             opacity: 1 !important;
@@ -323,22 +286,18 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9);
             transform: scale(1.08);
         }
-
         .press-start-wrapper.flash-exit {
             animation: simple-flash-fade 0.25s ease-out forwards !important;
             pointer-events: none !important;
         }
-
         @keyframes smooth-scale-fade-out {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
         }
-
         .slow-fade-out {
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
         }
-
         .intro-notice-left {
             position: absolute;
             bottom: 25px;
@@ -355,13 +314,8 @@
             pointer-events: none;
             word-break: keep-all;
         }
-
-        .intro-notice-left.animate {
-            animation: fade-in 1.2s ease-out forwards;
-        }
-        .intro-notice-left.slow-fade-out {
-            animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
-        }
+        .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
+        .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
         /* --- [탭 선택 창] --- */
         .tree-selection-container {
@@ -376,14 +330,12 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
-
         .tree-selection-container.show {
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
-
         .tree-matrix-world {
             position: absolute;
             top: 0;
@@ -392,7 +344,6 @@
             height: 100vh;
             transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1);
         }
-
         .tree-svg-layer {
             position: absolute;
             top: 0;
@@ -402,7 +353,6 @@
             pointer-events: none;
             z-index: 31;
         }
-
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
@@ -412,11 +362,7 @@
             opacity: 0;
             transition: opacity 0.6s ease-in-out;
         }
-
-        .tree-branch-line.drawn {
-            opacity: 1;
-        }
-
+        .tree-branch-line.drawn { opacity: 1; }
         .tree-node-box {
             position: absolute;
             transform: translate(-50%, -50%);
@@ -453,7 +399,6 @@
             text-shadow: 0 0 50px rgba(255, 255, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9);
             transform: scale(1.05);
         }
-
         .red-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
@@ -462,7 +407,6 @@
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
             transform: scale(1.05);
         }
-
         .white-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 35px rgba(255, 255, 255, 0.95), 0 0 15px rgba(200, 200, 200, 0.8);
@@ -471,7 +415,6 @@
             text-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 25px rgba(200, 200, 255, 0.9);
             transform: scale(1.05);
         }
-
         .brightred-glow-btn {
             color: #990000;
             text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
@@ -481,7 +424,6 @@
             text-shadow: 0 0 50px rgba(255, 50, 50, 1), 0 0 25px rgba(255, 100, 100, 0.9);
             transform: scale(1.05);
         }
-
         .skyblue-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 35px rgba(135, 206, 235, 0.95), 0 0 15px rgba(100, 180, 220, 0.8);
@@ -490,7 +432,6 @@
             text-shadow: 0 0 50px rgba(135, 206, 235, 1), 0 0 25px rgba(255, 255, 255, 0.9);
             transform: scale(1.05);
         }
-
         .black-glow-btn {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 35px rgba(0, 0, 0, 1), 0 0 15px rgba(40, 40, 40, 0.9);
@@ -518,7 +459,6 @@
             pointer-events: none;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
-
         .tab-detail-view.show {
             z-index: 55 !important;
             opacity: 1;
@@ -526,7 +466,6 @@
             pointer-events: auto;
             transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
-
         #tabDetail_sungbwar {
             justify-content: center;
             padding-left: 0;
@@ -548,7 +487,6 @@
             pointer-events: none;
             z-index: 10;
         }
-
         .title-yellow {
             color: #fffdfa;
             text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
@@ -582,8 +520,9 @@
             min-width: 280px;
         }
 
+        /* 30% 증가 연산 적용 280px -> 364px */
         .detail-img {
-            width: 280px;
+            width: 364px;
             max-width: 100%;
             height: auto;
             animation: grail-gentle-float 3.5s infinite ease-in-out;
@@ -605,10 +544,9 @@
             text-align: center;
         }
 
-        /* [설명창] 반응형 텍스트 박스 제어 */
         .detail-right-box {
             flex: 1;
-            max-width: 750px; /* 줄바꿈 자동 조율을 위한 너비 상향 조정 */
+            max-width: 750px;
             background: rgba(15, 0, 0, 0.75);
             border: 2px solid rgba(160, 0, 0, 0.8);
             border-radius: 8px;
@@ -631,13 +569,12 @@
             text-shadow: 0 0 12px rgba(255, 50, 50, 0.7);
         }
 
-        /* 텍스트 자동 조율 속성 (강제 줄바꿈 제거 및 반응형 래핑) */
         .description-content p {
             font-size: 1.35rem;
             line-height: 1.85;
             color: #d0c5b5;
             letter-spacing: 1px;
-            word-break: keep-all; /* 단어 단위 줄바꿈 유지 */
+            word-break: keep-all;
             max-width: 100%;
         }
 
@@ -662,9 +599,7 @@
             transition: text-decoration-color 0.3s;
             pointer-events: auto;
         }
-        .annotation-word:hover {
-            text-decoration-color: #ffd700;
-        }
+        .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse {
             0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); }
             50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); }
@@ -689,10 +624,7 @@
             word-break: keep-all;
             line-height: 1.6;
         }
-        #tooltipBox.show {
-            display: block;
-            opacity: 1;
-        }
+        #tooltipBox.show { display: block; opacity: 1; }
         #tooltipBox::after {
             content: '';
             position: absolute;
@@ -722,27 +654,27 @@
         #tutorialOverlay.active {
             opacity: 1;
             visibility: visible;
-            pointer-events: auto; /* 하위 클릭 차단 */
+            pointer-events: auto;
         }
         
         #tutorialGuide {
             position: fixed;
-            bottom: 15%;
+            bottom: 35%; /* 화면 중간과 하단 사이 */
             left: 50%;
             transform: translateX(-50%);
-            width: 550px;
-            background: rgba(30, 10, 10, 0.95);
-            border: 2px solid #ff4444;
+            width: 825px; /* 기존 대비 50% 확장 연산 적용 */
+            background: rgba(30, 30, 30, 0.95);
+            border: 3px solid #ffffff; /* 백색 테두리 */
             color: #f5f0e6;
-            padding: 30px;
+            padding: 45px;
             border-radius: 10px;
             text-align: center;
             z-index: 9005;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+            box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); /* 백색 글로우 */
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s, top 0.5s, bottom 0.5s;
-            font-size: 1.3rem;
+            font-size: 1.95rem; /* 기존 대비 50% 확장 연산 적용 */
             line-height: 1.7;
             word-break: keep-all;
         }
@@ -752,22 +684,45 @@
         }
         
         .guide-btn {
-            margin-top: 25px;
-            padding: 10px 30px;
-            background: #600;
+            margin-top: 30px;
+            padding: 15px 40px;
+            background: #444;
             color: #fff;
-            border: 1px solid #faa;
+            border: 2px solid #aaa;
             cursor: pointer;
             font-family: 'Song Myung', serif;
-            font-size: 1.15rem;
+            font-size: 1.5rem;
             transition: background 0.3s;
         }
-        .guide-btn:hover { background: #900; }
+        .guide-btn:hover { background: #777; }
 
         .highlight-element {
             z-index: 9010 !important;
             position: relative;
             pointer-events: auto !important;
+        }
+
+        /* 화살표 가이드 객체 */
+        #tutorialArrow {
+            position: fixed;
+            bottom: 30px;
+            left: 170px;
+            font-size: 5rem;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+            z-index: 9015;
+            opacity: 0;
+            visibility: hidden;
+            animation: point-left 1s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        #tutorialArrow.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        @keyframes point-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-20px); }
         }
 
         /* --- [뒤로가기 버튼] --- */
@@ -895,6 +850,7 @@
     <!-- [안내창 가이드 시스템] -->
     <div id="tutorialOverlay"></div>
     <div id="tutorialGuide"></div>
+    <div id="tutorialArrow">⇦</div>
     
     <!-- [툴팁 박스] -->
     <div id="tooltipBox"></div>
@@ -1136,15 +1092,15 @@
         let isToastActive = false;
         let isTutorialActive = false;
 
-        // ★ [탭 선택 창 데이터베이스] 동일한 30단위 격자 좌표계 배치 적용 ★
+        // ★ [탭 선택 창 데이터베이스] 균등 매트릭스 20/50/80 좌표계 재설정 적용 ★
         const CONCEPT_REGISTRY = {
-            'sung': { name: '성배', parent: null, x: 50, y: 30 },
-            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 60 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 60 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 60 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 20, y: 90 }, 
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 90 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 80, y: 90 } 
+            'sung': { name: '성배', parent: null, x: 50, y: 20 },
+            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 50 },
+            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 50 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 50 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 20, y: 80 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 80 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 80, y: 80 } 
         };
 
         (function checkReloadAndReset() {
@@ -1155,7 +1111,6 @@
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
-                // 튜토리얼 데이터는 로컬 스토리지에 보관하여 초기화 방지
             }
         })();
 
@@ -1367,7 +1322,7 @@
                 }
             });
 
-            // [가이드 시스템 공통 함수]
+            // [가이드 시스템 튜토리얼 렌더링]
             function showTutorialGuide(text, showBtn, btnText, callback, highlightEl) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
@@ -1382,10 +1337,12 @@
                 }
                 
                 guide.style.top = 'auto';
-                guide.style.bottom = '15%';
+                guide.style.bottom = '35%';
                 if (highlightEl) {
                     const rect = highlightEl.getBoundingClientRect();
-                    if (rect.bottom > window.innerHeight * 0.5) {
+                    if (rect.top > window.innerHeight * 0.4 && rect.top < window.innerHeight * 0.7) {
+                         guide.style.bottom = '15%';
+                    } else if (rect.bottom > window.innerHeight * 0.7) {
                         guide.style.bottom = 'auto';
                         guide.style.top = '15%';
                     }
@@ -1400,15 +1357,42 @@
                 document.getElementById('tutorialGuide').classList.remove('active');
             }
 
+            // [동적 프레임 연산 기반 토스트 타이머 제어 알고리즘]
+            let toastEl = null;
+            let toastRemaining = 1800;
+            let lastTime = Date.now();
+
             function spawnAcquireToast(wordText) {
-                const toastEl = document.createElement('div');
+                if (toastEl && toastEl.parentNode) {
+                    toastEl.parentNode.removeChild(toastEl);
+                }
+                toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
                 toastEl.innerHTML = `—${wordText}을(를) 획득했습니다—`;
                 acquireToastContainer.appendChild(toastEl);
+                
+                toastRemaining = 1800;
+                lastTime = Date.now();
 
-                setTimeout(() => {
-                    if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
-                }, 1800);
+                function tick() {
+                    if (!isTutorialActive) {
+                        let now = Date.now();
+                        toastRemaining -= (now - lastTime);
+                        lastTime = now;
+                        if (toastEl) toastEl.style.animationPlayState = 'running';
+                    } else {
+                        lastTime = Date.now();
+                        if (toastEl) toastEl.style.animationPlayState = 'paused';
+                    }
+
+                    if (toastRemaining <= 0) {
+                        if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+                        isToastActive = false;
+                    } else {
+                        requestAnimationFrame(tick);
+                    }
+                }
+                requestAnimationFrame(tick);
             }
 
             document.addEventListener('click', function(e) {
@@ -1450,20 +1434,18 @@
                         }
                         spawnAcquireToast(keyTarget.innerHTML.trim());
 
-                        // 튜토리얼 1단계: 최초 신규개념 획득 검사
                         if (!localStorage.getItem('fate_main_tut')) {
                             localStorage.setItem('fate_main_tut', 'step1');
                             setTimeout(() => {
                                 isTutorialActive = true;
                                 backBtnWrapper.classList.add('highlight-element');
+                                document.getElementById('tutorialArrow').classList.add('active');
                                 showTutorialGuide(
-                                    "신규개념을 획득 했습니다. 뒤로가기를 눌러봅시다", 
+                                    "신규개념을 획득 했습니다. 뒤로가기 버튼 혹은 Esc를 눌러봅시다", 
                                     false, "", null, backBtnWrapper
                                 );
                             }, 500);
                         }
-
-                        setTimeout(() => { isToastActive = false; }, 1800);
                     }
                 }
             });
@@ -1476,7 +1458,6 @@
                 }
             });
 
-            // [주석효과 (툴팁) 클릭 및 외부 클릭 해제 로직]
             let activeAnnotation = null;
             document.addEventListener('click', function(e) {
                 if (isTutorialActive) return;
@@ -1540,7 +1521,6 @@
                 if (resetFocus) currentFocusedId = 'sung';
                 focusToNode(currentFocusedId);
 
-                // [연결선 렌더링 - 대각선 3차 베지어 곡선 연산 포함]
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1680,7 +1660,6 @@
                                     currentStage = 3;
                                     isTransitioning = false;
 
-                                    // 튜토리얼 3단계: 성배전쟁 탭 진입 완료 후
                                     if (localStorage.getItem('fate_main_tut') === 'step3') {
                                         setTimeout(() => {
                                             isTutorialActive = true;
@@ -1695,7 +1674,6 @@
                                         }, 800);
                                     }
 
-                                    // 주석효과 튜토리얼 검사
                                     if (targetView.querySelector('.annotation-word') && !localStorage.getItem('fate_anno_tut')) {
                                         setTimeout(() => {
                                             isTutorialActive = true;
@@ -1707,7 +1685,7 @@
                                                     localStorage.setItem('fate_anno_tut', 'done');
                                                 }
                                             );
-                                        }, 1000); // 메인 튜토리얼과 겹치지 않게 여유시간 부여
+                                        }, 1000); 
                                     }
                                 }, 600);
                             }
@@ -1758,10 +1736,10 @@
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
 
-                // 튜토리얼 1단계 -> 2단계 릴레이
                 if (isTutorialActive && localStorage.getItem('fate_main_tut') === 'step1') {
                     backBtnWrapper.classList.remove('highlight-element');
-                    isTutorialActive = false; // 일시적 해제
+                    document.getElementById('tutorialArrow').classList.remove('active');
+                    isTutorialActive = false;
                     localStorage.setItem('fate_main_tut', 'step2');
                     setTimeout(() => {
                         isTutorialActive = true;
@@ -1776,7 +1754,7 @@
                         );
                     }, 800);
                 } else if (isTutorialActive) {
-                    return; // 튜토리얼 도중 임의의 뒤로가기 차단
+                    return; 
                 }
 
                 history.back(); 
@@ -1784,7 +1762,7 @@
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
-                    if (isTransitioning || currentStage <= 1 || isTutorialActive) return;
+                    if (isTransitioning || currentStage <= 1 || (isTutorialActive && localStorage.getItem('fate_main_tut') !== 'step1')) return;
                     backBtn.click();
                 }
             });
