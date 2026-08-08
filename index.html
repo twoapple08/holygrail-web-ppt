@@ -471,6 +471,12 @@
             transition: opacity 0.6s ease-in-out;
         }
 
+        /* 성배전쟁 상세 뷰 전용 가운데 정렬 오버라이드 */
+        .tab-detail-view.centered-layout {
+            padding-left: 0 !important;
+            justify-content: center !important;
+        }
+
         .tab-detail-view.show {
             z-index: 55 !important;
             opacity: 1;
@@ -536,6 +542,13 @@
             position: relative;
             z-index: 5;
             pointer-events: auto;
+        }
+
+        /* 성배전쟁 전용 중앙 정렬 설명창 박스 */
+        .detail-right-box.centered-box {
+            max-width: 800px;
+            width: 800px;
+            margin: 0 auto;
         }
 
         .description-title {
@@ -706,8 +719,8 @@
     <div id="acquireToastContainer"></div>
 
     <!-- [AUDIO] 오디오 자산 엘리먼트 정의 (경로 및 파일명 규격 준수) -->
-    <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
-    <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
+    <audio id="bgmMain" src="main-theme.mp3" loop preload="auto"></audio>
+    <audio id="bgmTheme2" src="BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
@@ -731,7 +744,7 @@
     <!-- [HTML] 메인 화면 타이틀 및 로고 컨테이너 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
-            <img src="img/img-Fate.png" alt="Fate Logo" class="fate-logo-img">
+            <img src="Fate.png" alt="Fate Logo" class="fate-logo-img">
         </div>
         <p class="sub-title" id="subTitle">성배와 영령<span class="extended-dash">—</span>그리고 운명의 이야기</p>
         <div class="press-start-wrapper" id="pressStartWrapper">
@@ -757,7 +770,7 @@
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title">성배</div>
             <div class="detail-left-box">
-                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img">
+                <img src="holygrail.png" alt="Holy Grail Detail" class="detail-img">
                 <span class="detail-sub-label">소(小)성배</span>
             </div>
             <div class="detail-right-box">
@@ -770,13 +783,10 @@
             </div>
         </section>
 
-        <!-- 성배전쟁 상세 뷰 (설명창) -->
-        <section class="tab-detail-view" id="tabDetail_sungbwar">
+        <!-- 성배전쟁 상세 뷰 (설명창 - 이미지 삭제 및 정중앙 정렬 레이아웃 적용) -->
+        <section class="tab-detail-view centered-layout" id="tabDetail_sungbwar">
             <div class="static-tab-title">성배전쟁</div>
-            <div class="detail-left-box">
-                <img src="img/img-sungbwar.png" alt="Holy Grail War Detail" class="detail-img">
-            </div>
-            <div class="detail-right-box">
+            <div class="detail-right-box centered-box">
                 <h2 class="description-title">성배전쟁이란?</h2>
                 <div class="description-content">
                     <span class="description-quote" id="kiritsuguTrigger">"온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전. 그게 성배전쟁이다."</span>
@@ -1339,3 +1349,4 @@
     </script>
 </body>
 </html>
+
