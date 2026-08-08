@@ -19,12 +19,12 @@
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         /* [알림] 토스트 컨테이너 */
-        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; width: auto; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; }
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; transition: filter 0.5s ease; }
         .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.8s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
         @keyframes float-fade-smooth { 0% { transform: translateY(35px); opacity: 0; } 50% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-35px); opacity: 0; } }
 
         /* [신규개념] 키워드 */
-        .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: color 0.3s ease, text-shadow 0.3s ease; user-select: none; display: inline-block; position: relative; z-index: 1000; pointer-events: auto; }
+        .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: color 0.3s ease, text-shadow 0.3s ease, filter 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
@@ -32,7 +32,7 @@
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
         /* [설명창] 성우 어록 */
-        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 1000; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease; pointer-events: auto; }
+        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease, filter 0.5s ease; pointer-events: auto; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
         @keyframes quote-gentle-glow { 0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); } 100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); } }
@@ -73,16 +73,17 @@
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1); }
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; }
         
-        /* 뷰박스 삭제 후 두께 복원 (2px) */
-        .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out; }
+        .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: opacity 0.6s ease-in-out, filter 0.5s ease; }
+        .tree-branch-hitbox { stroke-width: 25px; stroke: transparent; fill: none; cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out; }
+        
         .tree-branch-line.drawn { opacity: 1; }
+        .tree-branch-hitbox.drawn { opacity: 1; }
 
-        .tree-node-box { position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease; }
+        .tree-node-box { position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease, filter 0.5s ease; }
         .tree-node-box.focused { z-index: 35; }
         .tree-node-box.focused .tab-item-btn { transform: scale(1.15); }
 
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; position: relative; }
-        
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
@@ -107,7 +108,7 @@
 
         #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class { justify-content: center; padding-left: 0; gap: 0; }
 
-        .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; }
+        .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: filter 0.5s ease; }
 
         .title-yellow { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .title-red { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8); }
@@ -117,8 +118,8 @@
         .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
         .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
 
-        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; }
-        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; }
+        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: filter 0.5s ease; }
+        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: filter 0.5s ease; }
 
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
@@ -127,59 +128,56 @@
         .img-glow-rj { filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.7)); } 
         .img-glow-gam { filter: drop-shadow(0 0 30px rgba(40, 40, 40, 0.9)); } 
 
-        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; }
+        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: filter 0.5s ease; }
 
-        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; }
+        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: filter 0.5s ease; }
 
         .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; }
         .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; }
         .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; }
 
         /* --- [주석효과 (툴팁) 모듈] --- */
-        .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: text-decoration-color 0.3s; pointer-events: auto; z-index: 1000; }
+        .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: text-decoration-color 0.3s, filter 0.5s ease; pointer-events: auto; z-index: 100; }
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
         #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; }
         #tooltipBox.show { display: block; opacity: 1; }
-        
-        /* 툴팁 꼬리 방향 역전 알고리즘 기반 화살표 방향 설정 */
-        #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
-        #tooltipBox.bottom-arrow::after { border-color: #ffd700 transparent transparent transparent; bottom: -16px; top: auto; }
+        #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: #ffd700 transparent transparent transparent; bottom: -16px; left: 50%; transform: translateX(-50%); }
 
-        /* --- [가이드 튜토리얼 마스킹 및 전용 조명 엔진] --- */
-        body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
-        body.tut-active .tree-selection-container.show, body.tut-active .tab-detail-view.show, body.tut-active .bottom-left-controls.show, body.tut-active #acquireToastContainer { z-index: 9001 !important; }
-
-        /* 비타겟 요소 강제 딤 처리 */
-        .dim-target { opacity: 0.2 !important; filter: brightness(0.4) !important; pointer-events: none !important; transition: all 0.3s; }
-
-        /* 타겟 요소 독립 조명 (명도 복원 및 박스 쉐도우) */
-        .highlight-element { z-index: 9010 !important; position: relative !important; opacity: 1 !important; filter: none !important; pointer-events: auto !important; transition: all 0.3s; }
-        
-        /* 상세창 테두리 강조 전용 */
-        .detail-right-box.highlight-element { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; background: rgba(30, 10, 10, 0.95) !important; }
-
-        /* 이미지 강조 전용 패딩 확장 */
-        img.highlight-element { filter: drop-shadow(0 0 40px rgba(255,255,255,0.9)) !important; transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; }
-        
-        /* 텍스트(주석/신규개념) 및 버튼 강조 전용 */
-        .highlight-text { background-color: rgba(255,255,255,0.2) !important; padding: 2px 8px !important; border-radius: 6px !important; box-shadow: 0 0 15px rgba(255,255,255,0.6) !important; color: #ffffff !important; }
-        .highlight-btn { box-shadow: 0 0 35px rgba(255,255,255,0.7) !important; }
-
-        /* 튜토리얼 중 뒤로가기 버튼 호버 무효화 */
-        body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
-
+        /* --- [가이드 튜토리얼 딤(Dim) 및 하이라이트 시스템] --- */
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 9000; opacity: 0; visibility: hidden; transition: opacity 0.5s; pointer-events: none; }
+        #tutorialOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
-        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
+        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s, top 0.5s, bottom 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
         .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
 
-        /* 뒤로가기 화살표 Y축 강하 애니메이션 (버튼과 겹침 소멸) */
+        /* 딤 타겟 (배경을 어둡게 처리, 클릭 불가) */
+        .tut-dimming { filter: brightness(0.2) !important; pointer-events: none !important; transition: filter 0.5s ease; }
+
+        /* 하이라이트 전용 조명 (명도 복원, 클릭 여부는 pulse-guide에서 제어) */
+        .tutorial-highlight { filter: none !important; opacity: 1 !important; transition: filter 0.5s ease, box-shadow 0.5s ease; }
+        
+        /* 추가 시각적 강조 옵션 */
+        .highlight-box { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; background: rgba(30, 10, 10, 0.95) !important; border-color: rgba(255,255,255,0.8) !important; z-index: 9010 !important; }
+        img.tutorial-highlight { filter: drop-shadow(0 0 40px rgba(255,255,255,0.9)) !important; transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; z-index: 9010 !important; }
+        
+        /* 텍스트(주석/신규개념) 전용 하이라이트 */
+        span.tutorial-highlight { color: #ffd700 !important; text-shadow: 0 0 15px rgba(255, 215, 0, 1) !important; z-index: 9010 !important; position: relative; }
+        span.tutorial-highlight.annotation-word { color: #ffffff !important; text-shadow: 0 0 15px rgba(255, 255, 255, 1) !important; text-decoration-color: #ffffff !important; }
+        
+        /* 상호작용 대기 상태 애니메이션 */
+        @keyframes pulse-glow { 0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); } 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } }
+        .pulse-guide { animation: pulse-glow 1.5s infinite !important; pointer-events: auto !important; z-index: 9015 !important; position: relative; }
+        
+        /* 튜토리얼 중 뒤로가기 버튼 호버 반응 강제 무효화 */
+        body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
+
+        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
         #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
@@ -261,7 +259,6 @@
     <!-- [탭 선택 창] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
-            <!-- 뷰박스 제거를 통해 선 두께 롤백 100% 보장 -->
             <svg class="tree-svg-layer" id="treeSvg"></svg>
             <div id="treeNodesBox"></div>
         </div>
@@ -274,7 +271,7 @@
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
-                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img img-glow-default">
+                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img">
                 <span class="detail-sub-label">소(小)성배</span>
             </div>
             <div class="detail-right-box">
@@ -309,7 +306,7 @@
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
-                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img img-glow-ma">
+                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img">
                 <span class="detail-sub-label">제 5차 성배전쟁 참여 마술사 토오사카 린</span>
             </div>
             <div class="detail-right-box">
@@ -335,7 +332,7 @@
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
-                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img img-glow-rj">
+                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img">
                 <span class="detail-sub-label">제 4차 성배전쟁 참여자 에미야 키리츠구의 령주</span>
             </div>
             <div class="detail-right-box">
@@ -364,7 +361,7 @@
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
-                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img img-glow-master">
+                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img">
                 <span class="detail-sub-label">제 4차 성배전쟁 참가자 에미야 키리츠구</span>
             </div>
             <div class="detail-right-box">
@@ -389,7 +386,7 @@
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
-                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img img-glow-suv">
+                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img">
                 <span class="detail-sub-label">제 5차 성배전쟁에서 소환된 서번트</span>
             </div>
             <div class="detail-right-box">
@@ -415,7 +412,7 @@
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
-                <img src="img/img-gam-kotomine.png" alt="Kotomine Kirei" class="detail-img img-glow-gam">
+                <img src="img/img-gam-kotomine.png" alt="Kotomine Kirei" class="detail-img">
                 <span class="detail-sub-label">제 5차 성배전쟁 감독관 코토미네 키레이</span>
             </div>
             <div class="detail-right-box">
@@ -519,7 +516,7 @@
             'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 71, y: 66 },
             'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 66 },
             'yong': { name: '영령', parent: 'suv', x: 26, y: 95 },
-            'class': { name: '클래스', parent: 'suv', x: 50, y: 95 },
+            'class': { name: '클래스', parent: 'suv', x: 50, y: 105 },
             'bogu': { name: '보구', parent: 'suv', x: 74, y: 95 }
         };
 
@@ -769,32 +766,42 @@
                 arrow.style.top = (rect.top - 65) + 'px';
             }
 
+            // 시각적 강조(하이라이트) 부여 함수 : 클래스 갱신 시 깜빡임 차단 적용
             function applyHighlights(els) {
-                // 전체를 강제 딤 처리하기 위해 클래스 추가
-                document.querySelectorAll('.tree-node-box, .tree-branch-line, .detail-left-box > *, .detail-right-box, .static-tab-title, .fate-back-btn, .word-toast-item').forEach(el => {
-                    el.classList.add('dim-target');
+                // 이전에 강조되었던 요소의 펄스 효과만 제거 (딤 상태로 복귀)
+                document.querySelectorAll('.highlight-element').forEach(el => {
+                    if (els && (els === el || (Array.isArray(els) && els.includes(el)) || (els instanceof NodeList && Array.from(els).includes(el)))) {
+                        return; // 새로 강조할 요소면 상태 유지
+                    }
+                    el.classList.remove('highlight-element');
+                    el.classList.remove('highlight-text');
+                    el.classList.remove('highlight-btn');
+                    el.classList.remove('highlight-box');
+                    el.classList.add('tut-dimming');
                 });
                 
-                // 타겟 엘리먼트와 그 부모들의 딤을 해제하고 명도 100% 복원 조명 부여
+                // 타겟 엘리먼트 딤을 해제하고 명도 100% 복원
                 if (els) {
                     let targets = els instanceof NodeList || Array.isArray(els) ? els : [els];
                     targets.forEach(el => {
                         if (el) {
-                            el.classList.remove('dim-target');
+                            el.classList.remove('tut-dimming');
                             el.classList.add('highlight-element');
                             
-                            // 텍스트/버튼 전용 추가 하이라이트 스타일링
+                            // 텍스트/버튼/박스 전용 추가 하이라이트 스타일링 분기
                             if (el.classList.contains('interactive-keyword') || el.classList.contains('annotation-word')) {
                                 el.classList.add('highlight-text');
-                                const pNode = el.closest('p');
-                                if (pNode) pNode.classList.remove('dim-target');
-                                const boxNode = el.closest('.detail-right-box');
-                                if (boxNode) boxNode.classList.remove('dim-target');
-                            }
-                            if (el.classList.contains('tab-item-btn')) {
+                            } else if (el.classList.contains('tab-item-btn')) {
                                 el.classList.add('highlight-btn');
-                                const boxNode = el.closest('.tree-node-box');
-                                if (boxNode) boxNode.classList.remove('dim-target');
+                            } else if (el.classList.contains('detail-right-box')) {
+                                el.classList.add('highlight-box');
+                            }
+                            
+                            // 부모 태그 딤 연쇄 해제
+                            let parent = el.parentElement;
+                            while(parent && !parent.classList.contains('content-container') && parent.tagName !== 'BODY') {
+                                parent.classList.remove('tut-dimming');
+                                parent = parent.parentElement;
                             }
                         }
                     });
@@ -802,11 +809,13 @@
             }
 
             function clearHighlights() {
-                document.querySelectorAll('.dim-target').forEach(el => el.classList.remove('dim-target'));
+                document.querySelectorAll('.tut-dimming').forEach(el => el.classList.remove('tut-dimming'));
                 document.querySelectorAll('.highlight-element').forEach(el => {
                     el.classList.remove('highlight-element');
                     el.classList.remove('highlight-text');
                     el.classList.remove('highlight-btn');
+                    el.classList.remove('highlight-box');
+                    el.classList.remove('pulse-guide');
                 });
                 document.getElementById('tutorialArrow').classList.remove('active');
             }
@@ -825,7 +834,7 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
-                // 성배전쟁 탭 가이드를 제외하고 모두 하단(10%) 고정
+                // 안내창은 성배전쟁 탭 가이드를 제외하고 하단 고정
                 if (isSungbwarTab) {
                     guide.style.bottom = 'auto';
                     guide.style.top = '10%';
@@ -834,10 +843,31 @@
                     guide.style.bottom = '10%';
                 }
                 
+                // 최초 튜토리얼 딤 세팅
+                if(!document.body.classList.contains('tut-active')) {
+                    document.querySelectorAll('.tree-node-box, .tree-branch-line, .tree-branch-hitbox, .detail-left-box > *, .detail-right-box, .static-tab-title, .fate-back-btn, .word-toast-item, .interactive-keyword, .description-quote, .annotation-word').forEach(el => {
+                        el.classList.add('tut-dimming');
+                    });
+                }
+                document.body.classList.add('tut-active');
+                
                 applyHighlights(highlightEls);
                 
                 overlay.classList.add('active');
                 guide.classList.add('active');
+            }
+
+            function setWaitingAction(highlightEls) {
+                document.getElementById('tutorialGuide').classList.remove('active');
+                if (highlightEls) {
+                    let els = highlightEls instanceof NodeList || Array.isArray(highlightEls) ? highlightEls : [highlightEls];
+                    els.forEach(el => {
+                        if (el) el.classList.add('pulse-guide');
+                    });
+                }
+                // 화면 딤(어두움)은 유지하되 인터랙션은 풀어주기 위해 오버레이 제거
+                document.getElementById('tutorialOverlay').classList.remove('active');
+                isTutorialActive = false; // 일시적 해제
             }
 
             function endTutorial() {
@@ -849,7 +879,6 @@
             }
 
             function runTutStep() {
-                clearHighlights();
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) {
                         showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
@@ -863,7 +892,7 @@
                         showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq1', 'done');
-                            endTutorial(); 
+                            setWaitingAction(target);
                         }, target);
                     }
                 } else if (tutState.seq === 2) { 
@@ -889,12 +918,11 @@
                         showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq2', 'done');
-                            endTutorial(); 
+                            setWaitingAction(target);
                         }, target);
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) {
-                        // 알림창 내부 텍스트 박스만 타겟으로 지정하여 100% 비율 맞춤
                         const target = document.querySelector('.word-toast-item');
                         showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 1) {
@@ -904,7 +932,7 @@
                         showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq3', 'done');
-                            endTutorial(); 
+                            setWaitingAction(backBtn);
                         }, backBtn);
                     }
                 } else if (tutState.seq === 4) { 
@@ -913,7 +941,7 @@
                         showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq4', 'done');
-                            endTutorial(); 
+                            setWaitingAction(target);
                         }, target, true); // 성배전쟁만 상단 회피 허용
                     }
                 } else if (tutState.seq === 5) { 
@@ -926,17 +954,23 @@
                     }
                 } else if (tutState.seq === 6) { 
                     if (tutState.step === 0) {
-                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
+                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box')); // 설명창 동시 강조 유지
                         showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
                     } else if (tutState.step === 1) {
-                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
+                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box'));
                         showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
                     } else if (tutState.step === 2) {
-                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
+                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box'));
                         showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq6', 'done');
-                            endTutorial(); 
+                            
+                            // 주석 클릭을 유도하기 위해 박스는 딤 해제, 단어는 펄스 부여
+                            const annoWords = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                            setWaitingAction(annoWords);
                         }, targets);
                     }
                 }
@@ -957,6 +991,7 @@
                 
                 // 가이드 중 토스트가 발생하면 강조박스 자동할당
                 if (isTutorialActive && tutState.seq === 3) {
+                    toastEl.classList.remove('tut-dimming');
                     toastEl.classList.add('highlight-element');
                 }
                 
@@ -987,6 +1022,13 @@
             }
 
             document.addEventListener('click', function(e) {
+                // 클릭 대상이 튜토리얼 펄스 대상이면 클릭 즉시 펄스 소거
+                if(e.target.classList.contains('pulse-guide')) {
+                    e.target.classList.remove('pulse-guide');
+                    document.getElementById('tutorialArrow').classList.remove('active');
+                    clearHighlights();
+                }
+
                 if (isTutorialActive) return;
                 
                 const keyTarget = e.target.closest('.interactive-keyword');
@@ -1033,7 +1075,6 @@
                         if (!localStorage.getItem('tut_seq3')) {
                             setTimeout(() => {
                                 isTutorialActive = true;
-                                document.body.classList.add('tut-active');
                                 tutState = { seq: 3, step: 0 };
                                 runTutStep();
                             }, 500);
@@ -1068,7 +1109,6 @@
                     }
                     activeAnnotation = annoTarget;
                     tooltipBox.innerHTML = annoTarget.getAttribute('data-tooltip') || '추가예정';
-                    tooltipBox.classList.remove('bottom-arrow');
                     tooltipBox.classList.add('show');
                     
                     const rect = annoTarget.getBoundingClientRect();
@@ -1076,14 +1116,6 @@
                     
                     let top = rect.bottom + 15;
                     let left = rect.left + (rect.width / 2) - (boxRect.width / 2);
-                    
-                    // 방향 스위칭: 화면 밖으로 나가면 툴팁을 단어 위로 이동시키고 꼬리 방향 반전
-                    if (top + boxRect.height > window.innerHeight) {
-                        top = Math.max(10, rect.top - boxRect.height - 15);
-                        tooltipBox.classList.add('bottom-arrow');
-                    } else {
-                        tooltipBox.classList.remove('bottom-arrow');
-                    }
                     
                     tooltipBox.style.top = top + 'px';
                     tooltipBox.style.left = left + 'px';
@@ -1121,7 +1153,7 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // SVG 가상 픽셀 연산을 통한 100% 뷰박스 분리 및 두께 롤백
+                // SVG 가상 픽셀 연산을 통한 100% 두께 롤백
                 const svgW = treeSvg.clientWidth || window.innerWidth;
                 const svgH = treeSvg.clientHeight || window.innerHeight;
 
@@ -1163,7 +1195,7 @@
 
                         let branchObj;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
-                            // 대각선: 3차 베지어 곡선 (절대 좌표 픽셀화)
+                            // 대각선: 3차 베지어 곡선
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             const midX = (px + cx) / 2;
@@ -1177,10 +1209,25 @@
                             branchObj.setAttribute('x2', cx);
                             branchObj.setAttribute('y2', cy);
                         }
-                        
                         branchObj.setAttribute('stroke', `url(#${gradId})`);
+                        
+                        // [신규] 상호작용 전용 투명 히트박스 라인 병합 복제
+                        let hitboxObj;
+                        if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
+                            hitboxObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            hitboxObj.setAttribute('class', 'tree-branch-hitbox');
+                            const midX = (px + cx) / 2;
+                            hitboxObj.setAttribute('d', `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`);
+                        } else {
+                            hitboxObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            hitboxObj.setAttribute('class', 'tree-branch-hitbox');
+                            hitboxObj.setAttribute('x1', px);
+                            hitboxObj.setAttribute('y1', py);
+                            hitboxObj.setAttribute('x2', cx);
+                            hitboxObj.setAttribute('y2', cy);
+                        }
 
-                        branchObj.onclick = () => {
+                        hitboxObj.onclick = () => {
                             if (isTransitioning || isTutorialActive) return;
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
@@ -1196,7 +1243,8 @@
                         };
 
                         treeSvg.appendChild(branchObj);
-                        setTimeout(() => { branchObj.classList.add('drawn'); }, 100);
+                        treeSvg.appendChild(hitboxObj);
+                        setTimeout(() => { branchObj.classList.add('drawn'); hitboxObj.classList.add('drawn'); }, 100);
                     }
                 });
 
@@ -1235,6 +1283,14 @@
                     btn.onclick = () => {
                         if (isTransitioning) return;
                         if (isTutorialActive && localStorage.getItem('tut_seq2') === 'done' && id !== 'sungbwar') return;
+                        
+                        // 클릭 대상이 튜토리얼 펄스 대상이면 클릭 즉시 펄스 소거
+                        if(btn.classList.contains('pulse-guide') || nodeBox.classList.contains('pulse-guide')) {
+                            btn.classList.remove('pulse-guide');
+                            nodeBox.classList.remove('pulse-guide');
+                            document.getElementById('tutorialArrow').classList.remove('active');
+                            clearHighlights();
+                        }
                         
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
@@ -1286,21 +1342,19 @@
 
                                     if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
                                         isTutorialActive = true;
-                                        document.body.classList.add('tut-active');
                                         tutState = { seq: 2, step: 0 };
-                                        runTutStep();
+                                        // 탭 애니메이션 종료를 완벽히 대기
+                                        setTimeout(() => runTutStep(), 400);
                                     } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
                                         isTutorialActive = true;
-                                        document.body.classList.add('tut-active');
                                         tutState = { seq: 5, step: 0 };
-                                        runTutStep();
+                                        setTimeout(() => runTutStep(), 400);
                                     }
 
                                     if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
                                         setTimeout(() => {
                                             if(!isTutorialActive) {
                                                 isTutorialActive = true;
-                                                document.body.classList.add('tut-active');
                                                 tutState = { seq: 6, step: 0 };
                                                 runTutStep();
                                             }
@@ -1320,10 +1374,14 @@
                 }
             }
 
-            // 창크기 조절 시 라인 좌표 재갱신을 위한 리스너
+            // 가로 해상도 변경 시에만 연결선 재렌더링
+            let lastWidth = window.innerWidth;
             window.addEventListener('resize', () => {
-                if (currentStage === 2 && !isTransitioning) {
-                    renderTreeGrid(false);
+                if (window.innerWidth !== lastWidth) {
+                    lastWidth = window.innerWidth;
+                    if (currentStage === 2 && !isTransitioning) {
+                        renderTreeGrid(false);
+                    }
                 }
             });
 
@@ -1364,7 +1422,6 @@
                     if (!localStorage.getItem('tut_seq1')) {
                         setTimeout(() => {
                             isTutorialActive = true;
-                            document.body.classList.add('tut-active');
                             tutState = { seq: 1, step: 0 };
                             runTutStep();
                         }, 1000);
@@ -1373,6 +1430,13 @@
             });
 
             backBtn.addEventListener('click', function() { 
+                if(backBtn.classList.contains('pulse-guide') || backBtnWrapper.classList.contains('pulse-guide')) {
+                    backBtn.classList.remove('pulse-guide');
+                    backBtnWrapper.classList.remove('pulse-guide');
+                    document.getElementById('tutorialArrow').classList.remove('active');
+                    clearHighlights();
+                }
+
                 if (isTransitioning) return;
 
                 if (isTutorialActive && localStorage.getItem('tut_seq3') && !localStorage.getItem('tut_seq4')) {
@@ -1380,7 +1444,6 @@
                     isTutorialActive = false;
                     setTimeout(() => {
                         isTutorialActive = true;
-                        document.body.classList.add('tut-active');
                         tutState = { seq: 4, step: 0 };
                         runTutStep();
                     }, 800);
@@ -1399,7 +1462,7 @@
             });
 
             window.addEventListener('popstate', function(event) {
-                // 튜토리얼 락오프: 강제 팝스테이트 발생 시 히스토리 복원 방어
+                // 모바일/PC 뒤로가기 팝스테이트 강제 이탈 완벽 방어 연산
                 if (isTutorialActive) {
                     history.pushState({ stage: currentStage, id: currentActiveTabId }, '', '');
                     return;
@@ -1440,7 +1503,6 @@
 
                         if (localStorage.getItem('tut_seq3') && !localStorage.getItem('tut_seq4')) {
                             isTutorialActive = true;
-                            document.body.classList.add('tut-active');
                             tutState = { seq: 4, step: 0 };
                             setTimeout(() => runTutStep(), 600);
                         }
