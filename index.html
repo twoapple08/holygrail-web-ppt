@@ -302,6 +302,9 @@
             pointer-events: auto !important;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
+            /* 버그 수정: 레이어 최상단 고정을 통한 클릭 영역 무결성 확보 */
+            position: relative;
+            z-index: 200;
         }
 
         .press-start-btn:hover {
@@ -446,14 +449,23 @@
                 0 0 15px rgba(200, 0, 0, 0.8);
         }
 
-        .tab-item-btn:hover {
-            color: #ffffff;
-            transform: scale(1.08);
-            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 20px rgba(255, 255, 255, 0.9);
-        }
-
         .tab-item-btn.red-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
+        }
+
+        /* [(단어) 탭] 마술사 탭 전용 백색 계열 글로우 */
+        .tab-item-btn.white-glow-btn {
+            text-shadow:
+                3px 3px 0px #555555,
+                -1px -1px 0px #555555,
+                1px -1px 0px #555555,
+                -1px 1px 0px #555555,
+                0 0 35px rgba(255, 255, 255, 0.95),
+                0 0 15px rgba(200, 200, 200, 0.8);
+        }
+
+        .tab-item-btn.white-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 25px rgba(200, 200, 255, 0.9);
         }
 
         /* --- [설명창] 각 단어(개념)별 상세 내용이 출력되는 설명창 컨테이너 --- */
@@ -699,7 +711,8 @@
             30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
             100% { opacity: 0; filter: brightness(8); color: #ffffff; transform: translateX(2px) scale(0.95); }
         }
-        @keyframes slow-blink-loop { 0% { opacity: 0.2; } 50% { opacity: 0.85; } 100% { opacity: 0.2; } }
+        /* 수정사항 1 적용: 깜빡임 투명도 수치 상향 조정 */
+        @keyframes slow-blink-loop { 0% { opacity: 0.5; } 50% { opacity: 1.0; } 100% { opacity: 0.5; } }
         @keyframes grail-smooth-fadein { 0% { opacity: 0; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes grail-gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
@@ -791,10 +804,23 @@
                     <span class="description-quote-author">-에미야 키리츠구</span>
                     <p style="margin-top: 12px; line-height: 1.8;">
                         성배의 소유권을 둘러싸고 벌이는 전쟁.<br>
-                        성배가 7명의 마술사에게 령주(令呪)를 내려<br>
+                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 령주(令呪)를 내려<br>
                         마스터의 역할과 서번트 소환 자격을 부여하고<br>
                         감독관의 감독하에 진행이 되는 전쟁.
                     </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 마술사 단어 탭 선택 시 나타나는 마술사 설명창 -->
+        <section class="tab-detail-view" id="tabDetail_ma">
+            <div class="static-tab-title">마술사</div>
+            <div class="detail-left-box">
+            </div>
+            <div class="detail-right-box">
+                <h2 class="description-title">마술사란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
                 </div>
             </div>
         </section>
@@ -829,7 +855,8 @@
         // ★ [탭 선택 창 데이터베이스] 마인드맵 트리 구조 내 단어 탭 및 계층 정의 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 35 },
-            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 }
+            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 },
+            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 65 }
         };
 
         // 새로고침 시 세션 스토리지 초기화 및 상태 보호 모듈
@@ -918,7 +945,12 @@
             });
 
             seSlider.addEventListener('change', function() {
-                if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
+                if (pstSfx) { 
+                    pstSfx.pause(); 
+                    pstSfx.currentTime = 0; 
+                    const p = pstSfx.play();
+                    if (p !== undefined) p.catch(()=>{}); 
+                }
             });
 
             // [오디오 제어] BGM 페이드 아웃 헬퍼 함수
@@ -946,7 +978,10 @@
             function fadeAudioIn(audioEl, targetVol, duration = 1000) {
                 if (!audioEl) return;
                 audioEl.volume = 0;
-                audioEl.play().catch(()=>{});
+                const playPromise = audioEl.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(()=>{});
+                }
                 const steps = 20;
                 const stepTime = duration / steps;
                 const volStep = targetVol / steps;
@@ -1050,9 +1085,11 @@
                     
                     if (activeToastCount > 0) {
                         if (noshinSfx) {
+                            noshinSfx.pause();
                             noshinSfx.volume = parseFloat(seSlider.value);
                             noshinSfx.currentTime = 0;
-                            noshinSfx.play().catch(()=>{});
+                            const p = noshinSfx.play();
+                            if (p !== undefined) p.catch(()=>{});
                         }
                         return;
                     }
@@ -1070,9 +1107,11 @@
                         }
 
                         if (wordSfx) {
+                            wordSfx.pause();
                             wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                             wordSfx.currentTime = 0;
-                            wordSfx.play().catch(()=>{});
+                            const p = wordSfx.play();
+                            if (p !== undefined) p.catch(()=>{});
                         }
                         spawnAcquireToast(keyTarget.innerText.trim());
                     }
@@ -1155,9 +1194,11 @@
                         line.onclick = () => {
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
+                                moveSfx.pause();
                                 moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                                 moveSfx.currentTime = 0.15;
-                                moveSfx.play().catch(()=>{});
+                                const p = moveSfx.play();
+                                if (p !== undefined) p.catch(()=>{});
                             }
                             focusToNode(nextFocus);
                         };
@@ -1181,6 +1222,8 @@
                     
                     if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
+                    } else if (id === 'ma') {
+                        btn.classList.add('white-glow-btn');
                     }
 
                     btn.style.fontSize = '4.5rem';
@@ -1189,17 +1232,21 @@
                     btn.onclick = () => {
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
+                                moveSfx.pause();
                                 moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                                 moveSfx.currentTime = 0.15;
-                                moveSfx.play().catch(()=>{});
+                                const p = moveSfx.play();
+                                if (p !== undefined) p.catch(()=>{});
                             }
                             focusToNode(id);
                         } else {
                             history.pushState({ stage: 3, id: id }, '', '');
                             if (pstSfx) { 
+                                pstSfx.pause();
                                 pstSfx.volume = parseFloat(seSlider.value);
                                 pstSfx.currentTime = 0; 
-                                pstSfx.play().catch(()=>{}); 
+                                const p = pstSfx.play();
+                                if (p !== undefined) p.catch(()=>{}); 
                             }
                             
                             currentActiveTabId = id;
@@ -1225,9 +1272,11 @@
                 history.pushState({ stage: 2 }, '', '');
                 
                 if (pstSfx) {
+                    pstSfx.pause();
                     pstSfx.volume = parseFloat(seSlider.value);
                     pstSfx.currentTime = 0;
-                    pstSfx.play().catch(()=>{});
+                    const p = pstSfx.play();
+                    if (p !== undefined) p.catch(()=>{});
                 }
 
                 // 메인 BGM 페이드 아웃 가동
@@ -1264,9 +1313,11 @@
                     // 설명창(상세 뷰) -> 탭 선택 창으로 복귀
                     currentStage = 2;
                     if (pstSfx) { 
+                        pstSfx.pause();
                         pstSfx.volume = parseFloat(seSlider.value);
                         pstSfx.currentTime = 0; 
-                        pstSfx.play().catch(()=>{}); 
+                        const p = pstSfx.play();
+                        if (p !== undefined) p.catch(()=>{}); 
                     }
 
                     const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
@@ -1282,12 +1333,15 @@
                     // 탭 선택 창 -> 메인화면으로 복귀
                     currentStage = 1;
                     if (pstSfx) { 
+                        pstSfx.pause();
                         pstSfx.volume = parseFloat(seSlider.value);
                         pstSfx.currentTime = 0; 
-                        pstSfx.play().catch(()=>{}); 
+                        const p = pstSfx.play();
+                        if (p !== undefined) p.catch(()=>{}); 
                     }
 
-                    fadeAudioOut(bgmTheme2, 1000);
+                    // 오디오 페이드아웃 시간을 UI 전환 시간(600ms)과 동기화 연산
+                    fadeAudioOut(bgmTheme2, 600);
 
                     treeSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
@@ -1298,9 +1352,10 @@
                         introNotice.classList.remove('slow-fade-out');
 
                         if (bgmMain) {
-                            fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1000);
+                            // 오디오 페이드인 시간을 UI 전환 가동 후 1200ms에 걸쳐 원본 크기로 복구 연산
+                            fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1200);
                         }
-                    }, 300);
+                    }, 600);
 
                     setTimeout(() => {
                         pressStartWrapper.classList.remove('flash-exit');
@@ -1308,7 +1363,7 @@
                         void pressStartWrapper.offsetWidth;
                         pressStartWrapper.style.opacity = '1';
                         pressStartWrapper.style.pointerEvents = 'auto';
-                    }, 800);
+                    }, 1400);
                 }
             });
 
@@ -1325,7 +1380,10 @@
 
                 if (bgmMain) {
                     bgmMain.volume = parseFloat(volumeSlider.value);
-                    setTimeout(() => { bgmMain.play().catch(()=>{}); }, 700);
+                    setTimeout(() => { 
+                        const p = bgmMain.play();
+                        if (p !== undefined) p.catch(()=>{});
+                    }, 700);
                 }
 
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
@@ -1344,7 +1402,8 @@
                         sessionStorage.setItem('fate_voice_played', 'true');
                         if (fateVoice) {
                             fateVoice.currentTime = 0;
-                            fateVoice.play().catch(e => console.log(e));
+                            const p = fateVoice.play();
+                            if (p !== undefined) p.catch(e => console.log(e));
                         }
                     }
                 }, 1400);
@@ -1361,3 +1420,4 @@
     </script>
 </body>
 </html>
+```》
