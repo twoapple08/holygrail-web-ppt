@@ -274,14 +274,16 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.8s ease-out;
+            position: relative;
+            z-index: 100;
         }
 
         .press-start-wrapper.animate {
             opacity: 1;
-            pointer-events: auto;
+            pointer-events: auto !important;
         }
 
-        /* PRESS TO START 버튼 (히트박스 확장 패딩 적용) */
+        /* PRESS TO START 버튼 (히트박스 대폭 확장) */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -291,9 +293,10 @@
             text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5);
             background: transparent;
             border: none;
-            padding: 16px 36px;
+            padding: 24px 48px;
             cursor: pointer;
             outline: none;
+            pointer-events: auto !important;
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
@@ -1142,42 +1145,37 @@
 
             backBtn.addEventListener('click', function() { history.back(); });
 
-            // ★ 뒤로가기 모션 동기화 ★
+            // ★ 스테이지 기반 엄격한 순차 뒤로가기(popstate) 라우팅 아키텍처 ★
             window.addEventListener('popstate', function(event) {
-                const targetStage = (event.state && event.state.stage) ? event.state.stage : 1;
-                if (targetStage >= currentStage) return;
-
-                if (pstSfx) { 
-                    pstSfx.volume = parseFloat(seSlider.value);
-                    pstSfx.currentTime = 0; 
-                    pstSfx.play().catch(()=>{}); 
-                }
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
-                    currentStage = targetStage;
+                    // Stage 3 (상세 뷰) -> Stage 2 (탭 선택창)으로 복귀
+                    currentStage = 2;
+                    if (pstSfx) { 
+                        pstSfx.volume = parseFloat(seSlider.value);
+                        pstSfx.currentTime = 0; 
+                        pstSfx.play().catch(()=>{}); 
+                    }
+
                     const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                     if (activeView) activeView.classList.remove('show');
 
                     setTimeout(() => {
-                        if (targetStage === 2) {
-                            renderTreeGrid(false);
-                            treeSelectionContainer.classList.add('show');
-                        }
-                        if (targetStage === 1) {
-                            backBtnWrapper.classList.remove('show');
-                            grailWrapper.classList.remove('slow-fade-out');
-                            subTitle.classList.remove('slow-fade-out');
-                            introNotice.classList.remove('slow-fade-out');
-                            pressStartWrapper.classList.remove('flash-exit');
-                            pressStartWrapper.style.opacity = '1';
-                            pressStartWrapper.style.pointerEvents = 'auto';
-                        }
+                        renderTreeGrid(false);
+                        treeSelectionContainer.classList.add('show');
                         currentActiveTabId = null;
                     }, 600); 
 
-                } else if (currentStage === 2 && targetStage === 1) {
+                } else if (currentStage === 2) {
+                    // Stage 2 (탭 선택창) -> Stage 1 (메인 화면)으로 복귀
                     currentStage = 1;
+                    if (pstSfx) { 
+                        pstSfx.volume = parseFloat(seSlider.value);
+                        pstSfx.currentTime = 0; 
+                        pstSfx.play().catch(()=>{}); 
+                    }
+
                     treeSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
