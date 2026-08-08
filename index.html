@@ -689,7 +689,7 @@
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
-    <audio id="kotomineSfx" src="voice/voice-hloygrail-kotomine.mp3" preload="auto"></audio>
+    <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
@@ -858,10 +858,10 @@
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
 
-            // voice-fate는 VOICE 슬라이더의 60%로 반영
+            // voice-fate는 VOICE 슬라이더의 45%로 반영
             voiceSlider.addEventListener('input', function() { 
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); 
-                if (fateVoice) fateVoice.volume = parseFloat(this.value) * 0.6;
+                if (fateVoice) fateVoice.volume = parseFloat(this.value) * 0.45;
             });
 
             seSlider.addEventListener('change', function() {
@@ -893,7 +893,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // ★ 어록 터치/클릭 100% 재생 전역 위임엔진 ★
+            // ★ 어록 터치/클릭 100% 재생 전역 위임엔진 (재생 안정성 로직 보강) ★
             document.addEventListener('click', function(e) {
                 const quoteTarget = e.target.closest('#kotomineTrigger');
                 if (quoteTarget) {
@@ -902,9 +902,10 @@
                         quoteTarget.classList.add('glow-fade-out');
                     }
                     if (kotomineSfx) {
-                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        kotomineSfx.pause();
                         kotomineSfx.currentTime = 0;
-                        kotomineSfx.play().catch(()=>{});
+                        kotomineSfx.volume = parseFloat(voiceSlider.value);
+                        kotomineSfx.play().catch(err => console.log('Quote audio error:', err));
                     }
                 }
             });
@@ -982,7 +983,7 @@
                 }
             }
 
-            // ★ 특정 탭선택 버튼으로 카메라/매트릭스 포커스 이동 연산 ★
+            // ★ 특정 탭선택 버튼으로 카메라/매트릭스 포커스 이동 연산 (sfx-choicemove 0.15초 시작점 지정) ★
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
@@ -1050,7 +1051,7 @@
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
                                 moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                                moveSfx.currentTime = 0;
+                                moveSfx.currentTime = 0.15; // 0.15초 부분부터 재생
                                 moveSfx.play().catch(()=>{});
                             }
                             focusToNode(nextFocus);
@@ -1079,7 +1080,7 @@
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
                                 moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                                moveSfx.currentTime = 0;
+                                moveSfx.currentTime = 0.15; // 0.15초 부분부터 재생
                                 moveSfx.play().catch(()=>{});
                             }
                             focusToNode(id);
@@ -1201,17 +1202,23 @@
 
                 btnContainer.classList.add('hide');
 
+                // ★ sfx-pst 효과음 재생 복구 ★
+                if (pstSfx) {
+                    pstSfx.volume = parseFloat(seSlider.value);
+                    pstSfx.currentTime = 0;
+                    pstSfx.play().catch(()=>{});
+                }
+
                 if (bgm) {
                     bgm.volume = Math.min(1, parseFloat(volumeSlider.value) * 1.15);
                     setTimeout(() => { bgm.play().catch(()=>{}); }, 700);
                 }
 
-                if (pstSfx) pstSfx.volume = parseFloat(seSlider.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value) * 0.6; // 60% 적용
+                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value) * 0.45; // 45% 적용
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
