@@ -686,6 +686,7 @@
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
+    <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
@@ -790,6 +791,7 @@
             if (isReload) {
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
+                sessionStorage.removeItem('fate_voice_played');
             }
         })();
 
@@ -811,6 +813,7 @@
             const noshinSfx = document.getElementById('noshinSfx');
             const kotomineSfx = document.getElementById('kotomineSfx');
             const moveSfx = document.getElementById('moveSfx');
+            const fateVoice = document.getElementById('fateVoice');
 
             const volumeSlider = document.getElementById('volumeSlider');
             const seSlider = document.getElementById('seSlider');
@@ -845,7 +848,10 @@
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
-            voiceSlider.addEventListener('input', function() { if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); });
+            voiceSlider.addEventListener('input', function() { 
+                if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); 
+                if (fateVoice) fateVoice.volume = parseFloat(this.value);
+            });
 
             seSlider.addEventListener('change', function() {
                 if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
@@ -855,7 +861,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgm, pstSfx, wordSfx, noshinSfx, kotomineSfx, moveSfx].forEach(audio => {
+                [bgm, pstSfx, wordSfx, noshinSfx, kotomineSfx, moveSfx, fateVoice].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -1194,6 +1200,7 @@
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
+                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value);
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
@@ -1203,6 +1210,15 @@
                     subTitle.classList.add('animate');
                     introNotice.classList.add('animate');
                     controlsGroup.classList.add('animate');
+                    
+                    // 최초 메인 화면 진입 시 1회만 보이스 재생
+                    if (!sessionStorage.getItem('fate_voice_played')) {
+                        sessionStorage.setItem('fate_voice_played', 'true');
+                        if (fateVoice) {
+                            fateVoice.currentTime = 0;
+                            fateVoice.play().catch(e => console.log(e));
+                        }
+                    }
                 }, 2200);
 
                 setTimeout(() => pressStartWrapper.classList.add('animate'), 3000);
