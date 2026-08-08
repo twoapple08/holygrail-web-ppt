@@ -361,8 +361,7 @@
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- [탭 선택 창] 마인드맵 트리 컨테이너 영역 스타일 --- 
-           버그 해결의 핵심: 숨겨진 레이어가 클릭을 흡수하지 못하게 visibility 제어 */
+        /* --- [탭 선택 창] 마인드맵 트리 컨테이너 영역 스타일 --- */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -402,7 +401,7 @@
             z-index: 31;
         }
 
-        /* [연결선] 탭 선택 창 내 개념 노드들을 이어주는 마력 연결선 (SVG Line) */
+        /* [연결선] 탭 선택 창 내 개념 노드들을 이어주는 마력 연결선 (SVG Line/Path) */
         .tree-branch-line {
             stroke-width: 4px;
             fill: none;
@@ -426,68 +425,70 @@
             align-items: center;
         }
 
-        /* [(단어) 탭] 탭 선택 창 내부에서 클릭하여 상세 뷰(설명창)로 진입하는 탭 버튼 */
+        /* [(단어) 탭] 탭 선택 창 내부에서 클릭하여 상세 뷰(설명창)로 진입하는 탭 버튼 기본 속성 */
         .tab-item-btn {
             font-family: 'Song Myung', serif;
+            font-size: 4.5rem;
             font-weight: 700;
-            color: #fffdfa;
-            letter-spacing: 12px;
             background: transparent;
             border: none;
             outline: none;
             cursor: pointer;
             user-select: none;
             white-space: nowrap;
-            text-shadow: 
-                3px 3px 0px #700000, 
-                -1px -1px 0px #700000, 
-                1px -1px 0px #700000, 
-                -1px 1px 0px #700000,
-                0 0 40px rgba(255, 215, 0, 0.8);
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
 
-        /* [(단어) 탭] 성배 탭 전용 골드 계열 글로우 */
-        .tab-item-btn.gold-glow-btn {
-            text-shadow:
-                3px 3px 0px #705000,
-                -1px -1px 0px #705000,
-                1px -1px 0px #705000,
-                -1px 1px 0px #705000,
-                0 0 35px rgba(255, 215, 0, 0.95),
-                0 0 15px rgba(200, 150, 0, 0.8);
+        /* [(단어) 탭] 색상별 커스텀 글로우 클래스 아키텍처 */
+        .yellow-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
         }
-        .tab-item-btn.gold-glow-btn:hover {
-            text-shadow: 0 0 50px rgba(255, 230, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9);
+        .yellow-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(255, 255, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        /* [(단어) 탭] 성배전쟁 탭 전용 붉은 계열 글로우 */
-        .tab-item-btn.red-glow-btn {
-            text-shadow: 
-                3px 3px 0px #900000, 
-                -1px -1px 0px #900000, 
-                1px -1px 0px #900000, 
-                -1px 1px 0px #900000,
-                0 0 35px rgba(255, 50, 50, 0.95),
-                0 0 15px rgba(200, 0, 0, 0.8);
+        .red-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
         }
-        .tab-item-btn.red-glow-btn:hover {
+        .red-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        /* [(단어) 탭] 마술사 탭 전용 백색 계열 글로우 */
-        .tab-item-btn.white-glow-btn {
-            text-shadow:
-                3px 3px 0px #555555,
-                -1px -1px 0px #555555,
-                1px -1px 0px #555555,
-                -1px 1px 0px #555555,
-                0 0 35px rgba(255, 255, 255, 0.95),
-                0 0 15px rgba(200, 200, 200, 0.8);
+        .white-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 35px rgba(255, 255, 255, 0.95), 0 0 15px rgba(200, 200, 200, 0.8);
         }
-        .tab-item-btn.white-glow-btn:hover {
+        .white-glow-btn:hover {
             text-shadow: 0 0 50px rgba(255, 255, 255, 1), 0 0 25px rgba(200, 200, 255, 0.9);
         }
+
+        .brightred-glow-btn {
+            color: #cc0000;
+            text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8);
+        }
+        .brightred-glow-btn:hover {
+            color: #ff3333;
+            text-shadow: 0 0 50px rgba(255, 50, 50, 1), 0 0 25px rgba(255, 100, 100, 0.9);
+        }
+
+        .skyblue-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 35px rgba(135, 206, 235, 0.95), 0 0 15px rgba(100, 180, 220, 0.8);
+        }
+        .skyblue-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(135, 206, 235, 1), 0 0 25px rgba(255, 255, 255, 0.9);
+        }
+
+        .black-glow-btn {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 35px rgba(0, 0, 0, 1), 0 0 15px rgba(30, 30, 30, 0.8);
+        }
+        .black-glow-btn:hover {
+            text-shadow: 0 0 50px rgba(50, 50, 50, 1), 0 0 25px rgba(150, 150, 150, 0.9);
+        }
+
 
         /* --- [설명창] 각 단어(개념)별 상세 내용이 출력되는 설명창 컨테이너 --- */
         .tab-detail-view {
@@ -523,7 +524,7 @@
             gap: 0;
         }
 
-        /* [설명창] 정적 탭 타이틀 영역 */
+        /* [설명창] 정적 탭 타이틀 영역 기본 뼈대 */
         .static-tab-title {
             position: absolute;
             top: 7vh;
@@ -531,20 +532,39 @@
             font-family: 'Song Myung', serif;
             font-size: 4.5rem;
             font-weight: 700;
-            color: #fffdfa;
             letter-spacing: 12px;
             white-space: nowrap;
-            text-shadow: 
-                3px 3px 0px #700000, 
-                -1px -1px 0px #700000, 
-                1px -1px 0px #700000, 
-                -1px 1px 0px #700000,
-                0 0 40px rgba(255, 215, 0, 0.8);
             transform-origin: top left;
             transform: scale(0.75);
-            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 220, 120, 0.9));
+            filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2));
             pointer-events: none;
             z-index: 10;
+        }
+
+        /* [설명창] 탭 제목 동기화 컬러 클래스 */
+        .title-yellow {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8);
+        }
+        .title-red {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8);
+        }
+        .title-white {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 40px rgba(255, 255, 255, 0.8);
+        }
+        .title-brightred {
+            color: #cc0000;
+            text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 40px rgba(255, 50, 50, 0.95);
+        }
+        .title-skyblue {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8);
+        }
+        .title-black {
+            color: #fffdfa;
+            text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9);
         }
 
         .detail-left-box {
@@ -584,7 +604,6 @@
             backdrop-filter: blur(4px);
             position: relative;
             z-index: 5;
-            /* pointer-events: auto 강제 할당 제거 완료 (상위 상속 처리) */
         }
 
         .description-title {
@@ -805,9 +824,9 @@
 
     <!-- [설명창] 각 단어별 상세 정보 및 성우 어록을 보여주는 설명창 보관소 -->
     <div id="dynamicTabDetailViews">
-        <!-- [설명창] 기본 성배 단어 탭 선택 시 나타나는 성배 설명창 -->
+        <!-- [설명창] 1. 성배 -->
         <section class="tab-detail-view" id="tabDetail_sung">
-            <div class="static-tab-title">성배</div>
+            <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
                 <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img">
                 <span class="detail-sub-label">소(小)성배</span>
@@ -822,10 +841,9 @@
             </div>
         </section>
 
-        <!-- [설명창] 성배전쟁 단어 탭 선택 시 나타나는 성배전쟁 설명창 -->
+        <!-- [설명창] 2. 성배전쟁 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
-            <div class="static-tab-title">성배전쟁</div>
-            <!-- 이미지 영역 제거 및 중앙 정렬 적용 -->
+            <div class="static-tab-title title-red">성배전쟁</div>
             <div class="detail-right-box">
                 <h2 class="description-title">성배전쟁이란?</h2>
                 <div class="description-content">
@@ -833,24 +851,71 @@
                     <span class="description-quote-author">-에미야 키리츠구</span>
                     <p style="margin-top: 12px; line-height: 1.8;">
                         성배의 소유권을 둘러싸고 벌이는 전쟁.<br>
-                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 령주(令呪)를 내려<br>
-                        마스터의 역할과 서번트 소환 자격을 부여하고<br>
-                        감독관의 감독하에 진행이 되는 전쟁.
+                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj">령주(令呪)</span>를 내려<br>
+                        <span class="interactive-keyword" data-key="master">마스터</span>의 역할과 <span class="interactive-keyword" data-key="suv">서번트</span> 소환 자격을 부여하고<br>
+                        <span class="interactive-keyword" data-key="gam">감독관</span>의 감독하에 진행이 되는 전쟁.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [설명창] 마술사 단어 탭 선택 시 나타나는 마술사 설명창 -->
+        <!-- [설명창] 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
-            <div class="static-tab-title">마술사</div>
+            <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
-                <!-- 이미지 및 설명 양식 추가 -->
                 <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img">
                 <span class="detail-sub-label">제 5차 성배전쟁 참여 마술사 토오사카 린</span>
             </div>
             <div class="detail-right-box">
                 <h2 class="description-title">마술사란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- [설명창] 4. 령주 -->
+        <section class="tab-detail-view" id="tabDetail_rj">
+            <div class="static-tab-title title-brightred">령주(令呪)</div>
+            <div class="detail-left-box"></div>
+            <div class="detail-right-box">
+                <h2 class="description-title">령주(令呪)란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 5. 마스터 -->
+        <section class="tab-detail-view" id="tabDetail_master">
+            <div class="static-tab-title title-white">마스터</div>
+            <div class="detail-left-box"></div>
+            <div class="detail-right-box">
+                <h2 class="description-title">마스터란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 6. 서번트 -->
+        <section class="tab-detail-view" id="tabDetail_suv">
+            <div class="static-tab-title title-skyblue">서번트</div>
+            <div class="detail-left-box"></div>
+            <div class="detail-right-box">
+                <h2 class="description-title">서번트란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [설명창] 7. 감독관 -->
+        <section class="tab-detail-view" id="tabDetail_gam">
+            <div class="static-tab-title title-black">감독관</div>
+            <div class="detail-left-box"></div>
+            <div class="detail-right-box">
+                <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
                 </div>
@@ -863,7 +928,7 @@
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- [오디오 컨트롤러] 우측 하단 볼륨 패널 영역 -->
+    <!-- [오디오 컨트롤러] 우측 하단 볼륨 조절 패널 및 워터마크 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -884,14 +949,20 @@
 
     <!-- [자바스크립트] 시스템 로직 및 인터랙션 제어 엔진 -->
     <script>
-        // 전역 트랜지션 락 변수: 화면 전환 중 중복 입력 방지 시스템 가동
         let isTransitioning = false;
+        
+        // 상호작용 잠금 변수: 신규 개념 획득 토스트 표시 중 중복 획득 차단
+        let isToastActive = false;
 
         // ★ [탭 선택 창 데이터베이스] 마인드맵 트리 구조 내 단어 탭 및 계층 정의 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 35 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 65 }
+            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 65 }, // 좌측
+            'rj': { name: '령주(令呪)', parent: 'sungbwar', x: 35, y: 85 }, // 좌측 하단 1
+            'master': { name: '마스터', parent: 'sungbwar', x: 50, y: 85 }, // 하단
+            'suv': { name: '서번트', parent: 'sungbwar', x: 20, y: 85 }, // 좌측 하단 2
+            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 65 } // 우측
         };
 
         // 새로고침 시 세션 스토리지 초기화 및 상태 보호 모듈
@@ -955,7 +1026,6 @@
             let currentStage = 1;       // 1: 메인화면, 2: 탭 선택 창, 3: 설명창(상세 뷰)
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
-            let activeToastCount = 0;
 
             // BGM 슬라이더 이벤트: 실시간 볼륨 동기화 (2번 테마곡은 70% 출력 감소 적용)
             volumeSlider.addEventListener('input', function() { 
@@ -1005,7 +1075,7 @@
                         clearInterval(fadeInterval);
                         audioEl.pause();
                         audioEl.currentTime = 0;
-                        audioEl.volume = startVol; // 추후 재사용을 위해 목표 볼륨 롤백
+                        audioEl.volume = startVol;
                     }
                 }, stepTime);
             }
@@ -1058,7 +1128,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // [설명창 어록] 성우 어록 클릭 시 보이스 재생 (음성 출력 1.2배 증폭 적용)
+            // [설명창 어록] 성우 어록 클릭 시 보이스 재생
             document.addEventListener('click', function(e) {
                 const kotomineTarget = e.target.closest('#kotomineTrigger');
                 if (kotomineTarget) {
@@ -1103,7 +1173,6 @@
 
             // [알림] 신규개념 획득 토스트 알림 생성 모듈
             function spawnAcquireToast(wordText) {
-                activeToastCount++;
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
                 toastEl.innerText = `—${wordText}을(를) 획득했습니다—`;
@@ -1111,17 +1180,17 @@
 
                 setTimeout(() => {
                     if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
-                    activeToastCount = Math.max(0, activeToastCount - 1);
                 }, 1800);
             }
 
-            // [신규개념] 본문 내 키워드 클릭 시 신규개념 획득 프로세스 가동
+            // [신규개념] 본문 내 키워드 클릭 시 신규개념 획득 프로세스 가동 (락오프 방어 적용)
             document.addEventListener('click', function(e) {
                 const keyTarget = e.target.closest('.interactive-keyword');
                 if (keyTarget) {
                     e.preventDefault();
                     
-                    if (activeToastCount > 0) {
+                    if (isToastActive) {
+                        // 중복 상호작용 차단 및 방어 효과음 재생
                         if (noshinSfx) {
                             noshinSfx.pause();
                             noshinSfx.volume = parseFloat(seSlider.value);
@@ -1133,6 +1202,8 @@
                     }
 
                     if (!keyTarget.classList.contains('clicked')) {
+                        isToastActive = true;
+                        
                         keyTarget.classList.add('clicked');
                         const id = keyTarget.getAttribute('data-key');
                         
@@ -1152,6 +1223,11 @@
                             if (p !== undefined) p.catch(()=>{});
                         }
                         spawnAcquireToast(keyTarget.innerText.trim());
+
+                        // 1.8초간 시스템 상호작용 잠금 유지
+                        setTimeout(() => {
+                            isToastActive = false;
+                        }, 1800);
                     }
                 }
             });
@@ -1189,7 +1265,7 @@
                 if (resetFocus) currentFocusedId = 'sung';
                 focusToNode(currentFocusedId);
 
-                // 1. [연결선] 부모-자식 간 마력 연결선(SVG Line) 렌더링
+                // 1. [연결선] 부모-자식 간 마력 연결선 렌더링 (곡선 및 직선 분류 계산)
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1221,15 +1297,26 @@
                         });
                         svgDefs.appendChild(linearGrad);
 
-                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                        line.setAttribute('class', 'tree-branch-line');
-                        line.setAttribute('x1', pNode.x + '%');
-                        line.setAttribute('y1', pNode.y + '%');
-                        line.setAttribute('x2', cNode.x + '%');
-                        line.setAttribute('y2', cNode.y + '%');
-                        line.setAttribute('stroke', `url(#${gradId})`);
+                        let branchObj;
+                        // 령주(rj)와 서번트(suv) 노드에 한하여 3차 함수 베지어 곡선 생성
+                        if (id === 'rj' || id === 'suv') {
+                            branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            branchObj.setAttribute('class', 'tree-branch-line');
+                            const midY = (pNode.y + cNode.y) / 2;
+                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
+                        } else {
+                            // 그 외 노드는 기본 직선 연결
+                            branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                            branchObj.setAttribute('class', 'tree-branch-line');
+                            branchObj.setAttribute('x1', pNode.x + '%');
+                            branchObj.setAttribute('y1', pNode.y + '%');
+                            branchObj.setAttribute('x2', cNode.x + '%');
+                            branchObj.setAttribute('y2', cNode.y + '%');
+                        }
+                        
+                        branchObj.setAttribute('stroke', `url(#${gradId})`);
 
-                        line.onclick = () => {
+                        branchObj.onclick = () => {
                             if (isTransitioning) return;
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
@@ -1244,12 +1331,12 @@
                             setTimeout(() => { isTransitioning = false; }, 800);
                         };
 
-                        treeSvg.appendChild(line);
-                        setTimeout(() => { line.classList.add('drawn'); }, 100);
+                        treeSvg.appendChild(branchObj);
+                        setTimeout(() => { branchObj.classList.add('drawn'); }, 100);
                     }
                 });
 
-                // 2. [(단어) 탭] 개념 노드 버튼 생성
+                // 2. [(단어) 탭] 개념 노드 버튼 생성 및 속성 분배
                 unlockedIds.forEach(id => {
                     const nodeInfo = CONCEPT_REGISTRY[id];
 
@@ -1262,14 +1349,19 @@
                     btn.className = 'tab-item-btn';
                     
                     if (id === 'sung') {
-                        btn.classList.add('gold-glow-btn');
+                        btn.classList.add('yellow-glow-btn');
                     } else if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
-                    } else if (id === 'ma') {
+                    } else if (id === 'ma' || id === 'master') {
                         btn.classList.add('white-glow-btn');
+                    } else if (id === 'rj') {
+                        btn.classList.add('brightred-glow-btn');
+                    } else if (id === 'suv') {
+                        btn.classList.add('skyblue-glow-btn');
+                    } else if (id === 'gam') {
+                        btn.classList.add('black-glow-btn');
                     }
 
-                    btn.style.fontSize = '4.5rem';
                     btn.innerText = nodeInfo.name;
                     
                     btn.onclick = () => {
@@ -1331,7 +1423,6 @@
                     if (p !== undefined) p.catch(()=>{});
                 }
 
-                // 메인 BGM 페이드 아웃 가동
                 fadeAudioOut(bgmMain, 1200);
 
                 pressStartWrapper.classList.add('flash-exit');
@@ -1347,7 +1438,6 @@
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
 
-                    // 탭 선택 창 진입 시 BGM-theme2 페이드 인 가동 (70% 출력 적용)
                     if (bgmTheme2) {
                         fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value) * 0.7, 1000);
                     }
@@ -1355,13 +1445,11 @@
                 }, 1450);
             });
 
-            // 백 버튼 클릭 시 트랜지션 락오프 검사
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
                 history.back(); 
             });
 
-            // [신규 기능] ESC 키보드 입력 시 뒤로가기 연산 호출 인터럽트
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
                     if (isTransitioning || currentStage <= 1) return;
@@ -1378,7 +1466,6 @@
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
-                    // 설명창(상세 뷰) -> 탭 선택 창으로 복귀
                     currentStage = 2;
                     if (pstSfx) { 
                         pstSfx.pause();
@@ -1399,7 +1486,6 @@
                     }, 600); 
 
                 } else if (currentStage === 2) {
-                    // 탭 선택 창 -> 메인화면으로 복귀
                     currentStage = 1;
                     if (pstSfx) { 
                         pstSfx.pause();
@@ -1409,7 +1495,6 @@
                         if (p !== undefined) p.catch(()=>{}); 
                     }
 
-                    // 오디오 페이드아웃 시간을 UI 전환 시간(600ms)과 동기화 연산
                     fadeAudioOut(bgmTheme2, 600);
 
                     treeSelectionContainer.classList.remove('show');
@@ -1421,14 +1506,12 @@
                         introNotice.classList.remove('slow-fade-out');
 
                         if (bgmMain) {
-                            // 오디오 페이드인 시간을 UI 전환 가동 후 1200ms에 걸쳐 원본 크기로 복구 연산
                             fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1200);
                         }
                     }, 600);
 
                     setTimeout(() => {
                         pressStartWrapper.classList.remove('flash-exit');
-                        // 가시성 및 상호작용 권한 정상 롤백 처리
                         pressStartWrapper.style.opacity = '0';
                         void pressStartWrapper.offsetWidth;
                         pressStartWrapper.style.opacity = '1';
