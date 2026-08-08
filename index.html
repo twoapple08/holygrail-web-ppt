@@ -308,8 +308,14 @@
             pointer-events: none !important;
         }
 
+        /* 스케일 축소형 그라데이션 페이드 아웃 아키텍처 */
+        @keyframes smooth-scale-fade-out {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.9); }
+        }
+
         .slow-fade-out {
-            animation: pure-fade-out 1.2s ease-out forwards !important;
+            animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
             pointer-events: none !important;
         }
 
@@ -335,7 +341,7 @@
             animation: fade-in 1.2s ease-out forwards;
         }
         .intro-notice-left.slow-fade-out {
-            animation: pure-fade-out 1.2s ease-out forwards !important;
+            animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
         /* --- 4. 마인드맵 트리 컨테이너 (포커스 슬라이드 매트릭스) --- */
@@ -664,7 +670,6 @@
             margin-top: 2px;
         }
 
-        @keyframes pure-fade-out { 0% { opacity: 1; } 100% { opacity: 0; } }
         @keyframes simple-flash-fade {
             0% { opacity: 1; filter: brightness(1); color: #ffffff; }
             30% { opacity: 1; filter: brightness(5) drop-shadow(0 0 20px #ffffff); color: #ffffff; }
@@ -841,16 +846,22 @@
             let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
 
-            volumeSlider.addEventListener('input', function() { if (bgm) bgm.volume = parseFloat(this.value); });
+            // BGM 볼륨 +15% 증폭 적용
+            volumeSlider.addEventListener('input', function() { 
+                if (bgm) bgm.volume = Math.min(1, parseFloat(this.value) * 1.15); 
+            });
+
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
                 if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
+
+            // voice-fate는 VOICE 슬라이더의 60%로 반영
             voiceSlider.addEventListener('input', function() { 
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); 
-                if (fateVoice) fateVoice.volume = parseFloat(this.value);
+                if (fateVoice) fateVoice.volume = parseFloat(this.value) * 0.6;
             });
 
             seSlider.addEventListener('change', function() {
@@ -1191,7 +1202,7 @@
                 btnContainer.classList.add('hide');
 
                 if (bgm) {
-                    bgm.volume = parseFloat(volumeSlider.value);
+                    bgm.volume = Math.min(1, parseFloat(volumeSlider.value) * 1.15);
                     setTimeout(() => { bgm.play().catch(()=>{}); }, 700);
                 }
 
@@ -1200,17 +1211,14 @@
                 if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(voiceSlider.value);
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value);
+                if (fateVoice) fateVoice.volume = parseFloat(voiceSlider.value) * 0.6; // 60% 적용
 
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
-                setTimeout(() => grailWrapper.classList.add('animate'), 1400);
-
+                
+                // 페이트 로고 등장 타이밍(1400ms)에 voice-fate 재생 타이밍 동기화
                 setTimeout(() => {
-                    subTitle.classList.add('animate');
-                    introNotice.classList.add('animate');
-                    controlsGroup.classList.add('animate');
-                    
+                    grailWrapper.classList.add('animate');
                     if (!sessionStorage.getItem('fate_voice_played')) {
                         sessionStorage.setItem('fate_voice_played', 'true');
                         if (fateVoice) {
@@ -1218,6 +1226,12 @@
                             fateVoice.play().catch(e => console.log(e));
                         }
                     }
+                }, 1400);
+
+                setTimeout(() => {
+                    subTitle.classList.add('animate');
+                    introNotice.classList.add('animate');
+                    controlsGroup.classList.add('animate');
                 }, 2200);
 
                 setTimeout(() => pressStartWrapper.classList.add('animate'), 3000);
