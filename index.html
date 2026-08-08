@@ -107,16 +107,16 @@
 
         /* [신규개념] 본문 내 하이라이트 상호작용 키워드 (클릭 시 신규개념 획득 발생) */
         .interactive-keyword {
-            color: #ffd700 !important;
-            font-weight: 700 !important;
-            cursor: pointer !important;
-            pointer-events: auto !important;
+            color: #ffd700;
+            font-weight: 700;
+            cursor: pointer;
             text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
             transition: color 0.3s ease, text-shadow 0.3s ease;
             user-select: none;
             display: inline-block;
             position: relative;
             z-index: 1000;
+            pointer-events: auto;
         }
 
         .interactive-keyword:hover {
@@ -137,13 +137,13 @@
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
             display: inline-block;
-            cursor: pointer !important;
-            pointer-events: auto !important;
+            cursor: pointer;
             position: relative;
             z-index: 1000;
             user-select: none;
             animation: quote-gentle-glow 1.2s infinite alternate ease-in-out;
             transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
+            pointer-events: auto;
         }
 
         .description-quote:hover {
@@ -171,7 +171,7 @@
             justify-content: center;
             align-items: center;
             gap: 70px;
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s;
         }
 
         .fate-start-btn {
@@ -203,6 +203,7 @@
         .start-btn-container.hide {
             opacity: 0;
             transform: scale(0.9);
+            visibility: hidden;
             pointer-events: none;
         }
 
@@ -271,13 +272,13 @@
             margin: 0 2px;
         }
 
-        /* [메인화면] 상호작용 영역 강제 확장을 위한 래퍼 Z축 최상위 고정 */
+        /* [메인화면] 버튼 영역 - visibility 속성 활용하여 클릭 간섭 원천 차단 */
         .press-start-wrapper {
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.8s ease-out;
+            transition: opacity 0.8s ease-out, visibility 0.8s step-end;
             position: relative;
-            z-index: 9999;
             width: 100%;
             display: flex;
             justify-content: center;
@@ -285,7 +286,9 @@
 
         .press-start-wrapper.animate {
             opacity: 1;
+            visibility: visible;
             pointer-events: auto !important;
+            transition: opacity 0.8s ease-out, visibility 0.8s step-start;
         }
 
         /* [메인화면] PRESS TO START 버튼 */
@@ -307,7 +310,6 @@
             transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
             position: relative;
-            z-index: 9999; /* 클릭 영역 최상단 보장 */
         }
 
         .press-start-btn:hover {
@@ -359,7 +361,8 @@
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- [탭 선택 창] 마인드맵 트리 컨테이너 영역 스타일 --- */
+        /* --- [탭 선택 창] 마인드맵 트리 컨테이너 영역 스타일 --- 
+           버그 해결의 핵심: 숨겨진 레이어가 클릭을 흡수하지 못하게 visibility 제어 */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -368,13 +371,16 @@
             width: 100vw;
             height: 100vh;
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.6s ease-in-out;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
 
         .tree-selection-container.show {
             opacity: 1;
+            visibility: visible;
             pointer-events: auto;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
 
         .tree-matrix-world {
@@ -497,14 +503,17 @@
             padding-left: 18%;
             gap: 16%;
             opacity: 0;
+            visibility: hidden;
             pointer-events: none;
-            transition: opacity 0.6s ease-in-out;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s step-end;
         }
 
         .tab-detail-view.show {
             z-index: 55 !important;
             opacity: 1;
+            visibility: visible;
             pointer-events: auto;
+            transition: opacity 0.6s ease-in-out, visibility 0.6s step-start;
         }
 
         /* [설명창] 성배전쟁 전용 중앙 정렬 스타일 */
@@ -575,7 +584,7 @@
             backdrop-filter: blur(4px);
             position: relative;
             z-index: 5;
-            pointer-events: auto;
+            /* pointer-events: auto 강제 할당 제거 완료 (상위 상속 처리) */
         }
 
         .description-title {
@@ -1346,10 +1355,18 @@
                 }, 1450);
             });
 
-            // 백 버튼 입력 시 트랜지션 락오프 적용
+            // 백 버튼 클릭 시 트랜지션 락오프 검사
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
                 history.back(); 
+            });
+
+            // [신규 기능] ESC 키보드 입력 시 뒤로가기 연산 호출 인터럽트
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' || event.keyCode === 27) {
+                    if (isTransitioning || currentStage <= 1) return;
+                    backBtn.click();
+                }
             });
 
             // --- [라우팅] 스테이지 기반 순차 뒤로가기(popstate) 처리 아키텍처 ---
@@ -1411,9 +1428,11 @@
 
                     setTimeout(() => {
                         pressStartWrapper.classList.remove('flash-exit');
+                        // 가시성 및 상호작용 권한 정상 롤백 처리
                         pressStartWrapper.style.opacity = '0';
                         void pressStartWrapper.offsetWidth;
                         pressStartWrapper.style.opacity = '1';
+                        pressStartWrapper.style.visibility = 'visible';
                         pressStartWrapper.style.pointerEvents = 'auto';
                         isTransitioning = false;
                     }, 1400);
