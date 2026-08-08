@@ -29,8 +29,7 @@
 
         /* [메인화면 배경] */
         .main-background-layer {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('first-background.png');
             background-size: cover; background-position: center; background-repeat: no-repeat;
             z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out;
@@ -189,8 +188,9 @@
         }
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; }
         
+        /* 뷰박스 삭제 후 두께 복원 (2px) */
         .tree-branch-line {
-            stroke-width: 2px; /* 얇은 두께로 복구 */
+            stroke-width: 2px;
             fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85));
             cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out;
         }
@@ -296,54 +296,30 @@
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6;
         }
         #tooltipBox.show { display: block; opacity: 1; }
+        
+        /* 툴팁 꼬리 방향 역전 알고리즘 기반 화살표 방향 설정 */
         #tooltipBox::after {
-            content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: #ffd700 transparent transparent transparent;
-            bottom: -16px; left: 50%; transform: translateX(-50%);
+            content: ''; position: absolute; border-width: 8px; border-style: solid; 
+            border-color: transparent transparent #ffd700 transparent; /* 기본: 아래에서 위를 가리킴 (툴팁이 아래에 있을 때) */
+            top: -16px; left: 50%; transform: translateX(-50%); bottom: auto;
         }
-        #tooltipBox.bottom-arrow::after { border-color: transparent transparent #ffd700 transparent; top: -16px; bottom: auto; }
-
-        /* --- [가이드 시스템의 핵심: 형제 요소 어둡게 처리 & 타겟 밝게 유지] --- */
-        body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
-        body.tut-active .content-container,
-        body.tut-active .tree-selection-container,
-        body.tut-active #dynamicTabDetailViews,
-        body.tut-active .bottom-left-controls,
-        body.tut-active #acquireToastContainer { z-index: 9001 !important; }
-
-        /* 비타겟 요소 딤 처리 */
-        body.tut-active .tree-node-box:not(.highlight-element) { opacity: 0.3; filter: brightness(0.3); pointer-events: none; }
-        body.tut-active .tree-branch-line { opacity: 0.1 !important; }
-        body.tut-active .detail-right-box > *:not(.highlight-element),
-        body.tut-active .detail-left-box > *:not(.highlight-element),
-        body.tut-active .static-tab-title:not(.highlight-element) { opacity: 0.3; filter: brightness(0.3); pointer-events: none; }
-        body.tut-active .fate-back-btn:not(.highlight-element) { opacity: 0.3; filter: brightness(0.3); pointer-events: none; }
-        body.tut-active .word-toast-item:not(.highlight-element) { opacity: 0.3; filter: brightness(0.3); }
-
-        /* 타겟 요소 100% 명도 복원 및 박스 쉐도우 (독립 조명 역할) */
-        .highlight-element {
-            z-index: 9010 !important; position: relative !important; filter: none !important; opacity: 1 !important;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4) !important; background-color: rgba(255, 255, 255, 0.1) !important;
-            border-radius: 8px; pointer-events: auto !important; color: #ffffff !important;
-        }
-        img.highlight-element { padding: 15px !important; border-radius: 15px; }
-        .highlight-element .interactive-keyword { color: #ffd700 !important; }
-
-        /* 튜토리얼 중 뒤로가기 버튼 호버 반응 무효화 */
-        body.tut-active .fate-back-btn:hover {
-            transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important;
-            border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important;
+        #tooltipBox.bottom-arrow::after { 
+            border-color: #ffd700 transparent transparent transparent; /* bottom-arrow: 위에서 아래를 가리킴 (툴팁이 위에 있을 때) */
+            bottom: -16px; top: auto;
         }
 
+        /* --- [안내창 가이드 튜토리얼 시스템] --- */
         #tutorialOverlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.5); /* 딤용 배경 */
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); 
             z-index: 9000; opacity: 0; visibility: hidden; transition: opacity 0.5s; pointer-events: none;
         }
+        #tutorialOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
         #tutorialGuide {
             position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; 
             background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px;
             border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); 
-            opacity: 0; visibility: hidden; transition: opacity 0.5s, top 0.5s, bottom 0.5s; font-size: 1.3rem; 
+            opacity: 0; visibility: hidden; transition: opacity 0.5s; font-size: 1.3rem; 
             line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column;
         }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
@@ -355,8 +331,39 @@
         }
         .guide-btn:hover { background: #777; }
 
+        /* 하이라이트 엘리먼트 100% 명도 복원 및 독립 조명 효과 */
+        .highlight-element {
+            z-index: 9010 !important; position: relative !important; pointer-events: auto !important;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)) !important; opacity: 1 !important;
+        }
+        
+        /* 상세창 테두리 강조 전용 */
+        .detail-right-box.highlight-element {
+            box-shadow: 0 0 30px rgba(255,255,255,0.6), inset 0 0 15px rgba(255,255,255,0.3) !important;
+            background: rgba(40, 20, 20, 0.9) !important;
+        }
+
+        /* 이미지 강조 전용 패딩 확장 */
+        img.highlight-element {
+            filter: drop-shadow(0 0 40px rgba(255,255,255,0.8)) !important;
+            transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 10px; padding: 10px;
+        }
+        
+        /* 텍스트(주석/신규개념) 강조 전용 */
+        span.highlight-element { background-color: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 4px; }
+        
+        /* 알림창 토스트 전용 */
+        #acquireToastContainer.highlight-element { z-index: 9010 !important; position: absolute !important; }
+
+        /* 튜토리얼 활성화 중 뒤로가기 버튼 호버 무효화 */
+        body.tut-active .fate-back-btn:hover {
+            transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important;
+            border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important;
+        }
+
+        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
         #tutorialArrow {
-            position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
+            position: absolute; font-size: 5rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
             z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none;
         }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
@@ -370,9 +377,6 @@
         .fate-back-btn {
             font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6);
             border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.3s ease;
-        }
-        .fate-back-btn:hover {
-            color: #ffffff; background: rgba(50, 0, 0, 0.8); border-color: #ff4444; box-shadow: 0 0 18px rgba(255, 50, 50, 0.7); transform: scale(1.03);
         }
 
         /* --- [오디오 컨트롤러] --- */
@@ -449,7 +453,8 @@
     <!-- [탭 선택 창] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
-            <svg class="tree-svg-layer" id="treeSvg" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
+            <!-- 뷰박스 제거를 통해 선 두께 롤백 100% 보장 -->
+            <svg class="tree-svg-layer" id="treeSvg"></svg>
             <div id="treeNodesBox"></div>
         </div>
     </div>
@@ -492,7 +497,7 @@
             </div>
         </section>
 
-        <!-- 3. 마술사 -->
+        <!-- 3. 마술사 (수동 파싱 완료) -->
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
@@ -503,9 +508,10 @@
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며, 근원을 추구하는 자를 일컫는다.<br>
-                        마술사는 되고 싶다고 되는 것이 아니고 특수한 경우를 제외하면<br>
-                        집안이 마술사 가문이어야 한다.<br>
+                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며,<br>
+                        근원을 추구하는 자를 일컫는다.<br>
+                        마술사는 되고 싶다고 되는 것이 아니고<br>
+                        특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
                         마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="추가예정">마술각인</span>을 이어받는다.<br>
                         대부분의 마술사는 <span class="annotation-word" data-tooltip="추가예정">마술협회</span>에 소속되어 있다.<br>
                         성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
@@ -517,7 +523,7 @@
             </div>
         </section>
         
-        <!-- 4. 령주 -->
+        <!-- 4. 령주 (수동 파싱 완료) -->
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
@@ -532,20 +538,21 @@
                     <p style="margin-top: 12px;">
                         서번트와 계약한 마스터가 3회에 걸쳐<br>
                         서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
-                        그 형태는 신체 어딘가에 나타나는<br>
-                        3획의 선 형태의 붉은 멍처럼 보이는 문양으로 나타나며<br>
+                        그 형태는 신체 어딘가에 나타나는 3획의 선 형태의<br>
+                        붉은 멍처럼 보이는 문양으로 나타나며<br>
                         세부적인 형태는 마스터마다 전부 다르다.<br>
-                        성배가 주는 강대한 마력 덩어리로 특정 명령을 강제하는 힘을 가졌다.<br>
+                        성배가 주는 강대한 마력 덩어리로<br>
+                        특정 명령을 강제하는 힘을 가졌다.<br>
                         서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만<br>
-                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에<br>
-                        <ruby>령주<rt>令呪</rt></ruby>를 사용하면 그 강대한 마력을 강화용으로 사용할 수 있다.<br>
+                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에 <ruby>령주<rt>令呪</rt></ruby>를 사용하면<br>
+                        그 강대한 마력을 강화용으로 사용할 수 있다.<br>
                         여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- 5. 마스터 -->
+        <!-- 5. 마스터 (수동 파싱 완료) -->
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
@@ -557,17 +564,20 @@
                 <div class="description-content">
                     <p style="margin-top: 12px;">
                         성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.<br>
-                        성배전쟁에서 선출되는 마스터는 보통은 7명이며 이 중 3~4명은<br>
-                        <span class="annotation-word" data-tooltip="추가예정">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="추가예정">마술협회</span> 측에서 한 명씩 선출해 등록할 수 있는 권한을 가지고 있다.<br>
+                        성배전쟁에서 선출되는 마스터는 보통은 7명이며<br>
+                        이 중 3~4명은 <span class="annotation-word" data-tooltip="추가예정">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="추가예정">마술협회</span> 측에서 한 명씩 선출해<br>
+                        등록할 수 있는 권한을 가지고 있다.<br>
                         나머지는 성배가 알아서 배분한다.<br>
-                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며 <ruby>령주<rt>令呪</rt></ruby>가 있으면 <span class="interactive-keyword" data-key="sso">서번트 소환 의식</span>을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
-                        계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며, 마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
+                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며<br>
+                        <ruby>령주<rt>令呪</rt></ruby>가 있으면 <span class="interactive-keyword" data-key="sso">서번트 소환 의식</span>을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
+                        계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며,<br>
+                        마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- 6. 서번트 -->
+        <!-- 6. 서번트 (수동 파싱 완료) -->
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
@@ -593,7 +603,7 @@
             </div>
         </section>
 
-        <!-- 7. 감독관 -->
+        <!-- 7. 감독관 (수동 파싱 완료) -->
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
@@ -605,7 +615,8 @@
                 <div class="description-content">
                     <p style="margin-top: 12px;">
                         <span class="annotation-word" data-tooltip="추가예정">서방교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
-                        성배전쟁을 참여하길 거부하거나 서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
+                        성배전쟁을 참여하길 거부하거나<br>
+                        서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
                         성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며<br>
                         다음 성배전쟁이 시작되면 성당교회에서 파견된<br>
                         감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.<br>
@@ -689,19 +700,19 @@
         let isTutorialActive = false;
         let tutState = { seq: 0, step: 0 };
 
-        // ★ [방사형 좌표계 로직] (50, 50) 중앙 기점 원형/격자 혼합 배치 (대각선 간격 및 위치 최적화) ★
+        // ★ [방사형 좌표계 로직] 중앙 50,45 기점 완벽한 원형 궤도 산출 ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
-            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 50 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 18, y: 50 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 82, y: 50 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 26, y: 75 }, 
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 85 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 74, y: 75 },
-            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 75 },
-            'yong': { name: '영령', parent: 'suv', x: 26, y: 105 },
-            'class': { name: '클래스', parent: 'suv', x: 50, y: 115 },
-            'bogu': { name: '보구', parent: 'suv', x: 74, y: 105 }
+            'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
+            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 45 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 45 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 29, y: 66 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 75 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 71, y: 66 },
+            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 66 },
+            'yong': { name: '영령', parent: 'suv', x: 26, y: 95 },
+            'class': { name: '클래스', parent: 'suv', x: 50, y: 95 },
+            'bogu': { name: '보구', parent: 'suv', x: 74, y: 95 }
         };
 
         (function checkReloadAndReset() {
@@ -945,12 +956,11 @@
             function positionArrow(targetEl) {
                 const arrow = document.getElementById('tutorialArrow');
                 const rect = targetEl.getBoundingClientRect();
-                // 뒤로가기 버튼 위쪽에 화살표를 배치하고 위에서 아래로 진동
                 arrow.style.left = (rect.left + rect.width / 2 - 20) + 'px';
                 arrow.style.top = (rect.top - 60) + 'px';
             }
 
-            function showTutorialGuide(text, btnText, callback, highlightEls) {
+            function showTutorialGuide(text, btnText, callback, highlightEls, isSungbwarTab = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 
@@ -964,6 +974,16 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
+                if (isSungbwarTab) {
+                    guide.style.bottom = 'auto';
+                    guide.style.top = '10%';
+                } else {
+                    guide.style.top = 'auto';
+                    guide.style.bottom = '10%';
+                }
+                
+                let container = document.body;
+                
                 if (highlightEls) {
                     let els = highlightEls instanceof NodeList || Array.isArray(highlightEls) ? highlightEls : [highlightEls];
                     els.forEach(el => {
@@ -971,21 +991,13 @@
                     });
                     
                     if (els[0]) {
-                        const rect = els[0].getBoundingClientRect();
-                        // 타겟이 화면 하단 40% 구역에 있을 경우 안내창을 상단(10%)으로 회피
-                        if (rect.bottom > window.innerHeight * 0.6) {
-                            guide.style.bottom = 'auto';
-                            guide.style.top = '10%';
-                        } else {
-                            guide.style.top = 'auto';
-                            guide.style.bottom = '10%'; 
-                        }
+                        const view = els[0].closest('.tab-detail-view.show');
+                        const tree = els[0].closest('.tree-selection-container.show');
+                        container = view || tree || document.body;
                     }
-                } else {
-                    guide.style.top = 'auto';
-                    guide.style.bottom = '10%';
                 }
                 
+                container.appendChild(overlay);
                 overlay.classList.add('active');
                 guide.classList.add('active');
             }
@@ -995,6 +1007,7 @@
                     el.classList.remove('highlight-element');
                 });
                 document.getElementById('tutorialArrow').classList.remove('active');
+                document.body.appendChild(document.getElementById('tutorialOverlay'));
             }
 
             function endTutorial() {
@@ -1051,15 +1064,13 @@
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) {
-                        showTutorialGuide("신규개념을 획득했습니다. 뒤로가기 버튼 혹은 Esc를 눌러봅시다", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
-                    } else if (tutState.step === 1) {
-                        const target = document.querySelector('.word-toast-item');
+                        const target = document.getElementById('acquireToastContainer');
                         showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 2) {
+                    } else if (tutState.step === 1) {
                         const backBtn = document.getElementById('backBtnWrapper');
                         document.getElementById('tutorialArrow').classList.add('active');
                         positionArrow(backBtn);
-                        showTutorialGuide("뒤로가기를 눌러 단어 선택 창으로 돌아갑시다.", "확인", () => { 
+                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq3', 'done');
                             endTutorial(); 
@@ -1072,7 +1083,7 @@
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq4', 'done');
                             endTutorial(); 
-                        }, target); 
+                        }, target, true); // 성배전쟁 탭 한정 상단 회피 가이드
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) {
@@ -1112,6 +1123,12 @@
                 toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
                 toastEl.innerHTML = `—${wordText}을(를) 획득했습니다—`;
+                
+                // 가이드 중 토스트가 발생하면 강조박스 자동할당
+                if (isTutorialActive && tutState.seq === 3) {
+                    toastEl.classList.add('highlight-element');
+                }
+                
                 acquireToastContainer.appendChild(toastEl);
                 
                 toastRemaining = 1800;
@@ -1153,6 +1170,7 @@
                             const p = noshinSfx.play();
                             if (p !== undefined) p.catch(()=>{});
                         }
+                        // 방해 효과
                         keyTarget.classList.remove('keyword-error');
                         void keyTarget.offsetWidth; 
                         keyTarget.classList.add('keyword-error');
@@ -1228,7 +1246,7 @@
                     let top = rect.bottom + 15;
                     let left = rect.left + (rect.width / 2) - (boxRect.width / 2);
                     
-                    // 주석 툴팁 화면 이탈 회피 로직 수정
+                    // 방향 스위칭: 화면 밖으로 나가면 툴팁을 단어 위로 이동시키고 꼬리 방향 반전
                     if (top + boxRect.height > window.innerHeight) {
                         top = Math.max(10, rect.top - boxRect.height - 15);
                         tooltipBox.classList.add('bottom-arrow');
@@ -1272,7 +1290,7 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // [대각선 베지어 곡선 & 가로세로 직선 로직 (두께 2px 롤백 완료)]
+                // [연결선 렌더링 - 대각선 3차 베지어 곡선 및 두께 2px 복원]
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1306,13 +1324,13 @@
 
                         let branchObj;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
-                            // 대각선일 경우에만 3차 베지어 곡선 생성
+                            // 대각선: 3차 베지어 곡선 적용
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
-                            const midY = (pNode.y + cNode.y) / 2;
-                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
+                            const midX = (pNode.x + cNode.x) / 2;
+                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${midX} ${pNode.y}, ${midX} ${cNode.y}, ${cNode.x} ${cNode.y}`);
                         } else {
-                            // 가로 세로일 경우 기존 직선 연결
+                            // 수직/수평: 직선 적용
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             branchObj.setAttribute('x1', pNode.x + '%');
@@ -1520,12 +1538,18 @@
 
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
-                    if (isTransitioning || currentStage <= 1 || isTutorialActive) return;
+                    if (isTransitioning || currentStage <= 1 || (isTutorialActive && localStorage.getItem('tut_seq3') !== 'done')) return;
                     backBtn.click();
                 }
             });
 
             window.addEventListener('popstate', function(event) {
+                // 튜토리얼 락오프: 강제 팝스테이트 발생 시 히스토리 복원 방어
+                if (isTutorialActive) {
+                    history.pushState({ stage: currentStage, id: currentActiveTabId }, '', '');
+                    return;
+                }
+
                 if (isTransitioning) return;
                 isTransitioning = true;
 
