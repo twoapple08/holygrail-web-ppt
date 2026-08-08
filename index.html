@@ -712,7 +712,7 @@
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
-    <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
+    <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kritsugu.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
@@ -873,7 +873,7 @@
             let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
 
-            // BGM 볼륨 실시간 동기화
+            // BGM 볼륨 실시간 동기화 (기본값 0.4 기반, 개별증폭 제거)
             volumeSlider.addEventListener('input', function() { 
                 const targetVol = parseFloat(this.value);
                 if (bgmMain) bgmMain.volume = targetVol;
@@ -913,7 +913,7 @@
                         clearInterval(fadeInterval);
                         audioEl.pause();
                         audioEl.currentTime = 0;
-                        audioEl.volume = parseFloat(volumeSlider.value);
+                        audioEl.volume = parseFloat(volumeSlider.value); // 원상 복구
                     }
                 }, stepTime);
             }
@@ -1193,7 +1193,7 @@
                     pstSfx.play().catch(()=>{});
                 }
 
-                // PRESS TO START 누를 때 메인 BGM 페이드 아웃
+                // PRESS TO START 누를 때 로고/타이틀과 함께 메인 BGM 페이드 아웃 시작
                 fadeAudioOut(bgmMain, 1200);
 
                 pressStartWrapper.classList.add('flash-exit');
@@ -1209,7 +1209,7 @@
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
 
-                    // 탭 선택창 진입 시 BGM-theme2 페이드 인
+                    // 탭 선택창 진입 시 BGM-theme2 재생 시작 (페이드 인)
                     if (bgmTheme2) {
                         fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value), 1000);
                     }
@@ -1242,7 +1242,7 @@
                     }, 600); 
 
                 } else if (currentStage === 2) {
-                    // Stage 2 (탭 선택창) -> Stage 1 (메인 화면)으로 복귀
+                    // Stage 2 (탭 선택창) -> Stage 1 (메인 화면)으로 복귀 (BGM-theme2 페이드 아웃 후 메인 BGM 복원)
                     currentStage = 1;
                     if (pstSfx) { 
                         pstSfx.volume = parseFloat(seSlider.value);
@@ -1260,6 +1260,7 @@
                         subTitle.classList.remove('slow-fade-out');
                         introNotice.classList.remove('slow-fade-out');
 
+                        // 메인 화면으로 돌아왔을 때 메인 BGM 재개
                         if (bgmMain) {
                             fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1000);
                         }
@@ -1323,4 +1324,3 @@
     </script>
 </body>
 </html>
-
