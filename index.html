@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
+    <!-- [FONT] 구글 웹 폰트 'Song Myung (송명체)' 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
+        /* [CSS] 전역 초기화 및 모바일 탭 터치 하이라이트 제거 */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,6 +27,7 @@
             background-color: #000000;
         }
 
+        /* [메인화면 배경] 메인 배경 이미지 레이어 */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -42,6 +45,7 @@
         }
         .main-background-layer.active { opacity: 1; }
 
+        /* [메인화면 이펙트] 붉은 먼지 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -61,6 +65,7 @@
 
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
+        /* [알림] 신규개념 획득 토스트 알림 컨테이너 */
         #acquireToastContainer {
             position: absolute;
             top: 150px;
@@ -93,6 +98,7 @@
             100% { transform: translateY(-35px); opacity: 0; }
         }
 
+        /* [신규개념] 본문 내 하이라이트 상호작용 키워드 */
         .interactive-keyword {
             color: #ffd700;
             font-weight: 700;
@@ -129,6 +135,7 @@
             display: inline-block;
         }
 
+        /* [설명창] 성우 어록 스타일 */
         .description-quote {
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
@@ -157,6 +164,7 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
+        /* --- [시작하기 창] --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -207,6 +215,7 @@
             pointer-events: none;
         }
 
+        /* --- [메인화면] --- */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -400,7 +409,6 @@
             transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
         }
         
-        /* 커스텀 버튼 디자인 (sso 전용) */
         .btn-sso {
             font-size: 2.5rem !important;
             text-align: center;
@@ -660,7 +668,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.5s;
-            pointer-events: none; /* 토글 시 auto로 변경 */
+            pointer-events: none;
         }
         #tutorialOverlay.active {
             opacity: 1;
@@ -670,7 +678,7 @@
         
         #tutorialGuide {
             position: fixed;
-            bottom: 35%; 
+            bottom: 15%; 
             left: 50%;
             transform: translateX(-50%);
             width: 550px; 
@@ -713,20 +721,31 @@
         }
         .guide-btn:hover { background: #777; }
 
-        /* 하이라이트 엘리먼트 가시성 강화 (오버레이 위로 띄움 + 독립 빛 부여) */
+        /* 엘리먼트 가시성 강화 (오버레이 위로 띄움 + 독립 빛 부여) */
         .highlight-element {
             z-index: 9010 !important;
             position: relative;
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.3); 
-            background-color: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.5) !important; 
+            background-color: rgba(255, 255, 255, 0.1) !important;
             border-radius: 5px;
-        }
-        .interactive-highlight {
             pointer-events: auto !important;
+        }
+        
+        #acquireToastContainer.highlight-element { position: absolute !important; }
+        #backBtnWrapper.highlight-element { position: absolute !important; }
+        .tree-node-box.highlight-element { position: absolute !important; }
+
+        /* 튜토리얼 중 뒤로가기 버튼 호버 무효화 */
+        body.tut-active .fate-back-btn:hover {
+            transform: none !important;
+            color: #c0c0c8 !important;
+            background: rgba(20, 0, 0, 0.6) !important;
+            border-color: rgba(160, 0, 0, 0.7) !important;
+            box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important;
         }
 
         #tutorialArrow {
-            position: fixed;
+            position: absolute;
             font-size: 5rem;
             color: #ffffff;
             text-shadow: 0 0 20px rgba(255, 255, 255, 0.9);
@@ -771,13 +790,6 @@
             cursor: pointer;
             box-shadow: 0 0 10px rgba(100, 0, 0, 0.4);
             transition: all 0.3s ease;
-        }
-        .fate-back-btn:hover {
-            color: #ffffff;
-            background: rgba(50, 0, 0, 0.8);
-            border-color: #ff4444;
-            box-shadow: 0 0 18px rgba(255, 50, 50, 0.7);
-            transform: scale(1.03);
         }
 
         /* --- [오디오 컨트롤러] --- */
@@ -1157,7 +1169,6 @@
         let isTransitioning = false;
         let isToastActive = false;
         let isTutorialActive = false;
-        
         let tutState = { seq: 0, step: 0 };
 
         // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 원형/격자 혼합 배치 ★
@@ -1169,7 +1180,7 @@
             'master': { name: '마스터', parent: 'sungbwar', x: 26, y: 75 }, 
             'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 75 }, 
             'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 74, y: 75 },
-            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 5, y: 75 },
+            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 75 },
             'yong': { name: '영령', parent: 'suv', x: 26, y: 105 },
             'class': { name: '클래스', parent: 'suv', x: 50, y: 105 },
             'bogu': { name: '보구', parent: 'suv', x: 74, y: 105 }
@@ -1188,6 +1199,7 @@
                 localStorage.removeItem('tut_seq3');
                 localStorage.removeItem('tut_seq4');
                 localStorage.removeItem('tut_seq5');
+                localStorage.removeItem('tut_seq6');
             }
         })();
 
@@ -1401,7 +1413,6 @@
                 }
             });
 
-            // [가이드 시스템 튜토리얼 렌더링 엔진]
             function playAnneSfx() {
                 if (anneSfx) {
                     anneSfx.pause();
@@ -1419,7 +1430,7 @@
                 arrow.style.top = (rect.top + rect.height/2 - 40) + 'px';
             }
 
-            function showTutorialGuide(text, btnText, callback, topAlign = false) {
+            function showTutorialGuide(text, btnText, callback, highlightEls, topAlign = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 
@@ -1433,14 +1444,32 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
-                if (topAlign) {
-                    guide.style.bottom = 'auto';
-                    guide.style.top = '15%';
+                let container = document.body;
+                
+                if (highlightEls) {
+                    let els = highlightEls instanceof NodeList || Array.isArray(highlightEls) ? highlightEls : [highlightEls];
+                    els.forEach(el => el.classList.add('highlight-element'));
+                    
+                    if (els[0]) {
+                        const view = els[0].closest('.tab-detail-view');
+                        const tree = els[0].closest('.tree-selection-container');
+                        container = view || tree || document.body;
+                        
+                        const rect = els[0].getBoundingClientRect();
+                        if (topAlign || (rect.bottom > window.innerHeight * 0.5 && rect.top < window.innerHeight * 0.8)) {
+                            guide.style.bottom = 'auto';
+                            guide.style.top = '10%';
+                        } else {
+                            guide.style.top = 'auto';
+                            guide.style.bottom = '10%'; 
+                        }
+                    }
                 } else {
                     guide.style.top = 'auto';
-                    guide.style.bottom = '10%'; // 알림창(top 150px) 간섭 회피
+                    guide.style.bottom = '10%';
                 }
                 
+                container.appendChild(overlay);
                 overlay.classList.add('active');
                 guide.classList.add('active');
             }
@@ -1448,15 +1477,16 @@
             function clearHighlights() {
                 document.querySelectorAll('.highlight-element').forEach(el => {
                     el.classList.remove('highlight-element');
-                    el.classList.remove('interactive-highlight');
                 });
                 document.getElementById('tutorialArrow').classList.remove('active');
+                document.body.appendChild(document.getElementById('tutorialOverlay'));
             }
 
             function endTutorial() {
                 clearHighlights();
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
+                document.body.classList.remove('tut-active');
                 isTutorialActive = false;
             }
 
@@ -1468,95 +1498,94 @@
                     } else if (tutState.step === 1) {
                         showTutorialGuide("이곳은 개념들을 나열해두는 장소 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
                     } else if (tutState.step === 2) {
-                        document.querySelector('.tree-node-box[data-id="sung"]').classList.add('highlight-element');
-                        showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
+                        showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 3) {
-                        document.querySelector('.tree-node-box[data-id="sung"]').classList.add('highlight-element');
+                        const target = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
                         showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq1', 'done');
                             endTutorial(); 
-                        });
+                        }, target);
                     }
                 } else if (tutState.seq === 2) { 
                     if (tutState.step === 0) {
                         showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
                     } else if (tutState.step === 1) {
-                        document.querySelector('#tabDetail_sung .detail-img').classList.add('highlight-element');
-                        showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('#tabDetail_sung .detail-img');
+                        showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 2) {
-                        document.querySelector('#tabDetail_sung .detail-sub-label').classList.add('highlight-element');
-                        showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('#tabDetail_sung .detail-sub-label');
+                        showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 3) {
-                        document.querySelector('#tabDetail_sung .detail-right-box').classList.add('highlight-element');
-                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('#tabDetail_sung .detail-right-box');
+                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 4) {
-                        document.querySelector('#tabDetail_sung .description-quote').classList.add('highlight-element');
-                        showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('#tabDetail_sung .description-quote');
+                        showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 5) {
-                        document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]').classList.add('highlight-element');
-                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념(노란색) 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]');
+                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 6) {
-                        document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]').classList.add('highlight-element');
-                        showTutorialGuide("단어를 누르는 것으로 신규개념(노란색)을 획득합니다.", "확인", () => { 
+                        const target = document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]');
+                        showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq2', 'done');
                             endTutorial(); 
-                        });
+                        }, target);
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) {
-                        showTutorialGuide("신규개념(노란색)을 획득했습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        showTutorialGuide("신규개념을 획득했습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
                     } else if (tutState.step === 1) {
-                        document.getElementById('acquireToastContainer').classList.add('highlight-element');
-                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const target = document.getElementById('acquireToastContainer');
+                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
                     } else if (tutState.step === 2) {
                         const backBtn = document.getElementById('backBtnWrapper');
-                        backBtn.classList.add('highlight-element');
                         document.getElementById('tutorialArrow').classList.add('active');
                         positionArrow(backBtn);
                         showTutorialGuide("뒤로가기를 눌러 단어 선택 창으로 돌아갑시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq3', 'done');
                             endTutorial(); 
-                        });
+                        }, backBtn);
                     }
                 } else if (tutState.seq === 4) { 
                     if (tutState.step === 0) {
-                        document.querySelector('.tree-node-box[data-id="sungbwar"]').classList.add('highlight-element');
+                        const target = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
                         showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq4', 'done');
                             endTutorial(); 
-                        }, true); // top align
+                        }, target, true); 
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) {
                         showTutorialGuide("이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", "확인", () => { 
                             playAnneSfx(); 
+                            localStorage.setItem('tut_seq5', 'done');
                             endTutorial(); 
                         });
                     }
                 } else if (tutState.seq === 6) { 
                     if (tutState.step === 0) {
-                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
-                        showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                        showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
                     } else if (tutState.step === 1) {
-                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
-                        showTutorialGuide("신규개념(노란색)보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
+                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
+                        showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
                     } else if (tutState.step === 2) {
-                        document.querySelectorAll('.tab-detail-view.show .annotation-word').forEach(el => el.classList.add('highlight-element'));
+                        const targets = document.querySelectorAll('.tab-detail-view.show .annotation-word');
                         showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { 
                             playAnneSfx(); 
-                            localStorage.setItem('tut_seq5', 'done');
+                            localStorage.setItem('tut_seq6', 'done');
                             endTutorial(); 
-                        });
+                        }, targets);
                     }
                 }
             }
 
 
-            // [동적 프레임 연산 기반 토스트 타이머 제어 알고리즘]
             let toastEl = null;
             let toastRemaining = 1800;
             let lastTime = Date.now();
@@ -1640,6 +1669,7 @@
                         if (!localStorage.getItem('tut_seq3')) {
                             setTimeout(() => {
                                 isTutorialActive = true;
+                                document.body.classList.add('tut-active');
                                 tutState = { seq: 3, step: 0 };
                                 runTutStep();
                             }, 500);
@@ -1725,7 +1755,7 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // [연결선 2 알고리즘 병합]
+                // [대각선 베지어 곡선 & 가로세로 직선 로직]
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1759,26 +1789,13 @@
 
                         let branchObj;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
+                            // 대각선일 경우에만 3차 베지어 곡선 생성
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
-                            
                             const midY = (pNode.y + cNode.y) / 2;
-                            const signX = Math.sign(cNode.x - pNode.x);
-                            const signY = Math.sign(cNode.y - pNode.y);
-                            
-                            let rX = 3 * signX;
-                            let rY = 3 * signY;
-                            if (Math.abs(pNode.x - cNode.x) < 6) rX = (cNode.x - pNode.x) / 2;
-                            if (Math.abs(midY - pNode.y) < 6) rY = (midY - pNode.y) / 2;
-                            
-                            const dPath = `M ${pNode.x} ${pNode.y} 
-                                         L ${pNode.x} ${midY - rY} 
-                                         Q ${pNode.x} ${midY} ${pNode.x + rX} ${midY} 
-                                         L ${cNode.x - rX} ${midY} 
-                                         Q ${cNode.x} ${midY} ${cNode.x} ${midY + rY} 
-                                         L ${cNode.x} ${cNode.y}`;
-                            branchObj.setAttribute('d', dPath);
+                            branchObj.setAttribute('d', `M ${pNode.x} ${pNode.y} C ${pNode.x} ${midY}, ${cNode.x} ${midY}, ${cNode.x} ${cNode.y}`);
                         } else {
+                            // 가로 세로일 경우 기존 직선 연결
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             branchObj.setAttribute('x1', pNode.x + '%');
@@ -1886,19 +1903,24 @@
 
                                     if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
                                         isTutorialActive = true;
+                                        document.body.classList.add('tut-active');
                                         tutState = { seq: 2, step: 0 };
                                         runTutStep();
                                     } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
                                         isTutorialActive = true;
+                                        document.body.classList.add('tut-active');
                                         tutState = { seq: 5, step: 0 };
                                         runTutStep();
                                     }
 
-                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq5')) {
+                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6')) {
                                         setTimeout(() => {
-                                            isTutorialActive = true;
-                                            tutState = { seq: 6, step: 0 };
-                                            runTutStep();
+                                            if(!isTutorialActive) {
+                                                isTutorialActive = true;
+                                                document.body.classList.add('tut-active');
+                                                tutState = { seq: 6, step: 0 };
+                                                runTutStep();
+                                            }
                                         }, 1000); 
                                     }
                                 }, 600);
@@ -1951,8 +1973,9 @@
 
                     if (!localStorage.getItem('tut_seq1')) {
                         isTutorialActive = true;
+                        document.body.classList.add('tut-active');
                         tutState = { seq: 1, step: 0 };
-                        runTutStep();
+                        setTimeout(() => runTutStep(), 600);
                     }
                 }, 1450);
             });
@@ -2005,8 +2028,9 @@
 
                         if (localStorage.getItem('tut_seq3') && !localStorage.getItem('tut_seq4')) {
                             isTutorialActive = true;
+                            document.body.classList.add('tut-active');
                             tutState = { seq: 4, step: 0 };
-                            runTutStep();
+                            setTimeout(() => runTutStep(), 600);
                         }
                     }, 600); 
 
