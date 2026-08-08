@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
-    <!-- 송명체(Song Myung) 웹 폰트 적용 -->
+    <!-- [FONT] 구글 웹 폰트 'Song Myung (송명체)' 적용 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
+        /* [CSS] 전역 초기화 및 모바일 탭 터치 하이라이트 제거 */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -26,7 +27,7 @@
             background-color: #000000;
         }
 
-        /* 메인 배경 이미지 */
+        /* [CSS] 메인 배경 이미지 레이어 (페이드 인 아키텍처) */
         .main-background-layer {
             position: absolute;
             top: 0;
@@ -47,7 +48,7 @@
             opacity: 1;
         }
 
-        /* 붉은 먼지/안개 이펙트 */
+        /* [CSS] 붉은 먼지 및 안개 연출 이펙트 */
         .red-dust-effect {
             position: absolute;
             bottom: 0;
@@ -71,7 +72,7 @@
             100% { opacity: 0.75; }
         }
 
-        /* 신규개념 획득 토스트 알림 */
+        /* [CSS] 신규개념 획득 토스트 알림 컨테이너 (상단 배치) */
         #acquireToastContainer {
             position: absolute;
             top: 150px;
@@ -104,7 +105,7 @@
             100% { transform: translateY(-35px); opacity: 0; }
         }
 
-        /* 하이라이트 상호작용 키워드 */
+        /* [CSS] 본문 내 하이라이트 상호작용 키워드 */
         .interactive-keyword {
             color: #ffd700 !important;
             font-weight: 700 !important;
@@ -131,7 +132,7 @@
             pointer-events: none !important;
         }
 
-        /* 어록 스타일 (클릭 100% 보장) */
+        /* [CSS] 성우 어록 스타일 (클릭 100% 보장 및 네온 글로우) */
         .description-quote {
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
@@ -161,7 +162,7 @@
             100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); }
         }
 
-        /* --- 1. 시작 컨테이너 --- */
+        /* --- [CSS] Stage 1: 첫 시작 화면 컨테이너 --- */
         .start-btn-container {
             position: absolute;
             z-index: 50;
@@ -215,7 +216,7 @@
             pointer-events: none;
         }
 
-        /* --- 메인 화면 텍스트/로고 --- */
+        /* --- [CSS] 메인 화면 로고 및 타이틀 영역 --- */
         .content-container {
             display: flex;
             flex-direction: column;
@@ -283,7 +284,7 @@
             pointer-events: auto !important;
         }
 
-        /* PRESS TO START 버튼 */
+        /* [CSS] PRESS TO START 버튼 (텍스트 전체를 완벽히 감싸는 히트박스 패딩 및 배경 박스 적용) */
         .press-start-btn {
             font-family: 'Song Myung', serif;
             font-size: 1.25rem;
@@ -291,13 +292,15 @@
             color: #a0a0aa;
             letter-spacing: 5px;
             text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5);
-            background: transparent;
-            border: none;
-            padding: 24px 48px;
+            background: rgba(20, 0, 0, 0.5);
+            border: 1px solid rgba(140, 0, 0, 0.5);
+            padding: 18px 42px;
+            border-radius: 4px;
             cursor: pointer;
             outline: none;
+            display: inline-block;
             pointer-events: auto !important;
-            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease;
+            transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease, background 0.3s ease, border-color 0.3s ease;
             animation: slow-blink-loop 2.8s infinite alternate ease-in-out;
         }
 
@@ -305,8 +308,10 @@
             animation-play-state: paused !important;
             opacity: 1 !important;
             color: #ffffff;
+            background: rgba(60, 0, 0, 0.8);
+            border-color: #ff2222;
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9);
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
         .press-start-wrapper.flash-exit {
@@ -314,7 +319,7 @@
             pointer-events: none !important;
         }
 
-        /* 스케일 축소형 그라데이션 페이드 아웃 아키텍처 */
+        /* [CSS] 스케일 축소형 그라데이션 페이드 아웃 아키텍처 */
         @keyframes smooth-scale-fade-out {
             0% { opacity: 1; transform: scale(1); }
             100% { opacity: 0; transform: scale(0.9); }
@@ -325,7 +330,7 @@
             pointer-events: none !important;
         }
 
-        /* 유입자 안내 문구 */
+        /* [CSS] 유입자 안내 문구 */
         .intro-notice-left {
             position: absolute;
             bottom: 25px;
@@ -350,7 +355,7 @@
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- 4. 마인드맵 트리 컨테이너 (포커스 슬라이드 매트릭스) --- */
+        /* --- [CSS] Stage 2: 마인드맵 트리 컨테이너 (탭 선택창) --- */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -454,7 +459,7 @@
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        /* --- 5. 상세 뷰 컨테이너 (순수 페이드 전환) --- */
+        /* --- [CSS] Stage 3: 상세 뷰 컨테이너 (순수 페이드 전환) --- */
         .tab-detail-view {
             position: absolute;
             top: 0;
@@ -571,7 +576,7 @@
             user-select: none;
         }
 
-        /* --- 6. 뒤로가기 버튼 --- */
+        /* --- 6. 뒤로가기 버튼 컨트롤러 --- */
         .bottom-left-controls {
             position: absolute;
             bottom: 20px;
@@ -704,21 +709,25 @@
 </head>
 <body>
 
+    <!-- [HTML] 신규개념 획득 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
+    <!-- [AUDIO] 오디오 자산 엘리먼트 정의 (경로 및 파일명 규격 준수) -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
     <audio id="wordSfx" src="sfx/sfx-word.mp3" preload="auto"></audio>
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
-    <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kritsugu.mp3" preload="auto"></audio>
+    <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
 
+    <!-- [HTML] 배경 및 안개 이펙트 레이어 -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
+    <!-- [HTML] Stage 1: 최초 시작 컨테이너 (시작하기 버튼) -->
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
@@ -726,6 +735,7 @@
         </div>
     </div>
 
+    <!-- [HTML] 메인 화면 타이틀 및 로고 컨테이너 -->
     <main class="content-container">
         <div class="holy-grail-wrapper" id="grailWrapper">
             <img src="img/img-Fate.png" alt="Fate Logo" class="fate-logo-img">
@@ -740,7 +750,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- 트리 마인드맵 컨테이너 (포커스 슬라이드 매트릭스) -->
+    <!-- [HTML] Stage 2: 마인드맵 트리 컨테이너 (탭 선택창) -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -748,7 +758,7 @@
         </div>
     </div>
 
-    <!-- 동적 탭 보관소 -->
+    <!-- [HTML] Stage 3: 동적 탭 상세 뷰 보관소 (설명창) -->
     <div id="dynamicTabDetailViews">
         <!-- 기본 성배 상세 뷰 -->
         <section class="tab-detail-view" id="tabDetail_sung">
@@ -784,10 +794,12 @@
         </section>
     </div>
 
+    <!-- [HTML] 뒤로가기 버튼 컨트롤러 -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
+    <!-- [HTML] 우측 하단 오디오 볼륨 패널 및 워터마크 -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -806,14 +818,15 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
+    <!-- [JAVASCRIPT] 시스템 로직 및 인터랙션 엔진 -->
     <script>
-        // ★ 마인드맵 트리 데이터베이스 ★
+        // ★ 마인드맵 트리 데이터베이스 (개념 노드 및 계층 구조 정의) ★
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 35 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 65 }
         };
 
-        // 초기화 보호 모듈
+        // 새로고침 시 세션 스토리지 초기화 및 상태 보호 모듈
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -826,10 +839,12 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
+            // 브라우저 히스토리 초기 상태 정렬
             if (!history.state || history.state.stage !== 1) {
                 history.replaceState({ stage: 1 }, '', '');
             }
 
+            // 기본 개방 개념(성배) 세션 등록
             sessionStorage.setItem('fate_concept_sung', 'true');
             let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
             if (!conceptOrder.includes('sung')) {
@@ -837,6 +852,7 @@
                 sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder));
             }
 
+            // DOM 엘리먼트 매핑
             const bgmMain = document.getElementById('bgmMain');
             const bgmTheme2 = document.getElementById('bgmTheme2');
             const pstSfx = document.getElementById('pstSfx');
@@ -868,18 +884,19 @@
             const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
-            let currentStage = 1;
+            let currentStage = 1;       // 1: 메인 화면, 2: 탭 선택창(마인드맵), 3: 상세 뷰(설명창)
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
 
-            // BGM 볼륨 실시간 동기화 (기본값 0.4 기반, 개별증폭 제거)
+            // BGM 슬라이더 이벤트: 실시간 볼륨 동기화 (기본값 0.4 기반)
             volumeSlider.addEventListener('input', function() { 
                 const targetVol = parseFloat(this.value);
                 if (bgmMain) bgmMain.volume = targetVol;
                 if (bgmTheme2) bgmTheme2.volume = targetVol;
             });
 
+            // SFX 슬라이더 이벤트: 효과음 볼륨 동기화 및 배율 계산
             seSlider.addEventListener('input', function() {
                 if (pstSfx) pstSfx.volume = parseFloat(this.value);
                 if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
@@ -887,6 +904,7 @@
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
             });
 
+            // VOICE 슬라이더 이벤트: 성우 보이스 볼륨 동기화
             voiceSlider.addEventListener('input', function() { 
                 if (kotomineSfx) kotomineSfx.volume = parseFloat(this.value); 
                 if (kiritsuguSfx) kiritsuguSfx.volume = parseFloat(this.value);
@@ -897,7 +915,7 @@
                 if (pstSfx) { pstSfx.currentTime = 0; pstSfx.play().catch(()=>{}); }
             });
 
-            // ★ 오디오 페이드 아웃/인 헬퍼 함수 ★
+            // [오디오 제어] BGM 페이드 아웃 헬퍼 함수
             function fadeAudioOut(audioEl, duration = 1200) {
                 if (!audioEl || audioEl.paused) return;
                 const startVol = audioEl.volume;
@@ -913,11 +931,12 @@
                         clearInterval(fadeInterval);
                         audioEl.pause();
                         audioEl.currentTime = 0;
-                        audioEl.volume = parseFloat(volumeSlider.value); // 원상 복구
+                        audioEl.volume = parseFloat(volumeSlider.value);
                     }
                 }, stepTime);
             }
 
+            // [오디오 제어] BGM 페이드 인 헬퍼 함수
             function fadeAudioIn(audioEl, targetVol, duration = 1000) {
                 if (!audioEl) return;
                 audioEl.volume = 0;
@@ -937,7 +956,7 @@
                 }, stepTime);
             }
 
-            // ★ 전역 오디오 락오프 해제 엔진 ★
+            // [오디오 정책] 브라우저 자동 재생 제한 우회용 전역 락오프 해제 엔진
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
@@ -962,11 +981,12 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // ★ 어록 터치/클릭 100% 재생 전역 위임엔진 ★
+            // [이벤트 위임] 성우 어록 클릭 시 보이스 재생 (코토미네 & 키리츠구 통합 제어 + 폴백 오디오 인스턴스 보장)
             document.addEventListener('click', function(e) {
                 const kotomineTarget = e.target.closest('#kotomineTrigger');
                 if (kotomineTarget) {
                     e.preventDefault();
+                    e.stopPropagation();
                     if (!kotomineTarget.classList.contains('glow-fade-out')) {
                         kotomineTarget.classList.add('glow-fade-out');
                     }
@@ -974,13 +994,18 @@
                         kotomineSfx.pause();
                         kotomineSfx.currentTime = 0;
                         kotomineSfx.volume = parseFloat(voiceSlider.value);
-                        kotomineSfx.play().catch(err => console.log('Kotomine audio error:', err));
+                        kotomineSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-holygrail-kotomine.mp3');
+                            fb.volume = parseFloat(voiceSlider.value);
+                            fb.play().catch(ex => console.log('Kotomine fallback error:', ex));
+                        });
                     }
                 }
 
                 const kiritsuguTarget = e.target.closest('#kiritsuguTrigger');
                 if (kiritsuguTarget) {
                     e.preventDefault();
+                    e.stopPropagation();
                     if (!kiritsuguTarget.classList.contains('glow-fade-out')) {
                         kiritsuguTarget.classList.add('glow-fade-out');
                     }
@@ -988,11 +1013,16 @@
                         kiritsuguSfx.pause();
                         kiritsuguSfx.currentTime = 0;
                         kiritsuguSfx.volume = parseFloat(voiceSlider.value);
-                        kiritsuguSfx.play().catch(err => console.log('Kiritsugu audio error:', err));
+                        kiritsuguSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-sungbwar-kiritsugu.mp3');
+                            fb.volume = parseFloat(voiceSlider.value);
+                            fb.play().catch(ex => console.log('Kiritsugu fallback error:', ex));
+                        });
                     }
                 }
             });
 
+            // [UI 연산] 신규개념 획득 토스트 알림 생성 모듈
             function spawnAcquireToast(wordText) {
                 activeToastCount++;
                 const toastEl = document.createElement('div');
@@ -1006,7 +1036,7 @@
                 }, 1800);
             }
 
-            // ★ 고유번호 획득 검증 및 동적 추가 연산 ★
+            // [이벤트 위임] 본문 내 키워드 클릭 시 신규개념 획득 프로세스 가동
             document.addEventListener('click', function(e) {
                 const keyTarget = e.target.closest('.interactive-keyword');
                 if (keyTarget) {
@@ -1043,6 +1073,7 @@
                 }
             });
 
+            // 상세 뷰(설명창) 내 키워드 획득 상태 동기화
             const detailKeywords = document.querySelectorAll('.interactive-keyword');
             detailKeywords.forEach(kw => {
                 const kwId = kw.getAttribute('data-key');
@@ -1051,7 +1082,7 @@
                 }
             });
 
-            // ★ 특정 탭선택 버튼으로 카메라/매트릭스 포커스 이동 연산 ★
+            // [매트릭스 렌더링] 특정 노드로 카메라 포커스 이동 연산
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
@@ -1063,7 +1094,7 @@
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
             }
 
-            // ★ 마인드맵 & 동적 SVG 그라데이션 렌더링 엔진 ★
+            // [마인드맵 엔진] SVG 가지 및 노드(탭 선택창 버튼) 렌더링 루프
             function renderTreeGrid(resetFocus = false) {
                 treeSvg.innerHTML = '<defs></defs>';
                 const svgDefs = treeSvg.querySelector('defs');
@@ -1075,7 +1106,7 @@
                 if (resetFocus) currentFocusedId = 'sung';
                 focusToNode(currentFocusedId);
 
-                // 1. 연결선 렌더링
+                // 1. 부모-자식 간 마력 연결선 렌더링
                 unlockedIds.forEach(id => {
                     const parentId = CONCEPT_REGISTRY[id].parent;
                     if (parentId && unlockedIds.includes(parentId)) {
@@ -1119,7 +1150,7 @@
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
                             if (moveSfx) {
                                 moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                                moveSfx.currentTime = 0.15;
+                                moveSfx.currentTime = 0.15; // 0.15초 부분부터 타격감 재생
                                 moveSfx.play().catch(()=>{});
                             }
                             focusToNode(nextFocus);
@@ -1130,7 +1161,7 @@
                     }
                 });
 
-                // 2. `(이름) 탭 선택 버튼` 노드 생성
+                // 2. 개념 노드(탭 선택창 버튼) 생성
                 unlockedIds.forEach(id => {
                     const nodeInfo = CONCEPT_REGISTRY[id];
 
@@ -1183,7 +1214,7 @@
                 });
             }
 
-            // --- 단계별 상태 트랜지션 (크로스 페이드) ---
+            // --- [라우팅] - PRESS TO START - 버튼 클릭 시 탭 선택창 진입 ---
             pressStartBtn.addEventListener('click', function() {
                 history.pushState({ stage: 2 }, '', '');
                 
@@ -1193,7 +1224,7 @@
                     pstSfx.play().catch(()=>{});
                 }
 
-                // PRESS TO START 누를 때 로고/타이틀과 함께 메인 BGM 페이드 아웃 시작
+                // 메인 BGM 페이드 아웃 가동
                 fadeAudioOut(bgmMain, 1200);
 
                 pressStartWrapper.classList.add('flash-exit');
@@ -1209,7 +1240,7 @@
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
 
-                    // 탭 선택창 진입 시 BGM-theme2 재생 시작 (페이드 인)
+                    // 탭 선택창 진입 시 BGM-theme2 페이드 인 가동
                     if (bgmTheme2) {
                         fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value), 1000);
                     }
@@ -1218,13 +1249,13 @@
 
             backBtn.addEventListener('click', function() { history.back(); });
 
-            // ★ 스테이지 기반 엄격한 순차 뒤로가기(popstate) 라우팅 아키텍처 ★
+            // --- [라우팅] 스테이지 기반 순차 뒤로가기(popstate) 처리 아키텍처 ---
             window.addEventListener('popstate', function(event) {
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
-                    // Stage 3 (상세 뷰) -> Stage 2 (탭 선택창)으로 복귀
+                    // Stage 3 (상세 뷰/설명창) -> Stage 2 (탭 선택창)으로 복귀
                     currentStage = 2;
                     if (pstSfx) { 
                         pstSfx.volume = parseFloat(seSlider.value);
@@ -1242,7 +1273,7 @@
                     }, 600); 
 
                 } else if (currentStage === 2) {
-                    // Stage 2 (탭 선택창) -> Stage 1 (메인 화면)으로 복귀 (BGM-theme2 페이드 아웃 후 메인 BGM 복원)
+                    // Stage 2 (탭 선택창) -> Stage 1 (메인 화면)으로 복귀
                     currentStage = 1;
                     if (pstSfx) { 
                         pstSfx.volume = parseFloat(seSlider.value);
@@ -1260,7 +1291,6 @@
                         subTitle.classList.remove('slow-fade-out');
                         introNotice.classList.remove('slow-fade-out');
 
-                        // 메인 화면으로 돌아왔을 때 메인 BGM 재개
                         if (bgmMain) {
                             fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1000);
                         }
@@ -1276,6 +1306,7 @@
                 }
             });
 
+            // --- [시스템 초기화] '시작하기' 버튼 클릭 시 메인 연출 진입 ---
             startBtn.addEventListener('click', function() {
                 unlockAllAudioPolicy(); 
                 
@@ -1301,6 +1332,7 @@
                 setTimeout(() => bgLayer.classList.add('active'), 300);
                 setTimeout(() => dustEffect.classList.add('active'), 500);
                 
+                // 페이트 로고 등장 타이밍(1400ms)에 맞추어 voice-fate 재생 동기화
                 setTimeout(() => {
                     grailWrapper.classList.add('animate');
                     if (!sessionStorage.getItem('fate_voice_played')) {
