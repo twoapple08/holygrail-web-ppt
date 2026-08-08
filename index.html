@@ -132,7 +132,7 @@
             pointer-events: none !important;
         }
 
-        /* [CSS] 성우 어록 스타일 (클릭 100% 보장 및 네온 글로우) */
+        /* [CSS] 어록 스타일 (클릭 100% 보장 및 네온 글로우) */
         .description-quote {
             font-style: italic;
             color: rgba(220, 210, 195, 0.9);
@@ -351,7 +351,7 @@
             animation: smooth-scale-fade-out 1.2s ease-out forwards !important;
         }
 
-        /* --- [CSS] 4단계: 마인드맵 트리 컨테이너 (포커스 슬라이드 매트릭스) --- */
+        /* --- [CSS] 4단계: 마인드맵 트리 컨테이너 (탭 선택창) --- */
         .tree-selection-container {
             position: absolute;
             z-index: 30;
@@ -453,7 +453,7 @@
             text-shadow: 0 0 50px rgba(255, 80, 80, 1), 0 0 25px rgba(255, 255, 255, 0.9);
         }
 
-        /* --- [CSS] 5단계: 상세 뷰 컨테이너 (순수 페이드 전환) --- */
+        /* --- [CSS] 5단계: 상세 뷰 컨테이너 (설명창) --- */
         .tab-detail-view {
             position: absolute;
             top: 0;
@@ -702,7 +702,7 @@
 </head>
 <body>
 
-    <!-- [HTML] 신규개념 획득 알림 컨테이너 -->
+    <!-- [HTML] 신규개념 획득 토스트 알림 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
     <!-- [AUDIO] 오디오 자산 엘리먼트 정의 (경로 및 파일명 규격 준수) -->
@@ -743,7 +743,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [HTML] 마인드맵 트리 컨테이너 (포커스 슬라이드 매트릭스) -->
+    <!-- [HTML] 마인드맵 트리 컨테이너 (탭 선택창) -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -751,9 +751,9 @@
         </div>
     </div>
 
-    <!-- [HTML] 동적 탭 상세 뷰 보관소 -->
+    <!-- [HTML] 동적 탭 상세 뷰 보관소 (설명창) -->
     <div id="dynamicTabDetailViews">
-        <!-- 기본 성배 상세 뷰 -->
+        <!-- 기본 성배 상세 뷰 (설명창) -->
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title">성배</div>
             <div class="detail-left-box">
@@ -770,7 +770,7 @@
             </div>
         </section>
 
-        <!-- 성배전쟁 상세 뷰 -->
+        <!-- 성배전쟁 상세 뷰 (설명창) -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
             <div class="static-tab-title">성배전쟁</div>
             <div class="detail-left-box">
@@ -877,7 +877,7 @@
             const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
-            let currentStage = 1;       // 1: 메인 화면, 2: 탭 선택창(마인드맵), 3: 상세 뷰
+            let currentStage = 1;       // 1: 메인 화면, 2: 탭 선택창(마인드맵), 3: 상세 뷰(설명창)
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
             let activeToastCount = 0;
@@ -1019,7 +1019,7 @@
                 }, 1800);
             }
 
-            // [이벤트 위임] 본문 내 키워드 클릭 시 개념 획득 프로세스 가동
+            // [이벤트 위임] 본문 내 키워드 클릭 시 신규개념 획득 프로세스 가동
             document.addEventListener('click', function(e) {
                 const keyTarget = e.target.closest('.interactive-keyword');
                 if (keyTarget) {
@@ -1056,7 +1056,7 @@
                 }
             });
 
-            // 상세 뷰 내 키워드 획득 상태 동기화
+            // 상세 뷰(설명창) 내 키워드 획득 상태 동기화
             const detailKeywords = document.querySelectorAll('.interactive-keyword');
             detailKeywords.forEach(kw => {
                 const kwId = kw.getAttribute('data-key');
@@ -1077,7 +1077,7 @@
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
             }
 
-            // [마인드맵 엔진] SVG 가지 및 노드 렌더링 루프
+            // [마인드맵 엔진] SVG 가지 및 노드(탭 선택창 버튼) 렌더링 루프
             function renderTreeGrid(resetFocus = false) {
                 treeSvg.innerHTML = '<defs></defs>';
                 const svgDefs = treeSvg.querySelector('defs');
@@ -1144,7 +1144,7 @@
                     }
                 });
 
-                // 2. 개념 노드(버튼) 생성
+                // 2. 개념 노드(탭 선택창 버튼) 생성
                 unlockedIds.forEach(id => {
                     const nodeInfo = CONCEPT_REGISTRY[id];
 
@@ -1223,7 +1223,7 @@
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
 
-                    // 탭 선택창 BGM-theme2 페이드 인 가동
+                    // 탭 선택창 진입 시 BGM-theme2 페이드 인 가동
                     if (bgmTheme2) {
                         fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value), 1000);
                     }
@@ -1238,7 +1238,7 @@
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
-                    // Stage 3 (상세 뷰) -> Stage 2 (탭 선택창)으로 복귀
+                    // Stage 3 (상세 뷰/설명창) -> Stage 2 (탭 선택창)으로 복귀
                     currentStage = 2;
                     if (pstSfx) { 
                         pstSfx.volume = parseFloat(seSlider.value);
