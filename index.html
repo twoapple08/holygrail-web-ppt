@@ -4,26 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
-    <!-- [FONT] 구글 웹 폰트 'Song Myung (송명체)' 적용 -->
+    <!-- 
+      [AI 렌더링 가이드라인 & 시스템 목적]
+      이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
+      
+      [절대 준수 사항 (Guardrails)]
+      1. 브라우저의 기본 뒤로가기(History API)를 통해 뷰포트가 전환(popstate)됩니다. 라우팅 로직을 임의로 변경하지 마십시오.
+      2. 튜토리얼 시스템은 Z-index 격상 및 CSS filter(brightness)를 통해 타겟을 강조(Highlight)합니다.
+      3. DOM 트리의 삽입/삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막습니다.
+      4. 모바일 환경의 터치 및 스크롤로 인한 UI 붕괴를 막기 위해 body에 overflow: hidden이 강제되어 있습니다.
+    -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
-        /* [CSS] 전역 초기화 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
-        /* [메인화면 배경 및 이펙트] */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
         .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [알림] 토스트 컨테이너 */
-        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; transition: all 0.5s ease; }
-        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.8s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; transition: all 0.5s ease; }
-        @keyframes float-fade-smooth { 0% { transform: translateY(35px); opacity: 0; } 50% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-35px); opacity: 0; } }
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.5s ease; }
+        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; transition: opacity 0.5s ease; }
+        @keyframes float-fade-smooth { 0% { transform: translateY(20px); opacity: 0; } 20% { transform: translateY(0px); opacity: 1; } 80% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
 
-        /* [신규개념] 키워드 */
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
@@ -31,7 +36,6 @@
         @keyframes keyword-error-shake { 0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; } 100% { transform: translateX(0); } }
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
-        /* [설명창] 성우 어록 */
         .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
@@ -39,14 +43,16 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
-        /* --- [시작하기 창] --- */
         .start-btn-container { position: absolute; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s; }
         .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; margin-right: -6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
         .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
         .start-btn-container.hide { opacity: 0; transform: scale(0.9); visibility: hidden; pointer-events: none; }
-        .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: none; }
+        .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: auto; }
+        .tut-checkbox-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; cursor: pointer; }
+        .tut-checkbox-wrapper input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #900000; }
+        .tut-checkbox-wrapper span { font-size: 1.0rem; color: #d7cdbe; transition: color 0.3s; }
+        .tut-checkbox-wrapper:hover span { color: #ffffff; }
 
-        /* --- [메인화면] --- */
         .content-container { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; max-width: 700px; padding: 0 20px; position: relative; z-index: 10; pointer-events: none; transform: translateY(-10px); transition: all 0.5s ease; }
         .holy-grail-wrapper { display: flex; justify-content: center; align-items: center; margin-bottom: 25px; opacity: 0; }
         .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
@@ -67,10 +73,10 @@
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
-        /* --- [탭 선택 창] --- */
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; }
+        
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
         
         .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: all 0.5s ease; }
@@ -83,6 +89,7 @@
         .tree-node-box.focused .tab-item-btn { transform: scale(1.15); }
 
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
+        
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
@@ -104,7 +111,6 @@
         
         .color-gold { color: #ffd700 !important; }
 
-        /* --- [설명창] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
 
@@ -142,38 +148,37 @@
         .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: all 0.5s ease; }
         .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; transition: all 0.5s ease; }
 
-        /* --- [주석효과 (툴팁) 모듈] --- */
         .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: all 0.5s ease; pointer-events: auto; z-index: 100; }
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
-        #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; }
+        #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; text-align: right; }
         #tooltipBox.show { display: block; opacity: 1; }
         
-        /* 툴팁 화살표 고정 (단어 위를 향함) */
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
-        /* --- [단일 전역 딤(Dim) 오버레이 및 하이라이트 조명 엔진] --- */
-        /* 배경 딤 오버레이 (밝기 감소 0.6 수준 = 불투명도 0.4 적용) */
-        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); z-index: 8000; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: auto; }
-        #tutorialOverlay.active { opacity: 1; visibility: visible; }
+        /* [가이드 시각 효과 최적화] 페이드 인/아웃 전환 연산 적용 */
+        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); z-index: 8000; opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out; pointer-events: auto; }
+        body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; }
         
-        /* 타겟 요소 독립 조명 격상 (Z축 오버레이 위로) */
-        .highlight-element { z-index: 9010 !important; position: relative !important; transition: all 0.5s ease; }
+        body.tut-active .tree-selection-container.show, body.tut-active .tab-detail-view.show, body.tut-active .bottom-left-controls.show, body.tut-active #acquireToastContainer { z-index: 9001 !important; }
+
+        .highlight-element { z-index: 9010 !important; position: relative !important; filter: none !important; transition: opacity 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease, background-color 0.5s ease, color 0.5s ease, text-shadow 0.5s ease !important; }
         
-        /* 상세창 테두리 강조 전용 */
         .detail-right-box.highlight-box { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; border-color: rgba(255,255,255,0.8) !important; z-index: 9005 !important; }
 
-        /* 이미지 강조 (확대 모션 삭제) */
         img.highlight-element { filter: drop-shadow(0 0 40px rgba(255,255,255,0.9)) !important; background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; transform: none !important; }
         
-        /* 텍스트(주석/신규개념/어록) 강조 전용 */
         .highlight-text { background-color: rgba(255,255,255,0.2) !important; padding: 2px 8px !important; border-radius: 6px !important; box-shadow: 0 0 15px rgba(255,255,255,0.6) !important; display: inline-block; }
         .interactive-keyword.highlight-text { color: #ffd700 !important; text-shadow: 0 0 15px rgba(255, 215, 0, 1) !important; }
         .annotation-word.highlight-text { color: #ffffff !important; text-shadow: 0 0 15px rgba(255, 255, 255, 1) !important; text-decoration-color: #ffffff !important; }
         .tab-item-btn.highlight-btn { box-shadow: 0 0 35px rgba(255,255,255,0.7) !important; border-radius: 15px; }
 
-        /* 가이드창 CSS */
+        @keyframes pulse-glow { 0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); } 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } }
+        .pulse-guide { animation: pulse-glow 1.5s infinite !important; z-index: 9015 !important; position: relative; pointer-events: auto !important; }
+        
+        body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
+
         #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: all 0.5s ease; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
@@ -181,17 +186,14 @@
         .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
 
-        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
         #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; transition: opacity 0.5s ease; }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
-        /* --- [뒤로가기 버튼] --- */
         .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
         .fate-back-btn { font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.5s ease; position: relative; z-index: 10; }
 
-        /* --- [오디오 컨트롤러 및 워터마크 예외처리] --- */
         .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999 !important; opacity: 0; pointer-events: none; }
         .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
@@ -219,10 +221,10 @@
     <!-- [툴팁 박스] -->
     <div id="tooltipBox"></div>
 
-    <!-- [알림] 토스트 알림 컨테이너 -->
+    <!-- [알림] 동적 다중 렌더링을 위한 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
-    <!-- [오디오 자산] -->
+    <!-- [오디오 자산 매핑 갱신 완료] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -230,7 +232,7 @@
     <audio id="noshinSfx" src="sfx/sfx-noshin.mp3" preload="auto"></audio>
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
-    <audio id="tosarinSfx" src="voice/voice-juju-tosarin.mp3" preload="auto"></audio>
+    <audio id="kiritsuguYongSfx" src="voice/voice-yong-kiri.mp3" preload="auto"></audio>
     <audio id="yongSfx" src="voice/voice-yong-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
@@ -243,7 +245,11 @@
     <div class="start-btn-container" id="btnContainer">
         <button class="fate-start-btn" id="startBtn">시작하기</button>
         <div class="initial-notice-center" id="initialNotice">
-            ※이 사이트는 컴퓨터 전체화면을 기준으로 제작되었습니다.
+            ※이 사이트는 컴퓨터 전체화면을 기준으로 제작되었습니다.<br>
+            <label class="tut-checkbox-wrapper">
+                <input type="checkbox" id="tutDisableCheck">
+                <span>튜토리얼을 비활성화 하시겠습니까?</span>
+            </label>
         </div>
     </div>
 
@@ -261,7 +267,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 창] -->
+    <!-- [탭 선택 화면] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -269,7 +275,7 @@
         </div>
     </div>
 
-    <!-- [설명창] -->
+    <!-- [설명창 뷰 모듈] -->
     <div id="dynamicTabDetailViews">
         
         <!-- 1. 성배 -->
@@ -318,12 +324,12 @@
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="추가예정">마도</span>(魔道)를 걸으며,<br>
-                        근원을 추구하는 자를 일컫는다.<br>
+                        <span class="annotation-word" data-tooltip="마력을 사용해 원소를 다루며<br>초현실적인 일을 벌일 수 있는 기술">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="세계의 진리를 추구하는 학문">마도</span>(魔道)를 걸으며,<br>
+                        <span class="annotation-word" data-tooltip="만물의 시작과 끝이자,<br>모든 진리와 정보가 기록된<br>우주의 중심(소용돌이)">근원</span>을 추구하는 자를 일컫는다.<br>
                         마술사는 되고 싶다고 되는 것이 아니고<br>
                         특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
-                        마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="추가예정">마술각인</span>을 이어받는다.<br>
-                        대부분의 마술사는 <span class="annotation-word" data-tooltip="추가예정">마술협회</span>에 소속되어 있다.<br>
+                        마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="형체를 지닌 마술회로로, 일종의 장기.<br>마술사의 연구 성과를<br>다음 세대에 남기기 위한 각인.">마술각인</span>을 이어받는다.<br>
+                        대부분의 마술사는 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span>에 소속되어 있다.<br>
                         성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
                         성배전쟁에 참여한 것만으로도 마술사는<br>
                         마술사로서 큰 명예를 얻는다.<br>
@@ -343,8 +349,8 @@
             <div class="detail-right-box">
                 <h2 class="description-title">령주란?</h2>
                 <div class="description-content">
-                    <span class="description-quote" id="tosarinTrigger">"세트, 영주에 고하노니 성배의 규율에 따르라.<br>이자 나의 서번트에게 징계의 법을 내리라!"</span>
-                    <span class="description-quote-author">-토오사카 린</span>
+                    <span class="description-quote" id="kiritsuguYongTrigger">"령주를 통해 명한다"</span>
+                    <span class="description-quote-author">-에미야 키리츠구</span>
                     <p style="margin-top: 12px;">
                         서번트와 계약한 마스터가 3회에 걸쳐<br>
                         서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
@@ -375,7 +381,7 @@
                     <p style="margin-top: 12px;">
                         성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.<br>
                         성배전쟁에서 선출되는 마스터는 보통은 7명이며<br>
-                        이 중 3~4명은 <span class="annotation-word" data-tooltip="추가예정">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="추가예정">마술협회</span> 측에서 한 명씩 선출해<br>
+                        이 중 3~4명은 <span class="annotation-word" data-tooltip="성배전쟁의 기초를 닦은 세 가문인<br>아인츠베른, 토오사카, 마토를 지칭하는 말.">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span> 측에서 한 명씩 선출해<br>
                         등록할 수 있는 권한을 가지고 있다.<br>
                         나머지는 성배가 알아서 배분한다.<br>
                         마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며<br>
@@ -406,7 +412,7 @@
                         성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
                         서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중<br>
                         적성에 맞는 클래스가 부여된다.<br>
-                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="추가예정">스킬</span>을 가지고 있으며<br>
+                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="서번트들이 보유한 능력.<br>서번트가 생전에 익힌 기술이나<br>원전이 되는 전승에서 유래한 것들이 대부분이다.">스킬</span>을 가지고 있으며<br>
                         한 개체 개체가 어마무시한 힘을 가지고 있다.
                     </p>
                 </div>
@@ -424,7 +430,7 @@
                 <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="추가예정">서방교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
+                        <span class="annotation-word" data-tooltip="그리스도교의 이면에 존재하는 비밀 조직이다.<br>세상을 운행하는 과학적인 물리 법칙을 신의 섭리라 신봉하며<br>이에 거스르는 자를 이단으로 규정하며 박멸하는 것이 목표이다.">성당교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
                         성배전쟁을 참여하길 거부하거나<br>
                         서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
                         성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며<br>
@@ -437,7 +443,7 @@
             </div>
         </section>
 
-        <!-- [신규] 서번트 소환 의식 -->
+        <!-- 8. 서번트 소환 의식 -->
         <section class="tab-detail-view" id="tabDetail_sso">
             <div class="static-tab-title title-blue">서번트 소환 의식</div>
             <div class="detail-right-box">
@@ -448,11 +454,12 @@
             </div>
         </section>
 
-        <!-- [신규] 영령 -->
+        <!-- 9. 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
-                <img src="img-yong-ja.png" alt="Heroic Spirit" class="detail-img img-glow-yong">
+                <!-- 이미지 경로 누락 버그 픽스 완료 -->
+                <img src="img/img-yong-ja.png" alt="Heroic Spirit" class="detail-img img-glow-yong">
                 <span class="detail-sub-label">영령의 좌</span>
             </div>
             <div class="detail-right-box">
@@ -464,14 +471,14 @@
                         영웅의 영혼.<br>
                         각 시대에 이루기 힘든 비범한 위업을 이룬 영웅(英雄)이 죽은 뒤에도<br>
                         전설로 남아 사람들의 신앙이 모여서 되는 존재.<br>
-                        영혼이 <span class="annotation-word" data-tooltip="추가예정">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.<br>
+                        영혼이 <span class="annotation-word" data-tooltip="일반적인 인간의 영혼이 거치는<br>삶과 죽음의 반복">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.<br>
                         기본적으로 생전의 기억을 가지고 있다.
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- [신규] 보구 -->
+        <!-- 10. 보구 -->
         <section class="tab-detail-view" id="tabDetail_bogu">
             <div class="static-tab-title title-yellow"><ruby>보구<rt>노블 판타즘</rt></ruby></div>
             <div class="detail-left-box">
@@ -494,7 +501,7 @@
             </div>
         </section>
         
-        <!-- [신규] 진명개방 -->
+        <!-- 11. 진명개방 -->
         <section class="tab-detail-view" id="tabDetail_jinbang">
             <div class="static-tab-title title-yellow">진명개방</div>
             <div class="detail-right-box">
@@ -505,7 +512,7 @@
             </div>
         </section>
         
-        <!-- [신규] 브로큰 판타즘 -->
+        <!-- 12. 브로큰 판타즘 -->
         <section class="tab-detail-view" id="tabDetail_brokenf">
             <div class="static-tab-title title-pink">브로큰 판타즘</div>
             <div class="detail-right-box">
@@ -516,7 +523,7 @@
             </div>
         </section>
 
-        <!-- [신규] 클래스 (특수 라우팅) -->
+        <!-- 13. 클래스 -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="static-tab-title title-white color-gold">클래스</div>
             <div class="detail-right-box" style="background: transparent; border: none; box-shadow: none; text-align: center;">
@@ -530,7 +537,7 @@
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- [오디오 컨트롤러] -->
+    <!-- [오디오 컨트롤러 및 워터마크] -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -549,29 +556,29 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
-    <!-- [자바스크립트] 시스템 로직 및 인터랙션 제어 엔진 -->
+    <!-- [자바스크립트 모듈] -->
     <script>
         let isTransitioning = false;
-        let isToastActive = false;
+        let isKeywordLocked = false;
         let isTutorialActive = false;
         let tutState = { seq: 0, step: 0 };
         let activeHighlightElements = [];
 
-        // ★ [방사형 좌표계 로직] (50, 45) 중앙 기점 반경 배치 최적화 및 뷰포트 스크롤 허용 배치 ★
+        // [방사형 매트릭스 좌표 재계산 적용]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 18, y: 45 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 82, y: 45 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 26, y: 75 }, 
-            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 75 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 74, y: 75 },
-            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 75 },
-            'yong': { name: '영령', parent: 'suv', x: 26, y: 105 },
-            'class': { name: '클래스', parent: 'suv', x: 50, y: 105 },
-            'bogu': { name: '<ruby>보구<rt>노블 판타즘</rt></ruby>', parent: 'suv', x: 74, y: 105 },
-            'jinbang': { name: '진명개방', parent: 'bogu', x: 95, y: 105 },
-            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 95, y: 135 }
+            'ma': { name: '마술사', parent: 'sungbwar', x: 22, y: 45 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 78, y: 45 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 30.2, y: 64.8 }, 
+            'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 73 }, 
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 69.8, y: 64.8 },
+            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 10.4, y: 84.6 },
+            'yong': { name: '영령', parent: 'suv', x: 32.3, y: 90.6 },
+            'class': { name: '클래스', parent: 'suv', x: 50, y: 98 },
+            'bogu': { name: '<ruby>보구<rt>노블 판타즘</rt></ruby>', parent: 'suv', x: 67.7, y: 90.6 },
+            'jinbang': { name: '진명개방', parent: 'bogu', x: 87.7, y: 90.6 },
+            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 67.7, y: 110.6 }
         };
 
         (function checkReloadAndReset() {
@@ -610,7 +617,7 @@
             const noshinSfx = document.getElementById('noshinSfx');
             const kotomineSfx = document.getElementById('kotomineSfx');
             const kiritsuguSfx = document.getElementById('kiritsuguSfx');
-            const tosarinSfx = document.getElementById('tosarinSfx');
+            const kiritsuguYongSfx = document.getElementById('kiritsuguYongSfx');
             const yongSfx = document.getElementById('yongSfx');
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
@@ -624,6 +631,7 @@
             const pressStartBtn = document.getElementById('pressStartBtn');
             const backBtn = document.getElementById('backBtn');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
+            const tutDisableCheck = document.getElementById('tutDisableCheck');
 
             const grailWrapper = document.getElementById('grailWrapper');
             const subTitle = document.getElementById('subTitle');
@@ -634,7 +642,6 @@
             const treeMatrixWorld = document.getElementById('treeMatrixWorld');
             const treeSvg = document.getElementById('treeSvg');
             const treeNodesBox = document.getElementById('treeNodesBox');
-            const dynamicTabDetailViews = document.getElementById('dynamicTabDetailViews');
             const backBtnWrapper = document.getElementById('backBtnWrapper');
 
             let currentStage = 1;       
@@ -659,7 +666,7 @@
                 const voiceVol = Math.min(1.0, parseFloat(this.value) * 1.2);
                 if (kotomineSfx) kotomineSfx.volume = voiceVol; 
                 if (kiritsuguSfx) kiritsuguSfx.volume = voiceVol;
-                if (tosarinSfx) tosarinSfx.volume = voiceVol;
+                if (kiritsuguYongSfx) kiritsuguYongSfx.volume = voiceVol;
                 if (yongSfx) yongSfx.volume = voiceVol;
                 if (fateVoice) fateVoice.volume = voiceVol * 0.45;
             });
@@ -718,7 +725,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, yongSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -740,58 +747,25 @@
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
             document.addEventListener('click', function(e) {
-                if (isTutorialActive) return;
+                const triggerPlay = (targetId, audioObj) => {
+                    const target = e.target.closest(targetId);
+                    if (target) {
+                        e.preventDefault(); e.stopPropagation();
+                        if (!target.classList.contains('glow-fade-out')) target.classList.add('glow-fade-out');
+                        if (audioObj) {
+                            audioObj.pause(); audioObj.currentTime = 0;
+                            audioObj.volume = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                            audioObj.play().catch(err => console.log(err));
+                        }
+                    }
+                };
 
-                const kotomineTarget = e.target.closest('#kotomineTrigger');
-                if (kotomineTarget) {
-                    e.preventDefault(); e.stopPropagation();
-                    if (!kotomineTarget.classList.contains('glow-fade-out')) kotomineTarget.classList.add('glow-fade-out');
-                    if (kotomineSfx) {
-                        kotomineSfx.pause(); kotomineSfx.currentTime = 0;
-                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                        kotomineSfx.volume = voiceVol;
-                        kotomineSfx.play().catch(err => console.log(err));
-                    }
-                }
-
-                const kiritsuguTarget = e.target.closest('#kiritsuguTrigger');
-                if (kiritsuguTarget) {
-                    e.preventDefault(); e.stopPropagation();
-                    if (!kiritsuguTarget.classList.contains('glow-fade-out')) kiritsuguTarget.classList.add('glow-fade-out');
-                    if (kiritsuguSfx) {
-                        kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0;
-                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                        kiritsuguSfx.volume = voiceVol;
-                        kiritsuguSfx.play().catch(err => console.log(err));
-                    }
-                }
-                
-                const tosarinTarget = e.target.closest('#tosarinTrigger');
-                if (tosarinTarget) {
-                    e.preventDefault(); e.stopPropagation();
-                    if (!tosarinTarget.classList.contains('glow-fade-out')) tosarinTarget.classList.add('glow-fade-out');
-                    if (tosarinSfx) {
-                        tosarinSfx.pause(); tosarinSfx.currentTime = 0;
-                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                        tosarinSfx.volume = voiceVol;
-                        tosarinSfx.play().catch(err => console.log(err));
-                    }
-                }
-
-                const yongTarget = e.target.closest('#yongTrigger');
-                if (yongTarget) {
-                    e.preventDefault(); e.stopPropagation();
-                    if (!yongTarget.classList.contains('glow-fade-out')) yongTarget.classList.add('glow-fade-out');
-                    if (yongSfx) {
-                        yongSfx.pause(); yongSfx.currentTime = 0;
-                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                        yongSfx.volume = voiceVol;
-                        yongSfx.play().catch(err => console.log(err));
-                    }
-                }
+                triggerPlay('#kotomineTrigger', kotomineSfx);
+                triggerPlay('#kiritsuguTrigger', kiritsuguSfx);
+                triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx);
+                triggerPlay('#yongTrigger', yongSfx);
             });
 
-            // [가이드 시스템 튜토리얼 렌더링 엔진]
             function playAnneSfx() {
                 if (anneSfx) {
                     anneSfx.pause();
@@ -805,12 +779,10 @@
             function positionArrow(targetEl) {
                 const arrow = document.getElementById('tutorialArrow');
                 const rect = targetEl.getBoundingClientRect();
-                // 절대 좌표 픽셀화 기반 뒤로가기 버튼 X축 중앙 고정
-                arrow.style.left = (rect.left + rect.width / 2 - 32) + 'px'; // 4rem의 절반값
+                arrow.style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
                 arrow.style.top = (rect.top - 65) + 'px';
             }
 
-            // 시각적 강조(하이라이트) 부여 함수 (레이어 중첩 버그 수정)
             function applyHighlights(els, forceColor = null) {
                 const currentEls = els instanceof NodeList || Array.isArray(els) ? Array.from(els) : (els ? [els] : []);
                 
@@ -827,9 +799,7 @@
                 currentEls.forEach(el => {
                     if (el) {
                         el.classList.add('highlight-element');
-                        
                         if (forceColor) el.style.color = forceColor;
-
                         if (el.classList.contains('interactive-keyword') || el.classList.contains('annotation-word') || el.classList.contains('description-quote') || el.classList.contains('detail-sub-label')) {
                             el.classList.add('highlight-text');
                         } else if (el.classList.contains('tab-item-btn')) {
@@ -843,23 +813,17 @@
                 activeHighlightElements = currentEls;
             }
 
-            function clearHighlights() {
+            function endTutorial() {
                 document.querySelectorAll('.highlight-element').forEach(el => {
-                    el.classList.remove('highlight-element');
-                    el.classList.remove('highlight-text');
-                    el.classList.remove('highlight-btn');
-                    el.classList.remove('highlight-box');
+                    el.classList.remove('highlight-element', 'highlight-text', 'highlight-btn', 'highlight-box', 'pulse-guide');
                     el.style.color = '';
                 });
                 document.getElementById('tutorialArrow').classList.remove('active');
                 activeHighlightElements = [];
-            }
-
-            // 모든 UI 정상화 및 상호작용 락오프 완전 종료
-            function endTutorial() {
-                clearHighlights();
+                
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
+                document.body.classList.remove('tut-active');
                 isTutorialActive = false;
             }
 
@@ -873,11 +837,18 @@
                 const btn = document.createElement('button');
                 btn.className = 'guide-btn';
                 btn.innerText = btnText;
-                btn.onclick = () => { if (callback) callback(); };
+                
+                // 단일 실행 잠금 (Debounce Protocol)
+                btn.onclick = (e) => { 
+                    e.preventDefault();
+                    if (btn.classList.contains('locked')) return;
+                    btn.classList.add('locked');
+                    if (callback) callback(); 
+                };
+                
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
-                // 안내창은 성배전쟁 탭 가이드를 제외하고 하단 고정
                 if (isSungbwarTab) {
                     guide.style.bottom = 'auto';
                     guide.style.top = '10%';
@@ -886,6 +857,7 @@
                     guide.style.bottom = '10%';
                 }
                 
+                document.body.classList.add('tut-active');
                 applyHighlights(highlightEls, forceColor);
                 
                 overlay.classList.add('active');
@@ -906,7 +878,7 @@
                         showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { 
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq1', 'done');
-                            endTutorial();
+                            endTutorial(); 
                         }, target);
                     }
                 } else if (tutState.seq === 2) { 
@@ -987,51 +959,38 @@
                 }
             }
 
-            let toastEl = null;
-            let toastRemaining = 1800;
-            let lastTime = Date.now();
+            // 동적 조사 연산 및 다중 알림 렌더링 스레드
+            function getParticle(word) {
+                const cleanWord = word.replace(/<[^>]*>?/gm, '');
+                const lastChar = cleanWord.charCodeAt(cleanWord.length - 1);
+                if (lastChar < 0xAC00 || lastChar > 0xD7A3) return '을(를)';
+                return (lastChar - 0xAC00) % 28 > 0 ? '을' : '를';
+            }
 
             function spawnAcquireToast(wordText) {
-                if (toastEl && toastEl.parentNode) {
-                    toastEl.parentNode.removeChild(toastEl);
-                }
-                toastEl = document.createElement('div');
+                const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
-                toastEl.innerHTML = `—${wordText}을(를) 획득했습니다—`;
+                const particle = getParticle(wordText);
+                toastEl.innerHTML = `—${wordText}${particle} 획득했습니다—`;
                 
-                acquireToastContainer.appendChild(toastEl);
+                acquireToastContainer.prepend(toastEl);
                 
-                // 알림 생성 시 배경 명도 페이드 아웃/인 (튜토리얼3)
                 if (isTutorialActive && tutState.seq === 3) {
                     toastEl.classList.add('highlight-element');
                     document.getElementById('tutorialOverlay').classList.add('active');
                 } else if (!isTutorialActive && !localStorage.getItem('tut_seq3')) {
-                    // 최초 획득 시 0.5초 뒤 튜토리얼 3 가동 (페이드 연산 적용)
                     document.getElementById('tutorialOverlay').classList.add('active');
                 }
                 
-                toastRemaining = 1800;
-                lastTime = Date.now();
-
-                function tick() {
-                    if (!isTutorialActive) {
-                        let now = Date.now();
-                        toastRemaining -= (now - lastTime);
-                        lastTime = now;
-                        if (toastEl) toastEl.style.animationPlayState = 'running';
-                    } else {
-                        lastTime = Date.now();
-                        if (toastEl) toastEl.style.animationPlayState = 'paused';
+                setTimeout(() => {
+                    toastEl.style.opacity = '0';
+                    if (!isTutorialActive && !localStorage.getItem('tut_seq3')) {
+                        document.getElementById('tutorialOverlay').classList.remove('active');
                     }
-
-                    if (toastRemaining <= 0) {
+                    setTimeout(() => {
                         if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
-                        isToastActive = false;
-                    } else {
-                        requestAnimationFrame(tick);
-                    }
-                }
-                requestAnimationFrame(tick);
+                    }, 500);
+                }, 1500);
             }
 
             document.addEventListener('click', function(e) {
@@ -1041,7 +1000,7 @@
                 if (keyTarget) {
                     e.preventDefault();
                     
-                    if (isToastActive) {
+                    if (isKeywordLocked) {
                         if (noshinSfx) {
                             noshinSfx.pause();
                             noshinSfx.volume = parseFloat(seSlider.value);
@@ -1057,7 +1016,9 @@
                     }
 
                     if (!keyTarget.classList.contains('clicked')) {
-                        isToastActive = true;
+                        isKeywordLocked = true;
+                        setTimeout(() => { isKeywordLocked = false; }, 500); // 잠금시간 0.5초로 감소
+                        
                         keyTarget.classList.add('clicked');
                         const id = keyTarget.getAttribute('data-key');
                         
@@ -1098,8 +1059,10 @@
 
             let activeAnnotation = null;
             document.addEventListener('click', function(e) {
-                if (isTutorialActive) return;
-                
+                if (isTutorialActive && localStorage.getItem('tut_seq6') === 'done') {
+                    endTutorial();
+                }
+
                 const annoTarget = e.target.closest('.annotation-word');
                 const tooltipBox = document.getElementById('tooltipBox');
                 
@@ -1158,7 +1121,6 @@
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
 
-                // SVG 가상 픽셀 연산 (직선 복원, 대각선 3차 베지어 곡선)
                 const svgW = treeSvg.clientWidth || window.innerWidth;
                 const svgH = treeSvg.clientHeight || window.innerHeight;
 
@@ -1200,13 +1162,11 @@
 
                         let branchObj;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
-                            // 대각선: 3차 베지어 곡선
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             const midX = (px + cx) / 2;
                             branchObj.setAttribute('d', `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`);
                         } else {
-                            // 수직/수평: 직선 
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
                             branchObj.setAttribute('class', 'tree-branch-line');
                             branchObj.setAttribute('x1', px);
@@ -1264,7 +1224,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
                     
-                    if (id === 'sung' || id === 'jinbang') {
+                    if (id === 'sung' || id === 'jinbang' || id === 'bogu') {
                         btn.classList.add('yellow-glow-btn');
                     } else if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
@@ -1283,15 +1243,12 @@
                     } else if (id === 'brokenf') {
                         btn.classList.add('pink-glow-btn');
                         btn.classList.add('btn-sso');
-                    } else if (id === 'bogu') {
-                        // 보구 탭 노란색 글로우 설정
-                        btn.classList.add('yellow-glow-btn');
                     }
 
                     btn.innerHTML = nodeInfo.name;
                     
                     btn.onclick = () => {
-                        if (isTransitioning || isTutorialActive) return;
+                        if (isTransitioning) return;
                         
                         if (currentFocusedId !== id) {
                             if (moveSfx) {
@@ -1421,13 +1378,14 @@
             });
 
             backBtn.addEventListener('click', function() { 
-                if (isTutorialActive) return; 
                 if (isTransitioning) return;
 
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
                     history.back(); 
                     return;
                 }
+                
+                if (isTutorialActive) return; 
 
                 history.back(); 
             });
@@ -1440,10 +1398,10 @@
             });
 
             window.addEventListener('popstate', function(event) {
-                // 튜토리얼 중 뒤로가기 방어 로직
                 if (isTutorialActive) {
                     history.pushState({ stage: currentStage, id: currentActiveTabId }, '', '');
-                    endTutorial(); // 강제 종료 트리거
+                    endTutorial(); 
+                    return;
                 }
 
                 if (isTransitioning) return;
@@ -1451,7 +1409,7 @@
 
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
-                if (tosarinSfx) { tosarinSfx.pause(); tosarinSfx.currentTime = 0; }
+                if (kiritsuguYongSfx) { kiritsuguYongSfx.pause(); kiritsuguYongSfx.currentTime = 0; }
                 if (yongSfx) { yongSfx.pause(); yongSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
@@ -1480,7 +1438,6 @@
                         currentActiveTabId = null;
                         isTransitioning = false;
 
-                        // 튜토리얼 4단계 가동 (페이드 연산 보장 딜레이 800ms)
                         if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
                             setTimeout(() => {
                                 isTutorialActive = true;
@@ -1533,6 +1490,16 @@
                 if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
 
+                // [튜토리얼 우회 모듈 동작 검증]
+                if (tutDisableCheck && tutDisableCheck.checked) {
+                    localStorage.setItem('tut_seq1', 'done');
+                    localStorage.setItem('tut_seq2', 'done');
+                    localStorage.setItem('tut_seq3', 'done');
+                    localStorage.setItem('tut_seq4', 'done');
+                    localStorage.setItem('tut_seq5', 'done');
+                    localStorage.setItem('tut_seq6', 'done');
+                }
+
                 unlockAllAudioPolicy(); 
                 
                 const btnContainer = document.getElementById('btnContainer');
@@ -1556,7 +1523,7 @@
                 const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                 if (kotomineSfx) kotomineSfx.volume = baseVoiceVol;
                 if (kiritsuguSfx) kiritsuguSfx.volume = baseVoiceVol;
-                if (tosarinSfx) tosarinSfx.volume = baseVoiceVol;
+                if (kiritsuguYongSfx) kiritsuguYongSfx.volume = baseVoiceVol;
                 if (yongSfx) yongSfx.volume = baseVoiceVol;
                 if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
                 if (fateVoice) fateVoice.volume = baseVoiceVol * 0.45;
