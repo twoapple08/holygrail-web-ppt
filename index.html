@@ -10,8 +10,8 @@
       
       [절대 준수 사항 (Guardrails)]
       1. 브라우저의 기본 뒤로가기(History API)를 통해 뷰포트가 전환(popstate)됩니다. 라우팅 로직을 임의로 변경하지 마십시오.
-      2. 튜토리얼 시스템은 Z-index 격상 충돌을 막기 위해 원본 DOM을 복제(Deep Clone)하여 최상위 레이어(#cloneLayer)에 페이드 인/아웃으로 렌더링합니다.
-      3. DOM 트리의 삽입/삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막고 있습니다.
+      2. 튜토리얼 시스템은 오버레이(투명)를 통한 클릭 차단 기능만 수행하며, 화면의 밝기나 Z-index 시각 효과를 변형하지 않습니다.
+      3. DOM 트리의 삽입/삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막습니다.
       4. 모바일 환경의 터치 및 스크롤로 인한 UI 붕괴를 막기 위해 body에 overflow: hidden이 강제되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
@@ -20,42 +20,28 @@
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
-        /* [Z-INDEX 계층 설계도 (CRITICAL)]
-           z-index 0: 메인화면 최하단 베이스
-           z-index 1~2: 메인화면 배경 및 이펙트
-           z-index 5: 상세 설명창 내부 컨텐츠 배경
-           z-index 10: 메인 컨테이너 및 탭 선택창 배경
-           z-index 20: 화면 내 안내 문구 등
-           z-index 25~55: 마인드맵 트리(SVG 선, 탭 버튼) 및 설명창 뷰 모듈
-           z-index 60: 뒤로가기 버튼
-           z-index 8000: 튜토리얼 배경 딤(Dim) 오버레이 (#tutorialOverlay)
-           z-index 9000: 튜토리얼 강조 복제 렌더링 레이어 (#cloneLayer)
-           z-index 9005: 튜토리얼 텍스트 가이드 창 (#tutorialGuide)
-           z-index 9015: 튜토리얼 강하 화살표
-           z-index 9999: 신규개념 토스트 알림창 및 최상단 오디오 패널
-           z-index 10000: 주석 툴팁 레이어 및 타노스 핑거스냅 파티클
-        */
-
-        /* [메인화면 레이어] */
+        /* [메인화면 레이어] 배경 및 붉은 먼지 이펙트 */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
         .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [토스트 알림 시스템] 레이아웃 독립화 및 동일 좌표 렌더링 */
+        /* [토스트 알림 시스템] 다중 알림 시 동일 좌표에서 독립적으로 렌더링되도록 절대좌표(Absolute) 설정 */
         #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
-        .word-toast-item { position: absolute; left: 50%; top: 0; transform: translateX(-50%); color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-overlap-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
+        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-overlap-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
         @keyframes float-overlap-fade { 0% { transform: translate(-50%, 20px); opacity: 0; } 20% { transform: translate(-50%, 0px); opacity: 1; } 80% { transform: translate(-50%, 0px); opacity: 1; } 100% { transform: translate(-50%, -20px); opacity: 0; } }
 
-        /* [신호/상호작용 객체들] */
+        /* [상호작용 텍스트 객체] 신규개념 획득 클릭 유도 */
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
+        /* 에러(단기간 중복 클릭) 시 진동 효과 */
         @keyframes keyword-error-shake { 0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; } 100% { transform: translateX(0); } }
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
+        /* [어록 인터랙션 객체] */
         .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
@@ -68,6 +54,8 @@
         .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; margin-right: -6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
         .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
         .start-btn-container.hide { opacity: 0; transform: scale(0.9); visibility: hidden; pointer-events: none; }
+        
+        /* 튜토리얼 비활성화 체크박스 */
         .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: auto; }
         .tut-checkbox-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; cursor: pointer; }
         .tut-checkbox-wrapper input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #900000; }
@@ -97,8 +85,10 @@
         /* --- [탭 선택 창 트리 렌더링 계층] --- */
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
-        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; }
+        /* 컷신 카메라 워킹을 위한 트랜지션 적용 */
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; transform-origin: center center; }
         
+        /* SVG 선분이 뷰포트를 넘어가도 절단되지 않도록 overflow: visible 강제 */
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
         
         .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: all 0.5s ease; }
@@ -114,6 +104,7 @@
         
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
+        /* 노드 색상별 글로우 이펙트 제어 */
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .yellow-glow-btn:hover { text-shadow: 0 0 50px rgba(255, 255, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9); transform: scale(1.05); }
         .red-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8); }
@@ -133,16 +124,13 @@
         
         .color-gold { color: #ffd700 !important; }
 
-        /* [클래스 탭 잠금 로직 시각 효과] 투명도 25% 하향 */
-        .class-locked-btn { color: transparent !important; background: linear-gradient(0deg, #000000 0%, #000000 40%, rgba(200, 0, 0, 0.5) 50%, #000000 60%, #000000 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.25) !important; cursor: not-allowed !important; }
-        .class-locked-btn:hover { text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.25) !important; transform: none !important; }
+        /* [클래스 탭 잠금 및 컷신 이펙트 엔진] 타노스 스냅 파티클 및 물결 렌더링 */
+        .class-locked-btn { color: transparent !important; background: linear-gradient(0deg, #000000 0%, #000000 40%, rgba(200, 0, 0, 0.25) 50%, #000000 60%, #000000 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; cursor: not-allowed !important; }
+        .class-locked-btn:hover { text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; transform: none !important; }
         @keyframes wave-flow { 0% { background-position: 0% 100%; } 100% { background-position: 0% -100%; } }
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
-        .unlock-vibrate { animation: fast-vibrate 0.05s infinite; }
-        @keyframes fast-vibrate { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
         
-        /* 컷신 타노스 핑거스냅 파티클 엔진 클래스 (선형 소산) */
-        .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 1.5s ease-out; }
+        .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease-out; }
 
         /* --- [상세 설명창 뷰 모듈] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.6s ease; }
@@ -164,7 +152,7 @@
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; }
         
-        /* 영령의 좌 이미지 리사이징 축소 연산 적용 */
+        /* 영령 이미지 축소 스케일 적용 */
         #tabDetail_yong .detail-img { transform: scale(0.85); animation: yong-gentle-float 3.5s infinite ease-in-out; }
         @keyframes yong-gentle-float { 0%, 100% { transform: scale(0.85) translateY(0); } 50% { transform: scale(0.85) translateY(-4px); } }
 
@@ -179,40 +167,34 @@
 
         .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: all 0.5s ease; }
 
-        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: all 0.5s ease; }
+        /* 가로 폭 팽창 방어: max-width 제한을 통한 강제 줄바꿈 및 여백 보장 */
+        .detail-right-box { flex: 1; max-width: 700px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: all 0.5s ease; }
 
         .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; transition: all 0.5s ease; }
         .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: all 0.5s ease; }
         .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; transition: all 0.5s ease; }
 
-        /* --- [주석효과 (툴팁) 모듈] --- */
+        /* [주석효과 (툴팁) 모듈] 텍스트 좌측 정렬 */
         .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: all 0.5s ease; pointer-events: auto; z-index: 100; }
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
-        /* 주석 텍스트 좌측 정렬 */
         #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; text-align: left; }
         #tooltipBox.show { display: block; opacity: 1; }
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
-        /* --- [가이드 시스템 레이어 분리 렌더링 (Clone Base)] --- */
-        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); z-index: 8000; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: auto; }
+        /* [가이드 시스템 투명 차단막 전환] 밝기 변경 없이 상호작용만 봉인 */
+        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 8000; opacity: 0; visibility: hidden; pointer-events: auto; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; }
         
-        #cloneLayer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9000; display: none; }
-        #cloneLayer.active { display: block; }
-        .cloned-element { opacity: 0; transition: opacity 0.5s ease; animation: none !important; }
-        .cloned-element.show-clone { opacity: 1; }
-        .cloned-element.fade-out { opacity: 0; }
-
-        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s ease, visibility 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
+        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
         .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
 
-        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; transition: opacity 0.5s ease; }
+        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
@@ -221,7 +203,7 @@
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
         .fate-back-btn { font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.5s ease; position: relative; z-index: 10; }
 
-        /* --- [마스터 오디오 통합 제어 모듈 및 워터마크] --- */
+        /* --- [마스터 오디오 제어 모듈] --- */
         .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999 !important; opacity: 0; pointer-events: none; }
         .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
@@ -241,19 +223,16 @@
 </head>
 <body>
 
-    <!-- [가이드 시스템 렌더링 레이어] -->
+    <!-- [안내창 가이드 시스템] 투명 오버레이로 클릭만 차단 -->
     <div id="tutorialOverlay"></div>
-    <div id="cloneLayer"></div>
     <div id="tutorialGuide"></div>
     <div id="tutorialArrow">⇩</div>
     
-    <!-- [툴팁 박스] -->
+    <!-- [툴팁 박스 및 알림 컨테이너] -->
     <div id="tooltipBox"></div>
-
-    <!-- [알림 다중 렌더링 컨테이너] -->
     <div id="acquireToastContainer"></div>
 
-    <!-- [오디오 자산 매핑] -->
+    <!-- [오디오 자산] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -262,6 +241,7 @@
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
     <audio id="kiritsuguYongSfx" src="voice/voice-yong-kiri.mp3" preload="auto"></audio>
+    <audio id="yongSfx" src="voice/voice-yong-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
     <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
@@ -271,7 +251,7 @@
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
 
-    <!-- [메인화면] -->
+    <!-- [메인화면 레이어] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
@@ -300,7 +280,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 화면] -->
+    <!-- [탭 선택 화면] 트리 노드 매트릭스 -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -489,11 +469,7 @@
                     <span class="description-quote" id="suvsoTrigger">"세트. 소재로는 은과 철. 초석에는 돌과 계약의 대공.<br>내려서는 바람에는 벽을, 사방의 문은 닫히고,<br>왕관에서 나와, 왕국에 이르는 삼거리는 순환하라!<br>채워라, 채워라, 채워라, 채워라, 채워라!<br>거듭 반복하기를 5번. 그저 채워지는 때를 파각한다.<br>고한다. 그대의 몸은 나의 곁에, 나의 운명은 그대의 검에.<br>성배의 인도에 따라, 이 뜻, 이 이치에 따른다면 대답하라!"</span>
                     <span class="description-quote-author">- 스노우 필드의 성배전쟁에서 사용된 영창</span>
                     <p style="margin-top: 12px;">
-                        서번트를 소환하기 위해서는 촉매가 필요하다.<br>
-                        그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.<br>
-                        서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.<br>
-                        이 소환 자체는 성배가 도와주는 것이기 때문에<br>
-                        소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르다.
+                        서번트를 소환하기 위해서는 촉매가 필요하다.<br>그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.<br>서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.<br>이 소환 자체는 성배가 도와주는 것이기 때문에<br>소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르다.
                     </p>
                 </div>
             </div>
@@ -553,9 +529,9 @@
                     <span class="description-quote-author">-제 4차 성배전쟁 서번트</span>
                     <p style="margin-top: 12px;">
                         보구의 진정한 힘을 사용하기 위해 진정한 보구의 이름을 외치는 것.<br>
-                        진명개방을 하기 전까지 대부분의 보구들은 대체적으로 그냥 강력한 냉병기에 지나지 않지만, 이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.<br>
+                        진명개방을 하기 전까지 대부분의 보구들은 대체적으로 그냥 강력한 냉병기에 지나지 않지만<br>이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.<br>
                         진명개방을 하기 위해서는 <span class="annotation-word" data-tooltip="두 손으로 보구를 들고 진명개방을 해야 한다든지 등.">선행조건</span>을 갖춰야 하는 경우도 있으며<br>
-                        무구의 이름과 진명개방의 명칭이 일치하는 경우,<br>
+                        무구의 이름과 진명개방의 명칭이 일치하는 경우.<br>
                         무구의 이름과 진명개방이 일치하지 않는 경우 등<br>
                         진명개방의 방식도 여러가지가 있다.
                     </p>
@@ -573,10 +549,8 @@
                     <span class="description-quote-author">-제 5차 성배전쟁 서번트</span>
                     <p style="margin-top: 12px;">
                         보구의 특수한 사용법.<br>
-                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.<br>
-                        이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
-                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라 원형은 유지된다.<br>
-                        하지만 마력이 사라졌기에 곧 소멸한다.
+                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.<br>이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
+                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라 원형은 유지된다.<br>하지만 마력이 사라졌기에 곧 소멸한다.
                     </p>
                 </div>
             </div>
@@ -625,10 +599,9 @@
         let isKeywordLocked = false;
         let isTutorialActive = false;
         let currentScale = 1.0; 
-        let currentOrigin = '50% 50%';
         let tutState = { seq: 0, step: 0 };
-        let activeClones = [];
 
+        // [방사형 매트릭스 좌표 맵핑: 브로큰 판타즘 대각선 우측 하단 이동 적용 완료]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -642,9 +615,10 @@
             'class': { name: '클래스', parent: 'suv', x: 50, y: 98 },
             'bogu': { name: '<ruby>보구<rt>노블 판타즘</rt></ruby>', parent: 'suv', x: 67.7, y: 90.6 },
             'jinbang': { name: '진명개방', parent: 'bogu', x: 87.7, y: 90.6 },
-            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 67.7, y: 110.6 }
+            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 }
         };
 
+        // 새로고침 시 데이터 초기화 루틴
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -653,8 +627,6 @@
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
-                sessionStorage.removeItem('fate_visited_yong');
-                sessionStorage.removeItem('fate_visited_bogu');
                 localStorage.removeItem('tut_seq1');
                 localStorage.removeItem('tut_seq2');
                 localStorage.removeItem('tut_seq3');
@@ -666,11 +638,16 @@
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
-            if (!history.state || history.state.stage !== 1) { history.replaceState({ stage: 1 }, '', ''); }
+            if (!history.state || history.state.stage !== 1) {
+                history.replaceState({ stage: 1 }, '', '');
+            }
 
             sessionStorage.setItem('fate_concept_sung', 'true');
             let conceptOrder = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-            if (!conceptOrder.includes('sung')) { conceptOrder.push('sung'); sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder)); }
+            if (!conceptOrder.includes('sung')) {
+                conceptOrder.push('sung');
+                sessionStorage.setItem('fate_concept_order', JSON.stringify(conceptOrder));
+            }
 
             const bgmMain = document.getElementById('bgmMain');
             const bgmTheme2 = document.getElementById('bgmTheme2');
@@ -680,6 +657,7 @@
             const kotomineSfx = document.getElementById('kotomineSfx');
             const kiritsuguSfx = document.getElementById('kiritsuguSfx');
             const kiritsuguYongSfx = document.getElementById('kiritsuguYongSfx');
+            const yongSfx = document.getElementById('yongSfx');
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
             const anneSfx = document.getElementById('anneSfx');
@@ -699,7 +677,6 @@
             const backBtn = document.getElementById('backBtn');
             const acquireToastContainer = document.getElementById('acquireToastContainer');
             const tutDisableCheck = document.getElementById('tutDisableCheck');
-            const cloneLayer = document.getElementById('cloneLayer');
 
             const grailWrapper = document.getElementById('grailWrapper');
             const subTitle = document.getElementById('subTitle');
@@ -749,11 +726,15 @@
                 const stepTime = duration / steps;
                 const volStep = startVol / steps;
                 let currentStep = 0;
+
                 const fadeInterval = setInterval(() => {
                     currentStep++;
                     audioEl.volume = Math.max(0, startVol - (volStep * currentStep));
                     if (currentStep >= steps || audioEl.volume <= 0) {
-                        clearInterval(fadeInterval); audioEl.pause(); audioEl.currentTime = 0; audioEl.volume = startVol; 
+                        clearInterval(fadeInterval);
+                        audioEl.pause();
+                        audioEl.currentTime = 0;
+                        audioEl.volume = startVol; 
                     }
                 }, stepTime);
             }
@@ -768,11 +749,13 @@
                 const stepTime = duration / steps;
                 const volStep = targetVol / steps;
                 let currentStep = 0;
+
                 const fadeInterval = setInterval(() => {
                     currentStep++;
                     audioEl.volume = Math.min(targetVol, volStep * currentStep);
                     if (currentStep >= steps || audioEl.volume >= targetVol) {
-                        clearInterval(fadeInterval); audioEl.volume = targetVol;
+                        clearInterval(fadeInterval);
+                        audioEl.volume = targetVol;
                     }
                 }, stepTime);
             }
@@ -780,13 +763,15 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
                         const playPromise = audio.play();
                         if (playPromise !== undefined) {
-                            playPromise.then(() => { audio.pause(); audio.currentTime = 0; audio.volume = originalVol; }).catch(() => {});
+                            playPromise.then(() => {
+                                audio.pause(); audio.currentTime = 0; audio.volume = originalVol;
+                            }).catch(() => {});
                         }
                     }
                 });
@@ -797,86 +782,41 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
+            // 어록 인터랙션 클릭 리스너 (요구된 특정 오디오에 35% 증폭 파라미터 적용)
             document.addEventListener('click', function(e) {
-                const triggerPlay = (targetId, audioObj) => {
+                const triggerPlay = (targetId, audioObj, boost = 1.0) => {
                     const target = e.target.closest(targetId);
                     if (target) {
                         e.preventDefault(); e.stopPropagation();
                         if (!target.classList.contains('glow-fade-out')) target.classList.add('glow-fade-out');
                         if (audioObj) {
                             audioObj.pause(); audioObj.currentTime = 0;
-                            audioObj.volume = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * getMasterVol());
+                            audioObj.volume = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * boost * getMasterVol());
                             audioObj.play().catch(err => console.log(err));
                         }
                     }
                 };
+
                 triggerPlay('#kotomineTrigger', kotomineSfx);
                 triggerPlay('#kiritsuguTrigger', kiritsuguSfx);
-                triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx);
-                triggerPlay('#bfTrigger', bfEmiyaSfx);
-                triggerPlay('#jinmTrigger', jinmExcarSfx);
-                triggerPlay('#suvsoTrigger', suvsoFsfSfx);
+                triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx, 1.35); // 령주 35% 증폭
+                triggerPlay('#yongTrigger', yongSfx);
+                triggerPlay('#bfTrigger', bfEmiyaSfx, 1.35); // 브로큰 판타즘 35% 증폭
+                triggerPlay('#jinmTrigger', jinmExcarSfx, 1.35); // 진명개방 35% 증폭
+                triggerPlay('#suvsoTrigger', suvsoFsfSfx, 1.35); // 서번트 소환 의식 35% 증폭
             });
 
-            // [레이어 복제 렌더링 프로토콜]
-            function clearClones() {
-                activeClones.forEach(clone => {
-                    clone.classList.add('fade-out');
-                    setTimeout(() => { if (clone.parentNode) clone.parentNode.removeChild(clone); }, 500);
-                });
-                activeClones = [];
-                setTimeout(() => { if (activeClones.length === 0) cloneLayer.classList.remove('active'); }, 500);
-            }
-
-            function applyHighlightsClone(els) {
-                clearClones();
-                const currentEls = els instanceof NodeList || Array.isArray(els) ? Array.from(els) : (els ? [els] : []);
-                if (currentEls.length > 0) cloneLayer.classList.add('active');
-                
-                currentEls.forEach(el => {
-                    if (el) {
-                        const rect = el.getBoundingClientRect();
-                        const clone = el.cloneNode(true);
-                        
-                        clone.style.animation = 'none !important';
-                        const computed = window.getComputedStyle(el);
-                        clone.style.opacity = computed.opacity;
-                        clone.style.transform = computed.transform;
-                        
-                        clone.classList.add('cloned-element');
-                        clone.style.position = 'fixed';
-                        clone.style.left = rect.left + 'px';
-                        clone.style.top = rect.top + 'px';
-                        clone.style.width = rect.width + 'px';
-                        clone.style.height = rect.height + 'px';
-                        clone.style.margin = '0';
-                        clone.style.zIndex = '9010';
-                        
-                        // 이벤트 포워딩 브릿지
-                        clone.style.pointerEvents = 'auto';
-                        clone.onclick = (e) => { e.preventDefault(); el.click(); };
-                        
-                        cloneLayer.appendChild(clone);
-                        activeClones.push(clone);
-                        
-                        // 페이드 인
-                        requestAnimationFrame(() => {
-                            requestAnimationFrame(() => { clone.classList.add('show-clone'); });
-                        });
-                    }
-                });
-            }
-
+            // 튜토리얼 종료 시스템 (오버레이 및 가이드 숨김)
             function endTutorial() {
                 document.getElementById('tutorialArrow').classList.remove('active');
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
-                clearClones();
                 isTutorialActive = false;
             }
 
-            function showTutorialGuide(text, btnText, callback, highlightEls, isSungbwarTab = false) {
+            // 튜토리얼 가이드 출력 (시각적 변경 없이 텍스트 창 렌더링 및 입력 락오프 수행)
+            function showTutorialGuide(text, btnText, callback, isSungbwarTab = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 guide.innerHTML = `<p>${text}</p>`;
@@ -898,8 +838,6 @@
                 else { guide.style.top = 'auto'; guide.style.bottom = '10%'; }
                 
                 document.body.classList.add('tut-active');
-                applyHighlightsClone(highlightEls);
-                
                 overlay.classList.add('active');
                 guide.classList.add('active');
             }
@@ -908,16 +846,16 @@
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 1) { showTutorialGuide("이곳은 개념들을 나열해두는 장소 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
-                    else if (tutState.step === 2) { showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn')); } 
-                    else if (tutState.step === 3) { showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq1', 'done'); endTutorial(); }, document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn')); }
+                    else if (tutState.step === 2) { showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 3) { showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq1', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 2) { 
                     if (tutState.step === 0) { showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
-                    else if (tutState.step === 1) { showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('#tabDetail_sung .detail-img')); } 
-                    else if (tutState.step === 2) { showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('#tabDetail_sung .detail-sub-label')); } 
-                    else if (tutState.step === 3) { showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('#tabDetail_sung .detail-right-box')); } 
-                    else if (tutState.step === 4) { showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('#tabDetail_sung .description-quote')); } 
-                    else if (tutState.step === 5) { showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]')); } 
-                    else if (tutState.step === 6) { showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }, document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]')); }
+                    else if (tutState.step === 1) { showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 2) { showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 3) { showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 4) { showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 5) { showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 6) { showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) { showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 1) { 
@@ -926,19 +864,20 @@
                         const rect = backBtn.getBoundingClientRect();
                         document.getElementById('tutorialArrow').style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
                         document.getElementById('tutorialArrow').style.top = (rect.top - 65) + 'px';
-                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }, backBtn); 
+                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
                     }
                 } else if (tutState.seq === 4) { 
-                    if (tutState.step === 0) { showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }, document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn'), true); }
+                    if (tutState.step === 0) { showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) { showTutorialGuide("이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq5', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 6) { 
-                    if (tutState.step === 0) { showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelectorAll('.tab-detail-view.show .annotation-word')); } 
-                    else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, document.querySelectorAll('.tab-detail-view.show .annotation-word')); } 
-                    else if (tutState.step === 2) { showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }, document.querySelectorAll('.tab-detail-view.show .annotation-word')); }
+                    if (tutState.step === 0) { showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 2) { showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }); }
                 }
             }
 
+            // 동적 조사 연산 및 다중 알림 렌더링 스레드
             function getParticle(word) {
                 const cleanWord = word.replace(/<[^>]*>?/gm, '');
                 const lastChar = cleanWord.charCodeAt(cleanWord.length - 1);
@@ -952,7 +891,7 @@
                 toastEl.innerHTML = `—${wordText}${getParticle(wordText)} 획득했습니다—`;
                 acquireToastContainer.prepend(toastEl);
                 
-                if (isTutorialActive && tutState.seq === 3) { document.getElementById('tutorialOverlay').classList.add('active'); applyHighlightsClone([toastEl]); } 
+                if (isTutorialActive && tutState.seq === 3) { document.getElementById('tutorialOverlay').classList.add('active'); } 
                 else if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.add('active'); }
                 
                 setTimeout(() => {
@@ -962,6 +901,7 @@
                 }, 1500);
             }
 
+            // 신규 개념 상호작용 클릭 리스너
             document.addEventListener('click', function(e) {
                 if (isTutorialActive) return;
                 const keyTarget = e.target.closest('.interactive-keyword');
@@ -969,8 +909,11 @@
                     e.preventDefault();
                     if (isKeywordLocked) {
                         playSfx(noshinSfx, 1.0);
-                        keyTarget.classList.remove('keyword-error'); void keyTarget.offsetWidth; keyTarget.classList.add('keyword-error');
-                        setTimeout(() => keyTarget.classList.remove('keyword-error'), 300); return;
+                        keyTarget.classList.remove('keyword-error');
+                        void keyTarget.offsetWidth; 
+                        keyTarget.classList.add('keyword-error');
+                        setTimeout(() => keyTarget.classList.remove('keyword-error'), 300);
+                        return;
                     }
                     if (!keyTarget.classList.contains('clicked')) {
                         isKeywordLocked = true;
@@ -980,21 +923,28 @@
                         
                         sessionStorage.setItem('fate_concept_' + id, 'true');
                         let orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
-                        if (!orderList.includes(id)) { orderList.push(id); sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList)); }
+                        if (!orderList.includes(id)) {
+                            orderList.push(id);
+                            sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
+                        }
                         playSfx(wordSfx, 4.0);
                         spawnAcquireToast(keyTarget.innerHTML.trim());
 
-                        if (!localStorage.getItem('tut_seq3')) { setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500); }
+                        if (!localStorage.getItem('tut_seq3')) {
+                            setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500);
+                        }
                     }
                 }
             });
 
+            // 초기 로딩 시 획득 데이터 반영
             const detailKeywords = document.querySelectorAll('.interactive-keyword');
             detailKeywords.forEach(kw => {
                 const kwId = kw.getAttribute('data-key');
                 if (sessionStorage.getItem('fate_concept_' + kwId) === 'true') { kw.classList.add('clicked'); }
             });
 
+            // 주석 툴팁 상호작용 리스너
             let activeAnnotation = null;
             document.addEventListener('click', function(e) {
                 if (isTutorialActive && localStorage.getItem('tut_seq6') === 'done') endTutorial();
@@ -1017,7 +967,7 @@
                 }
             });
 
-            // [포커싱 좌표 오차 수정 행렬 연산]
+            // 트리 좌표 및 포커싱 계산 렌더링
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
@@ -1030,57 +980,68 @@
                 }, 100);
 
                 currentFocusedId = targetId;
-                currentOrigin = `${nodeInfo.x}% ${nodeInfo.y}%`;
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
-                
-                treeMatrixWorld.style.transformOrigin = currentOrigin;
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh) scale(${currentScale})`;
             }
 
-            // [타노스 핑거스냅 컷신 선형 소산 연산]
-            function triggerClassCutscene(nodeBox, btnObj, previousTabId) {
+            // 컷신 카메라 워킹 및 타노스 스냅 파티클 연산 엔진
+            function triggerClassCutscene(nodeBox, btnObj, prevFocusedId) {
                 isTransitioning = true;
                 currentScale = 1.6;
                 focusToNode('class');
-                playSfx(unlockSfx, 4.0);
                 
-                btnObj.classList.add('unlock-vibrate');
-                
-                const numParticles = 120;
-                for (let i = 0; i < numParticles; i++) {
-                    const pt = document.createElement('div');
-                    pt.className = 'dust-particle';
-                    pt.style.backgroundColor = Math.random() > 0.5 ? '#000000' : 'rgba(200, 0, 0, 0.8)';
-                    pt.style.left = (10 + Math.random() * 80) + '%';
-                    pt.style.top = (20 + Math.random() * 60) + '%';
-                    
-                    const dx = 100 + Math.random() * 150; 
-                    const dy = -(100 + Math.random() * 150); 
-                    
-                    nodeBox.appendChild(pt);
-                    
-                    setTimeout(() => {
-                        pt.style.transform = `translate(${dx}px, ${dy}px) scale(${Math.random() * 2 + 0.5})`;
-                        pt.style.opacity = '0';
-                    }, 50);
-                    setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 1600);
-                }
-
+                // 화면 줌 인(800ms) 완료 후 컷신 본격 가동
                 setTimeout(() => {
-                    btnObj.classList.remove('unlock-vibrate', 'class-locked-btn');
-                    btnObj.classList.add('white-glow-btn', 'color-gold');
-                    btnObj.innerHTML = CONCEPT_REGISTRY['class'].name;
-                    localStorage.setItem('fate_class_cutscene', 'true');
+                    playSfx(unlockSfx, 4.0);
                     
+                    // 버튼의 스타일을 서서히 페이드 아웃시키기 위한 트랜지션 할당
+                    btnObj.style.transition = 'color 1.5s, text-shadow 1.5s, opacity 1.5s';
+                    btnObj.style.opacity = '0';
+                    
+                    const numParticles = 80;
+                    const rect = btnObj.getBoundingClientRect();
+                    for (let i = 0; i < numParticles; i++) {
+                        const pt = document.createElement('div');
+                        pt.className = 'dust-particle';
+                        // 검은색과 붉은색, 회색이 혼합된 먼지
+                        pt.style.backgroundColor = Math.random() > 0.5 ? '#000000' : (Math.random() > 0.5 ? '#880000' : '#444444');
+                        pt.style.left = (Math.random() * 100) + '%';
+                        pt.style.top = (Math.random() * 100) + '%';
+                        
+                        // 우측 상단(타노스 스냅 방향)으로 향하도록 좌표 연산
+                        const dx = Math.random() * 120 + 40;
+                        const dy = -(Math.random() * 120 + 40);
+                        
+                        nodeBox.appendChild(pt);
+                        
+                        setTimeout(() => {
+                            pt.style.transform = `translate(${dx}px, ${dy}px) scale(${Math.random() * 1.5 + 1})`;
+                            pt.style.opacity = '0';
+                        }, 50);
+                        
+                        setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 1600);
+                    }
+
+                    // 먼지 페이드아웃 종료 후 복귀 페이즈
                     setTimeout(() => {
-                        currentScale = 1.0;
-                        focusToNode(previousTabId || 'class');
-                        isTransitioning = false;
-                    }, 800);
-                }, 1800);
+                        btnObj.classList.remove('class-locked-btn', 'class-locked-shake');
+                        btnObj.classList.add('white-glow-btn', 'color-gold');
+                        btnObj.innerHTML = CONCEPT_REGISTRY['class'].name;
+                        btnObj.style.opacity = '1'; // 버튼 복구
+                        localStorage.setItem('fate_class_cutscene', 'true');
+                        
+                        // 배율 정상화 후 원래 머물렀던 탭으로 카메라 회귀
+                        setTimeout(() => {
+                            currentScale = 1.0;
+                            focusToNode(prevFocusedId);
+                            setTimeout(() => { isTransitioning = false; }, 800);
+                        }, 500);
+                    }, 1600);
+                }, 800);
             }
 
+            // 트리 SVG 노드 계산 및 버튼 생성
             function renderTreeGrid(resetFocus = false) {
                 treeSvg.innerHTML = '<defs></defs>';
                 const svgDefs = treeSvg.querySelector('defs');
@@ -1104,7 +1065,8 @@
 
                         const gradId = `fadeGrad_${parentId}_${id}`;
                         const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
-                        linearGrad.setAttribute('id', gradId); linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
+                        linearGrad.setAttribute('id', gradId);
+                        linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
                         linearGrad.setAttribute('x1', pNode.x + '%'); linearGrad.setAttribute('y1', pNode.y + '%');
                         linearGrad.setAttribute('x2', cNode.x + '%'); linearGrad.setAttribute('y2', cNode.y + '%');
 
@@ -1146,6 +1108,7 @@
                     }
                 });
 
+                // 잠금 프로토콜 판별용 데이터 색인
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                 const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
                 const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
@@ -1186,7 +1149,10 @@
                         
                         if (isLockedClass) {
                             playSfx(blockSfx, 3.0);
-                            btn.classList.remove('class-locked-shake'); void btn.offsetWidth; btn.classList.add('class-locked-shake');
+                            btn.classList.remove('class-locked-shake');
+                            void btn.offsetWidth; 
+                            btn.classList.add('class-locked-shake');
+                            
                             isTransitioning = true;
                             focusToNode(id);
                             setTimeout(() => { btn.classList.remove('class-locked-shake'); isTransitioning = false; }, 500);
@@ -1203,9 +1169,6 @@
                             history.pushState({ stage: 3, id: id }, '', '');
                             playSfx(pstSfx, 1.0);
                             
-                            // 진입 시 독립 방문 데이터 기록
-                            if (id === 'yong' || id === 'bogu') { sessionStorage.setItem('fate_visited_' + id, 'true'); }
-
                             currentActiveTabId = id;
                             treeSelectionContainer.classList.remove('show');
                             
@@ -1215,6 +1178,11 @@
                             } else {
                                 document.getElementById('bgLayer').style.opacity = '1';
                                 document.getElementById('dustEffect').style.opacity = '0.55';
+                            }
+
+                            // 컷신 판별을 위한 방문 탭 식별자 기록
+                            if (id === 'yong' || id === 'bogu') {
+                                sessionStorage.setItem('fate_visited_' + id, 'true');
                             }
 
                             const targetView = document.getElementById('tabDetail_' + id);
@@ -1252,6 +1220,7 @@
                 }
             });
 
+            // 프레스 투 스타트
             pressStartBtn.addEventListener('click', function() {
                 if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
@@ -1276,6 +1245,7 @@
                 }, 1450);
             });
 
+            // 뒤로가기 버튼
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
@@ -1290,6 +1260,7 @@
                 }
             });
 
+            // 라우팅 (뷰포트 이동) 렌더링
             window.addEventListener('popstate', function(event) {
                 if (isTutorialActive) { history.pushState({ stage: currentStage, id: currentActiveTabId }, '', ''); endTutorial(); return; }
                 if (isTransitioning) return;
@@ -1298,6 +1269,7 @@
                 if (kotomineSfx) { kotomineSfx.pause(); kotomineSfx.currentTime = 0; }
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
                 if (kiritsuguYongSfx) { kiritsuguYongSfx.pause(); kiritsuguYongSfx.currentTime = 0; }
+                if (yongSfx) { yongSfx.pause(); yongSfx.currentTime = 0; }
                 if (bfEmiyaSfx) { bfEmiyaSfx.pause(); bfEmiyaSfx.currentTime = 0; }
                 if (jinmExcarSfx) { jinmExcarSfx.pause(); jinmExcarSfx.currentTime = 0; }
                 if (suvsoFsfSfx) { suvsoFsfSfx.pause(); suvsoFsfSfx.currentTime = 0; }
@@ -1305,13 +1277,15 @@
                 if (currentStage === 3) {
                     currentStage = 2;
                     playSfx(pstSfx, 1.0);
-                    const previousTabId = currentActiveTabId;
-                    const activeView = document.getElementById('tabDetail_' + previousTabId);
+                    
+                    const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                     if (activeView) activeView.classList.remove('show');
                     document.getElementById('tooltipBox').classList.remove('show');
                     activeAnnotation = null;
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
+                    
+                    const savedTabId = currentActiveTabId; // 이전 방문지 캐시 보존
 
                     setTimeout(() => {
                         renderTreeGrid(false);
@@ -1319,7 +1293,7 @@
                         currentActiveTabId = null;
                         isTransitioning = false;
 
-                        // 독립된 방문 데이터 기반 컷신 호출 연산
+                        // 방문 상태에 기반한 컷신 호출 논리 연산
                         const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                         const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
                         const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
@@ -1328,12 +1302,10 @@
                         if (isYongVisited && isBoguVisited && !isClassCutsceneDone && classNodeBox) {
                             setTimeout(() => {
                                 const classBtn = classNodeBox.querySelector('.tab-item-btn');
-                                triggerClassCutscene(classNodeBox, classBtn, previousTabId);
+                                triggerClassCutscene(classNodeBox, classBtn, savedTabId);
                             }, 500);
                         } else if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
                             setTimeout(() => { isTutorialActive = true; tutState = { seq: 4, step: 0 }; runTutStep(); }, 800);
-                        } else {
-                            focusToNode(previousTabId);
                         }
                     }, 600); 
 
@@ -1358,6 +1330,7 @@
                 } else { isTransitioning = false; }
             });
 
+            // 시작하기 구동
             startBtn.addEventListener('click', function() {
                 if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
@@ -1367,6 +1340,7 @@
                 }
 
                 unlockAllAudioPolicy(); 
+                
                 document.getElementById('btnContainer').classList.add('hide');
 
                 if (bgmMain) {
@@ -1392,7 +1366,9 @@
                     subTitle.classList.add('animate'); introNotice.classList.add('animate'); document.getElementById('controlsGroup').classList.add('animate');
                 }, 2200);
 
-                setTimeout(() => { pressStartWrapper.classList.add('animate'); isTransitioning = false; }, 3000);
+                setTimeout(() => {
+                    pressStartWrapper.classList.add('animate'); isTransitioning = false;
+                }, 3000);
             });
         });
     </script>
