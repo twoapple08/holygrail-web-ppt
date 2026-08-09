@@ -10,7 +10,7 @@
       
       [절대 준수 사항 (Guardrails)]
       1. 브라우저의 기본 뒤로가기(History API)를 통해 뷰포트가 전환(popstate)됩니다. 라우팅 로직을 임의로 변경하지 마십시오.
-      2. 튜토리얼 시스템은 Z-index 격상 및 CSS filter(brightness)를 통해 타겟을 강조(Highlight)합니다.
+      2. 튜토리얼 시스템은 Z-index 격상 및 CSS filter(brightness)를 통해 타겟을 강조(Highlight)합니다. 하드컷 렌더링이 강제되어 있습니다.
       3. DOM 트리의 삽입/삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막습니다.
       4. 모바일 환경의 터치 및 스크롤로 인한 UI 붕괴를 막기 위해 body에 overflow: hidden이 강제되어 있습니다.
     -->
@@ -25,9 +25,10 @@
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column; align-items: center; gap: 10px; transition: all 0.5s ease; }
-        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; transition: opacity 0.5s ease; }
-        @keyframes float-fade-smooth { 0% { transform: translateY(20px); opacity: 0; } 20% { transform: translateY(0px); opacity: 1; } 80% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+        /* 알림 레이아웃 독립화 및 동일 좌표 렌더링 */
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
+        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-overlap-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
+        @keyframes float-overlap-fade { 0% { transform: translate(-50%, 20px); opacity: 0; } 20% { transform: translate(-50%, 0px); opacity: 1; } 80% { transform: translate(-50%, 0px); opacity: 1; } 100% { transform: translate(-50%, -20px); opacity: 0; } }
 
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
@@ -75,6 +76,7 @@
 
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
+        /* 컷신 확대를 위한 transform 통합 관리를 위해 transition 설정 분리 */
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; }
         
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
@@ -111,6 +113,17 @@
         
         .color-gold { color: #ffd700 !important; }
 
+        /* [클래스 탭 잠금 로직 시각 효과] */
+        .class-locked-btn { color: transparent !important; background: linear-gradient(0deg, #000000 0%, #000000 40%, rgba(200, 0, 0, 0.7) 50%, #000000 60%, #000000 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; cursor: not-allowed !important; }
+        .class-locked-btn:hover { text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; transform: none !important; }
+        @keyframes wave-flow { 0% { background-position: 0% 100%; } 100% { background-position: 0% -100%; } }
+        .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
+        .unlock-vibrate { animation: fast-vibrate 0.05s infinite; }
+        @keyframes fast-vibrate { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -1px); } }
+        
+        /* 컷신 파티클 엔진 클래스 */
+        .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 1.5s ease-out, opacity 1.5s ease-out; }
+
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
 
@@ -129,6 +142,10 @@
 
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; }
+        
+        /* 영령의 좌 이미지 리사이징 축소 연산 적용 */
+        #tabDetail_yong .detail-img { transform: scale(0.85); animation: yong-gentle-float 3.5s infinite ease-in-out; }
+        @keyframes yong-gentle-float { 0%, 100% { transform: scale(0.85) translateY(0); } 50% { transform: scale(0.85) translateY(-4px); } }
 
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
@@ -152,18 +169,18 @@
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
-        #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; text-align: right; }
+        /* 주석 텍스트 정렬 좌측 고정 (롤백) */
+        #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; text-align: left; }
         #tooltipBox.show { display: block; opacity: 1; }
-        
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
-        /* [가이드 시각 효과 최적화] 페이드 인/아웃 전환 연산 적용 */
-        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); z-index: 8000; opacity: 0; visibility: hidden; transition: opacity 0.5s ease-in-out; pointer-events: auto; }
+        /* [가이드 시각 효과 즉각 전환 롤백] transition 속성 제거 및 기본 속성 복구 */
+        #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.4); z-index: 8000; opacity: 0; visibility: hidden; transition: none; pointer-events: auto; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; }
         
         body.tut-active .tree-selection-container.show, body.tut-active .tab-detail-view.show, body.tut-active .bottom-left-controls.show, body.tut-active #acquireToastContainer { z-index: 9001 !important; }
 
-        .highlight-element { z-index: 9010 !important; position: relative !important; filter: none !important; transition: opacity 0.5s ease, filter 0.5s ease, box-shadow 0.5s ease, background-color 0.5s ease, color 0.5s ease, text-shadow 0.5s ease !important; }
+        .highlight-element { z-index: 9010 !important; position: relative !important; filter: none !important; transition: none !important; opacity: 1 !important; }
         
         .detail-right-box.highlight-box { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; border-color: rgba(255,255,255,0.8) !important; z-index: 9005 !important; }
 
@@ -179,14 +196,14 @@
         
         body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
 
-        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: all 0.5s ease; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
+        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
         .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
 
-        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; transition: opacity 0.5s ease; }
+        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
         #tutorialArrow.active { opacity: 1; visibility: visible; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
@@ -198,7 +215,7 @@
         .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
         .volume-control-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .volume-label { font-size: 0.75rem; color: #d0c5b5; font-weight: 700; user-select: none; min-width: 40px; }
+        .volume-label { font-size: 0.75rem; color: #d0c5b5; font-weight: 700; user-select: none; min-width: 48px; text-align: left; }
         .volume-slider { -webkit-appearance: none; appearance: none; width: 80px; height: 4px; background: rgba(80, 10, 10, 0.8); border-radius: 2px; outline: none; cursor: pointer; }
         .volume-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #ff3333; border: 1px solid #ffffff; box-shadow: 0 0 8px rgba(255, 0, 0, 0.8); cursor: pointer; transition: transform 0.1s ease; }
         .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.25); background: #ff6666; }
@@ -213,15 +230,11 @@
 </head>
 <body>
 
-    <!-- [안내창 가이드 시스템] -->
     <div id="tutorialOverlay"></div>
     <div id="tutorialGuide"></div>
     <div id="tutorialArrow">⇩</div>
     
-    <!-- [툴팁 박스] -->
     <div id="tooltipBox"></div>
-
-    <!-- [알림] 동적 다중 렌더링을 위한 컨테이너 -->
     <div id="acquireToastContainer"></div>
 
     <!-- [오디오 자산 매핑 갱신 완료] -->
@@ -237,8 +250,12 @@
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
     <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
+    <audio id="blockSfx" src="sfx/sfx-block.mp3" preload="auto"></audio>
+    <audio id="unlockSfx" src="sfx/sfx-unlock.mp3" preload="auto"></audio>
+    <audio id="bfEmiyaSfx" src="voice/voice-bf-emiya.mp3" preload="auto"></audio>
+    <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
+    <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
 
-    <!-- [메인화면] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
@@ -267,7 +284,6 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 화면] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -446,10 +462,18 @@
         <!-- 8. 서번트 소환 의식 -->
         <section class="tab-detail-view" id="tabDetail_sso">
             <div class="static-tab-title title-blue">서번트 소환 의식</div>
+            <div class="detail-left-box">
+                <img src="img/img-suvso-mahojin.png" alt="Magic Circle" class="detail-img img-glow-rj">
+                <span class="detail-sub-label">서번트 소환 의식에 사용되는 마법진</span>
+            </div>
             <div class="detail-right-box">
                 <h2 class="description-title">서번트 소환 의식이란?</h2>
                 <div class="description-content">
-                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                    <span class="description-quote" id="suvsoTrigger">"세트. 소재로는 은과 철. 초석에는 돌과 계약의 대공. 내려서는 바람에는 벽을, 사방의 문은 닫히고, 왕관에서 나와, 왕국에 이르는 삼거리는 순환하라! 채워라, 채워라, 채워라, 채워라, 채워라! 거듭 반복하기를 하기를 5번. 그저 채워지는 때를 파각한다. 고한다. 그대의 몸은 나의 곁에, 나의 운명은 그대의 검에. 성배의 인도에 따라, 이 뜻, 이 이치에 따른다면 대답하라!"</span>
+                    <span class="description-quote-author">- 스노우 필드의 성배전쟁에서 사용된 영창</span>
+                    <p style="margin-top: 12px;">
+                        소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르다.
+                    </p>
                 </div>
             </div>
         </section>
@@ -458,7 +482,6 @@
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
-                <!-- 이미지 경로 누락 버그 픽스 완료 -->
                 <img src="img/img-yong-ja.png" alt="Heroic Spirit" class="detail-img img-glow-yong">
                 <span class="detail-sub-label">영령의 좌</span>
             </div>
@@ -507,7 +530,16 @@
             <div class="detail-right-box">
                 <h2 class="description-title">진명개방이란?</h2>
                 <div class="description-content">
-                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                    <span class="description-quote" id="jinmTrigger"><ruby>엑스칼리버어어—!<rt>약속된 승리의 검</rt></ruby></span>
+                    <span class="description-quote-author">-제 4차 성배전쟁 서번트</span>
+                    <p style="margin-top: 12px;">
+                        보구의 진정한 힘을 사용하기 위해 진정한 보구의 이름을 외치는 것.<br>
+                        진명개방을 하기 전까지 대부분의 보구들인 대체적으로 그냥 강력한 냉병기에 지나지 않지만 이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.<br>
+                        진명개방을 하기 위해서는 <span class="annotation-word" data-tooltip="두 손으로 보구를 들고 진명개방을 해야 한다든지 등.">선행조건</span>을 갖춰야 하는 경우도 있으며<br>
+                        무구의 이름과 진명개방의 명칭이 일치하는 경우.<br>
+                        무구의 이름과 진명개방이 일치하지 않는 경우 등<br>
+                        진명개방의 방식도 여러가지가 있다.
+                    </p>
                 </div>
             </div>
         </section>
@@ -518,7 +550,13 @@
             <div class="detail-right-box">
                 <h2 class="description-title">브로큰 판타즘이란?</h2>
                 <div class="description-content">
-                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                    <span class="description-quote" id="bfTrigger">"브로큰 판타즘!"</span>
+                    <span class="description-quote-author">-제 5차 성배전쟁 서번트</span>
+                    <p style="margin-top: 12px;">
+                        보구의 특수한 사용법.<br>
+                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술. 이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
+                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라 원형은 유지된다. 하지만 마력이 사라졌기에 곧 소멸한다.
+                    </p>
                 </div>
             </div>
         </section>
@@ -537,16 +575,20 @@
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
-    <!-- [오디오 컨트롤러 및 워터마크] -->
+    <!-- [마스터 오디오 통합 제어 모듈 및 워터마크] -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
-                <span class="volume-label">SFX</span>
-                <input type="range" id="seSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
+                <span class="volume-label">MASTER</span>
+                <input type="range" id="masterSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.5">
             </div>
             <div class="volume-control-box">
                 <span class="volume-label">BGM</span>
                 <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.4">
+            </div>
+            <div class="volume-control-box">
+                <span class="volume-label">SFX</span>
+                <input type="range" id="seSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.1">
             </div>
             <div class="volume-control-box">
                 <span class="volume-label">VOICE</span>
@@ -556,15 +598,14 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
-    <!-- [자바스크립트 모듈] -->
+    <!-- [시스템 코어 프로세서] -->
     <script>
         let isTransitioning = false;
         let isKeywordLocked = false;
         let isTutorialActive = false;
+        let currentScale = 1.0; 
         let tutState = { seq: 0, step: 0 };
-        let activeHighlightElements = [];
 
-        // [방사형 매트릭스 좌표 재계산 적용]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -595,6 +636,7 @@
                 localStorage.removeItem('tut_seq4');
                 localStorage.removeItem('tut_seq5');
                 localStorage.removeItem('tut_seq6');
+                localStorage.removeItem('fate_class_cutscene');
             }
         })();
 
@@ -622,7 +664,13 @@
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
             const anneSfx = document.getElementById('anneSfx');
+            const blockSfx = document.getElementById('blockSfx');
+            const unlockSfx = document.getElementById('unlockSfx');
+            const bfEmiyaSfx = document.getElementById('bfEmiyaSfx');
+            const jinmExcarSfx = document.getElementById('jinmExcarSfx');
+            const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
 
+            const masterSlider = document.getElementById('masterSlider');
             const volumeSlider = document.getElementById('volumeSlider');
             const seSlider = document.getElementById('seSlider');
             const voiceSlider = document.getElementById('voiceSlider');
@@ -648,37 +696,31 @@
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
 
-            volumeSlider.addEventListener('input', function() { 
-                const targetVol = parseFloat(this.value);
-                if (bgmMain) bgmMain.volume = targetVol;
-                if (bgmTheme2) bgmTheme2.volume = targetVol * 0.7; 
-            });
+            function getMasterVol() { return parseFloat(masterSlider.value); }
 
-            seSlider.addEventListener('input', function() {
-                if (pstSfx) pstSfx.volume = parseFloat(this.value);
-                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(this.value) * 4.0);
-                if (noshinSfx) noshinSfx.volume = parseFloat(this.value);
-                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(this.value) * 4.5);
-                if (anneSfx) anneSfx.volume = parseFloat(this.value);
-            });
+            function applyLiveVolumes() {
+                const mVol = getMasterVol();
+                if (bgmMain) bgmMain.volume = parseFloat(volumeSlider.value) * mVol;
+                if (bgmTheme2) bgmTheme2.volume = parseFloat(volumeSlider.value) * 0.7 * mVol;
+            }
 
-            voiceSlider.addEventListener('input', function() { 
-                const voiceVol = Math.min(1.0, parseFloat(this.value) * 1.2);
-                if (kotomineSfx) kotomineSfx.volume = voiceVol; 
-                if (kiritsuguSfx) kiritsuguSfx.volume = voiceVol;
-                if (kiritsuguYongSfx) kiritsuguYongSfx.volume = voiceVol;
-                if (yongSfx) yongSfx.volume = voiceVol;
-                if (fateVoice) fateVoice.volume = voiceVol * 0.45;
-            });
+            masterSlider.addEventListener('input', applyLiveVolumes);
+            volumeSlider.addEventListener('input', applyLiveVolumes);
 
             seSlider.addEventListener('change', function() {
                 if (pstSfx) { 
-                    pstSfx.pause(); 
-                    pstSfx.currentTime = 0; 
-                    const p = pstSfx.play();
-                    if (p !== undefined) p.catch(()=>{}); 
+                    pstSfx.pause(); pstSfx.currentTime = 0; 
+                    pstSfx.volume = parseFloat(seSlider.value) * getMasterVol();
+                    pstSfx.play().catch(()=>{}); 
                 }
             });
+
+            function playSfx(audioObj, volMult = 1.0) {
+                if (!audioObj) return;
+                audioObj.pause(); audioObj.currentTime = 0;
+                audioObj.volume = Math.min(1.0, parseFloat(seSlider.value) * volMult * getMasterVol());
+                audioObj.play().catch(()=>{});
+            }
 
             function fadeAudioOut(audioEl, duration = 1200) {
                 if (!audioEl || audioEl.paused) return;
@@ -700,13 +742,12 @@
                 }, stepTime);
             }
 
-            function fadeAudioIn(audioEl, targetVol, duration = 1000) {
+            function fadeAudioIn(audioEl, targetBaseVol, duration = 1000) {
                 if (!audioEl) return;
                 audioEl.volume = 0;
+                const targetVol = targetBaseVol * getMasterVol();
                 const playPromise = audioEl.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(()=>{});
-                }
+                if (playPromise !== undefined) playPromise.catch(()=>{});
                 const steps = 20;
                 const stepTime = duration / steps;
                 const volStep = targetVol / steps;
@@ -725,16 +766,14 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
                         const playPromise = audio.play();
                         if (playPromise !== undefined) {
                             playPromise.then(() => {
-                                audio.pause();
-                                audio.currentTime = 0;
-                                audio.volume = originalVol;
+                                audio.pause(); audio.currentTime = 0; audio.volume = originalVol;
                             }).catch(() => {});
                         }
                     }
@@ -754,7 +793,7 @@
                         if (!target.classList.contains('glow-fade-out')) target.classList.add('glow-fade-out');
                         if (audioObj) {
                             audioObj.pause(); audioObj.currentTime = 0;
-                            audioObj.volume = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                            audioObj.volume = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * getMasterVol());
                             audioObj.play().catch(err => console.log(err));
                         }
                     }
@@ -764,202 +803,80 @@
                 triggerPlay('#kiritsuguTrigger', kiritsuguSfx);
                 triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx);
                 triggerPlay('#yongTrigger', yongSfx);
+                triggerPlay('#bfTrigger', bfEmiyaSfx);
+                triggerPlay('#jinmTrigger', jinmExcarSfx);
+                triggerPlay('#suvsoTrigger', suvsoFsfSfx);
             });
 
-            function playAnneSfx() {
-                if (anneSfx) {
-                    anneSfx.pause();
-                    anneSfx.volume = parseFloat(seSlider.value);
-                    anneSfx.currentTime = 0;
-                    const p = anneSfx.play();
-                    if (p !== undefined) p.catch(()=>{});
-                }
-            }
-
-            function positionArrow(targetEl) {
-                const arrow = document.getElementById('tutorialArrow');
-                const rect = targetEl.getBoundingClientRect();
-                arrow.style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
-                arrow.style.top = (rect.top - 65) + 'px';
-            }
-
-            function applyHighlights(els, forceColor = null) {
-                const currentEls = els instanceof NodeList || Array.isArray(els) ? Array.from(els) : (els ? [els] : []);
-                
-                activeHighlightElements.forEach(el => {
-                    if (!currentEls.includes(el)) {
-                        el.classList.remove('highlight-element');
-                        el.classList.remove('highlight-text');
-                        el.classList.remove('highlight-btn');
-                        el.classList.remove('highlight-box');
-                        el.style.color = '';
-                    }
-                });
-                
-                currentEls.forEach(el => {
-                    if (el) {
-                        el.classList.add('highlight-element');
-                        if (forceColor) el.style.color = forceColor;
-                        if (el.classList.contains('interactive-keyword') || el.classList.contains('annotation-word') || el.classList.contains('description-quote') || el.classList.contains('detail-sub-label')) {
-                            el.classList.add('highlight-text');
-                        } else if (el.classList.contains('tab-item-btn')) {
-                            el.classList.add('highlight-btn');
-                        } else if (el.classList.contains('detail-right-box')) {
-                            el.classList.add('highlight-box');
-                        }
-                    }
-                });
-                
-                activeHighlightElements = currentEls;
-            }
-
             function endTutorial() {
-                document.querySelectorAll('.highlight-element').forEach(el => {
-                    el.classList.remove('highlight-element', 'highlight-text', 'highlight-btn', 'highlight-box', 'pulse-guide');
-                    el.style.color = '';
-                });
                 document.getElementById('tutorialArrow').classList.remove('active');
-                activeHighlightElements = [];
-                
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
                 isTutorialActive = false;
             }
 
-            function showTutorialGuide(text, btnText, callback, highlightEls, isSungbwarTab = false, forceColor = null) {
+            function showTutorialGuide(text, btnText, callback, highlightEls, isSungbwarTab = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
-                
                 guide.innerHTML = `<p>${text}</p>`;
                 const btnWrapper = document.createElement('div');
                 btnWrapper.className = 'guide-btn-wrapper';
                 const btn = document.createElement('button');
                 btn.className = 'guide-btn';
                 btn.innerText = btnText;
-                
-                // 단일 실행 잠금 (Debounce Protocol)
                 btn.onclick = (e) => { 
                     e.preventDefault();
                     if (btn.classList.contains('locked')) return;
                     btn.classList.add('locked');
                     if (callback) callback(); 
                 };
-                
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
-                if (isSungbwarTab) {
-                    guide.style.bottom = 'auto';
-                    guide.style.top = '10%';
-                } else {
-                    guide.style.top = 'auto';
-                    guide.style.bottom = '10%';
-                }
+                if (isSungbwarTab) { guide.style.bottom = 'auto'; guide.style.top = '10%'; } 
+                else { guide.style.top = 'auto'; guide.style.bottom = '10%'; }
                 
                 document.body.classList.add('tut-active');
-                applyHighlights(highlightEls, forceColor);
-                
                 overlay.classList.add('active');
                 guide.classList.add('active');
             }
 
             function runTutStep() {
                 if (tutState.seq === 1) { 
-                    if (tutState.step === 0) {
-                        showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
-                    } else if (tutState.step === 1) {
-                        showTutorialGuide("이곳은 개념들을 나열해두는 장소 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
-                    } else if (tutState.step === 2) {
-                        const target = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
-                        showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 3) {
-                        const target = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
-                        showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq1', 'done');
-                            endTutorial(); 
-                        }, target);
-                    }
+                    if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 1) { showTutorialGuide("이곳은 개념들을 나열해두는 장소 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 2) { showTutorialGuide("개념의 상세 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 3) { showTutorialGuide("단어를 눌러 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq1', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 2) { 
-                    if (tutState.step === 0) {
-                        showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); });
-                    } else if (tutState.step === 1) {
-                        const target = document.querySelector('#tabDetail_sung .detail-img');
-                        showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 2) {
-                        const target = document.querySelector('#tabDetail_sung .detail-sub-label');
-                        showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 3) {
-                        const target = document.querySelector('#tabDetail_sung .detail-right-box');
-                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 4) {
-                        const target = document.querySelector('#tabDetail_sung .description-quote');
-                        showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 5) {
-                        const target = document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]');
-                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념 입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target, false, '#ffd700');
-                    } else if (tutState.step === 6) {
-                        const target = document.querySelector('#tabDetail_sung .interactive-keyword[data-key="sungbwar"]');
-                        showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq2', 'done');
-                            endTutorial();
-                        }, target, false, '#ffd700');
-                    }
+                    if (tutState.step === 0) { showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 1) { showTutorialGuide("이곳에는 개념과 관련된 사진이 배치되는 장소이고", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 2) { showTutorialGuide("사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 3) { showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 4) { showTutorialGuide("이것은 어록 부분입니다. 이곳을 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 5) { showTutorialGuide("이렇게 노란색으로 표시된 단어는 신규개념 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 6) { showTutorialGuide("단어를 누르는 것으로 신규개념을 획득합니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 3) { 
-                    if (tutState.step === 0) {
-                        const target = document.querySelector('.word-toast-item');
-                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, target);
-                    } else if (tutState.step === 1) {
+                    if (tutState.step === 0) { showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 1) { 
                         const backBtn = document.querySelector('.fate-back-btn');
                         document.getElementById('tutorialArrow').classList.add('active');
-                        positionArrow(backBtn);
-                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq3', 'done');
-                            endTutorial();
-                        }, backBtn);
+                        const rect = backBtn.getBoundingClientRect();
+                        document.getElementById('tutorialArrow').style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
+                        document.getElementById('tutorialArrow').style.top = (rect.top - 65) + 'px';
+                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
                     }
                 } else if (tutState.seq === 4) { 
-                    if (tutState.step === 0) {
-                        const target = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
-                        showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq4', 'done');
-                            endTutorial();
-                        }, target, true); 
-                    }
+                    if (tutState.step === 0) { showTutorialGuide("방금 획득한 신규개념인 성배전쟁이 선택지로써 추가 되었습니다. 성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 5) { 
-                    if (tutState.step === 0) {
-                        showTutorialGuide("이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq5', 'done');
-                            endTutorial(); 
-                        });
-                    }
+                    if (tutState.step === 0) { showTutorialGuide("이런식으로 신규개념을 획득하여 설정들을 알아가봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq5', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 6) { 
-                    if (tutState.step === 0) {
-                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
-                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box')); 
-                        showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
-                    } else if (tutState.step === 1) {
-                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
-                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box'));
-                        showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playAnneSfx(); tutState.step++; runTutStep(); }, targets);
-                    } else if (tutState.step === 2) {
-                        const targets = Array.from(document.querySelectorAll('.tab-detail-view.show .annotation-word'));
-                        targets.push(document.querySelector('.tab-detail-view.show .detail-right-box'));
-                        showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { 
-                            playAnneSfx(); 
-                            localStorage.setItem('tut_seq6', 'done');
-                            endTutorial();
-                        }, targets);
-                    }
+                    if (tutState.step === 0) { showTutorialGuide("이것은 주석이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    else if (tutState.step === 2) { showTutorialGuide("단어를 누르면 주석이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 주석이 다시 접혀집니다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }); }
                 }
             }
 
-            // 동적 조사 연산 및 다중 알림 렌더링 스레드
             function getParticle(word) {
                 const cleanWord = word.replace(/<[^>]*>?/gm, '');
                 const lastChar = cleanWord.charCodeAt(cleanWord.length - 1);
@@ -970,55 +887,35 @@
             function spawnAcquireToast(wordText) {
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
-                const particle = getParticle(wordText);
-                toastEl.innerHTML = `—${wordText}${particle} 획득했습니다—`;
-                
+                toastEl.innerHTML = `—${wordText}${getParticle(wordText)} 획득했습니다—`;
                 acquireToastContainer.prepend(toastEl);
                 
-                if (isTutorialActive && tutState.seq === 3) {
-                    toastEl.classList.add('highlight-element');
-                    document.getElementById('tutorialOverlay').classList.add('active');
-                } else if (!isTutorialActive && !localStorage.getItem('tut_seq3')) {
-                    document.getElementById('tutorialOverlay').classList.add('active');
-                }
+                if (isTutorialActive && tutState.seq === 3) { document.getElementById('tutorialOverlay').classList.add('active'); } 
+                else if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.add('active'); }
                 
                 setTimeout(() => {
                     toastEl.style.opacity = '0';
-                    if (!isTutorialActive && !localStorage.getItem('tut_seq3')) {
-                        document.getElementById('tutorialOverlay').classList.remove('active');
-                    }
-                    setTimeout(() => {
-                        if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
-                    }, 500);
+                    if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.remove('active'); }
+                    setTimeout(() => { if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl); }, 500);
                 }, 1500);
             }
 
             document.addEventListener('click', function(e) {
                 if (isTutorialActive) return;
-                
                 const keyTarget = e.target.closest('.interactive-keyword');
                 if (keyTarget) {
                     e.preventDefault();
-                    
                     if (isKeywordLocked) {
-                        if (noshinSfx) {
-                            noshinSfx.pause();
-                            noshinSfx.volume = parseFloat(seSlider.value);
-                            noshinSfx.currentTime = 0;
-                            const p = noshinSfx.play();
-                            if (p !== undefined) p.catch(()=>{});
-                        }
+                        playSfx(noshinSfx, 1.0);
                         keyTarget.classList.remove('keyword-error');
                         void keyTarget.offsetWidth; 
                         keyTarget.classList.add('keyword-error');
                         setTimeout(() => keyTarget.classList.remove('keyword-error'), 300);
                         return;
                     }
-
                     if (!keyTarget.classList.contains('clicked')) {
                         isKeywordLocked = true;
-                        setTimeout(() => { isKeywordLocked = false; }, 500); // 잠금시간 0.5초로 감소
-                        
+                        setTimeout(() => { isKeywordLocked = false; }, 500);
                         keyTarget.classList.add('clicked');
                         const id = keyTarget.getAttribute('data-key');
                         
@@ -1028,22 +925,11 @@
                             orderList.push(id);
                             sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
                         }
-
-                        if (wordSfx) {
-                            wordSfx.pause();
-                            wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
-                            wordSfx.currentTime = 0;
-                            const p = wordSfx.play();
-                            if (p !== undefined) p.catch(()=>{});
-                        }
+                        playSfx(wordSfx, 4.0);
                         spawnAcquireToast(keyTarget.innerHTML.trim());
 
                         if (!localStorage.getItem('tut_seq3')) {
-                            setTimeout(() => {
-                                isTutorialActive = true;
-                                tutState = { seq: 3, step: 0 };
-                                runTutStep();
-                            }, 500);
+                            setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500);
                         }
                     }
                 }
@@ -1052,53 +938,34 @@
             const detailKeywords = document.querySelectorAll('.interactive-keyword');
             detailKeywords.forEach(kw => {
                 const kwId = kw.getAttribute('data-key');
-                if (sessionStorage.getItem('fate_concept_' + kwId) === 'true') {
-                    kw.classList.add('clicked');
-                }
+                if (sessionStorage.getItem('fate_concept_' + kwId) === 'true') { kw.classList.add('clicked'); }
             });
 
             let activeAnnotation = null;
             document.addEventListener('click', function(e) {
-                if (isTutorialActive && localStorage.getItem('tut_seq6') === 'done') {
-                    endTutorial();
-                }
+                if (isTutorialActive && localStorage.getItem('tut_seq6') === 'done') endTutorial();
 
                 const annoTarget = e.target.closest('.annotation-word');
                 const tooltipBox = document.getElementById('tooltipBox');
-                
                 if (annoTarget) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    if (activeAnnotation === annoTarget) {
-                        tooltipBox.classList.remove('show');
-                        activeAnnotation = null;
-                        return;
-                    }
+                    e.preventDefault(); e.stopPropagation();
+                    if (activeAnnotation === annoTarget) { tooltipBox.classList.remove('show'); activeAnnotation = null; return; }
                     activeAnnotation = annoTarget;
                     tooltipBox.innerHTML = annoTarget.getAttribute('data-tooltip') || '추가예정';
                     tooltipBox.classList.add('show');
                     
                     const rect = annoTarget.getBoundingClientRect();
                     const boxRect = tooltipBox.getBoundingClientRect();
-                    
-                    let top = rect.bottom + 15;
-                    let left = rect.left + (rect.width / 2) - (boxRect.width / 2);
-                    
-                    tooltipBox.style.top = top + 'px';
-                    tooltipBox.style.left = left + 'px';
+                    tooltipBox.style.top = (rect.bottom + 15) + 'px';
+                    tooltipBox.style.left = (rect.left + (rect.width / 2) - (boxRect.width / 2)) + 'px';
                 } else {
-                    if (activeAnnotation) {
-                        tooltipBox.classList.remove('show');
-                        activeAnnotation = null;
-                    }
+                    if (activeAnnotation) { tooltipBox.classList.remove('show'); activeAnnotation = null; }
                 }
             });
 
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
-                
                 const oldFocused = document.querySelector('.tree-node-box.focused');
                 if (oldFocused) oldFocused.classList.remove('focused');
                 
@@ -1110,7 +977,53 @@
                 currentFocusedId = targetId;
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
-                treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh)`;
+                treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh) scale(${currentScale})`;
+            }
+
+            function triggerClassCutscene(nodeBox, btnObj) {
+                isTransitioning = true;
+                currentScale = 1.6;
+                focusToNode('class');
+                playSfx(unlockSfx, 4.0);
+                
+                btnObj.classList.add('unlock-vibrate');
+                
+                const numParticles = 40;
+                const rect = btnObj.getBoundingClientRect();
+                for (let i = 0; i < numParticles; i++) {
+                    const pt = document.createElement('div');
+                    pt.className = 'dust-particle';
+                    pt.style.backgroundColor = Math.random() > 0.5 ? '#000000' : '#444444';
+                    pt.style.left = '50%';
+                    pt.style.top = '50%';
+                    
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 50 + Math.random() * 200;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+                    
+                    nodeBox.appendChild(pt);
+                    
+                    setTimeout(() => {
+                        pt.style.transform = `translate(${dx}px, ${dy}px) scale(${Math.random() * 2 + 1})`;
+                        pt.style.opacity = '0';
+                    }, 50);
+                    
+                    setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 1600);
+                }
+
+                setTimeout(() => {
+                    btnObj.classList.remove('unlock-vibrate', 'class-locked-btn');
+                    btnObj.classList.add('color-gold');
+                    btnObj.innerHTML = CONCEPT_REGISTRY['class'].name;
+                    localStorage.setItem('fate_class_cutscene', 'true');
+                    
+                    setTimeout(() => {
+                        currentScale = 1.0;
+                        focusToNode('class');
+                        isTransitioning = false;
+                    }, 800);
+                }, 1800);
             }
 
             function renderTreeGrid(resetFocus = false) {
@@ -1129,7 +1042,6 @@
                     if (parentId && unlockedIds.includes(parentId)) {
                         const pNode = CONCEPT_REGISTRY[parentId];
                         const cNode = CONCEPT_REGISTRY[id];
-
                         const px = (pNode.x / 100) * svgW;
                         const py = (pNode.y / 100) * svgH;
                         const cx = (cNode.x / 100) * svgW;
@@ -1139,82 +1051,53 @@
                         const linearGrad = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
                         linearGrad.setAttribute('id', gradId);
                         linearGrad.setAttribute('gradientUnits', 'userSpaceOnUse');
-                        linearGrad.setAttribute('x1', pNode.x + '%');
-                        linearGrad.setAttribute('y1', pNode.y + '%');
-                        linearGrad.setAttribute('x2', cNode.x + '%');
-                        linearGrad.setAttribute('y2', cNode.y + '%');
+                        linearGrad.setAttribute('x1', pNode.x + '%'); linearGrad.setAttribute('y1', pNode.y + '%');
+                        linearGrad.setAttribute('x2', cNode.x + '%'); linearGrad.setAttribute('y2', cNode.y + '%');
 
-                        const stopsData = [
-                            { offset: '0%', opacity: '0' },
-                            { offset: '22%', opacity: '1' },
-                            { offset: '78%', opacity: '1' },
-                            { offset: '100%', opacity: '0' }
-                        ];
-
+                        const stopsData = [ { offset: '0%', opacity: '0' }, { offset: '22%', opacity: '1' }, { offset: '78%', opacity: '1' }, { offset: '100%', opacity: '0' } ];
                         stopsData.forEach(data => {
                             const stop = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
-                            stop.setAttribute('offset', data.offset);
-                            stop.setAttribute('stop-color', '#8B0000');
-                            stop.setAttribute('stop-opacity', data.opacity);
+                            stop.setAttribute('offset', data.offset); stop.setAttribute('stop-color', '#8B0000'); stop.setAttribute('stop-opacity', data.opacity);
                             linearGrad.appendChild(stop);
                         });
                         svgDefs.appendChild(linearGrad);
 
-                        let branchObj;
+                        let branchObj, hitboxObj;
+                        const midX = (px + cx) / 2;
                         if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                            branchObj.setAttribute('class', 'tree-branch-line');
-                            const midX = (px + cx) / 2;
-                            branchObj.setAttribute('d', `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`);
+                            hitboxObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                            const dStr = `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`;
+                            branchObj.setAttribute('d', dStr); hitboxObj.setAttribute('d', dStr);
                         } else {
                             branchObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                            branchObj.setAttribute('class', 'tree-branch-line');
-                            branchObj.setAttribute('x1', px);
-                            branchObj.setAttribute('y1', py);
-                            branchObj.setAttribute('x2', cx);
-                            branchObj.setAttribute('y2', cy);
-                        }
-                        branchObj.setAttribute('stroke', `url(#${gradId})`);
-                        
-                        let hitboxObj;
-                        if (pNode.x !== cNode.x && pNode.y !== cNode.y) {
-                            hitboxObj = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                            hitboxObj.setAttribute('class', 'tree-branch-hitbox');
-                            const midX = (px + cx) / 2;
-                            hitboxObj.setAttribute('d', `M ${px} ${py} C ${midX} ${py}, ${midX} ${cy}, ${cx} ${cy}`);
-                        } else {
                             hitboxObj = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                            hitboxObj.setAttribute('class', 'tree-branch-hitbox');
-                            hitboxObj.setAttribute('x1', px);
-                            hitboxObj.setAttribute('y1', py);
-                            hitboxObj.setAttribute('x2', cx);
-                            hitboxObj.setAttribute('y2', cy);
+                            branchObj.setAttribute('x1', px); branchObj.setAttribute('y1', py); branchObj.setAttribute('x2', cx); branchObj.setAttribute('y2', cy);
+                            hitboxObj.setAttribute('x1', px); hitboxObj.setAttribute('y1', py); hitboxObj.setAttribute('x2', cx); hitboxObj.setAttribute('y2', cy);
                         }
+                        branchObj.setAttribute('class', 'tree-branch-line'); branchObj.setAttribute('stroke', `url(#${gradId})`);
+                        hitboxObj.setAttribute('class', 'tree-branch-hitbox');
 
                         hitboxObj.onclick = () => {
                             if (isTransitioning || isTutorialActive) return;
                             const nextFocus = (currentFocusedId === parentId) ? id : parentId;
-                            if (moveSfx) {
-                                moveSfx.pause();
-                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                                moveSfx.currentTime = 0.15;
-                                const p = moveSfx.play();
-                                if (p !== undefined) p.catch(()=>{});
-                            }
+                            playSfx(moveSfx, 4.5);
                             isTransitioning = true;
                             focusToNode(nextFocus);
                             setTimeout(() => { isTransitioning = false; }, 800);
                         };
 
-                        treeSvg.appendChild(branchObj);
-                        treeSvg.appendChild(hitboxObj);
+                        treeSvg.appendChild(branchObj); treeSvg.appendChild(hitboxObj);
                         setTimeout(() => { branchObj.classList.add('drawn'); hitboxObj.classList.add('drawn'); }, 100);
                     }
                 });
 
+                const isYongVisited = sessionStorage.getItem('fate_concept_yong') === 'true';
+                const isBoguVisited = sessionStorage.getItem('fate_concept_bogu') === 'true';
+                const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
+
                 unlockedIds.forEach(id => {
                     const nodeInfo = CONCEPT_REGISTRY[id];
-
                     const nodeBox = document.createElement('div');
                     nodeBox.className = 'tree-node-box';
                     nodeBox.style.left = nodeInfo.x + '%';
@@ -1224,25 +1107,22 @@
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
                     
-                    if (id === 'sung' || id === 'jinbang' || id === 'bogu') {
-                        btn.classList.add('yellow-glow-btn');
-                    } else if (id === 'sungbwar') {
-                        btn.classList.add('red-glow-btn');
-                    } else if (id === 'ma' || id === 'master' || id === 'class') {
-                        btn.classList.add('white-glow-btn');
-                        if (id === 'class') btn.classList.add('color-gold');
-                    } else if (id === 'rj') {
-                        btn.classList.add('brightred-glow-btn');
-                    } else if (id === 'suv' || id === 'yong') {
-                        btn.classList.add('skyblue-glow-btn');
-                    } else if (id === 'gam') {
-                        btn.classList.add('black-glow-btn');
-                    } else if (id === 'sso') {
-                        btn.classList.add('blue-glow-btn');
-                        btn.classList.add('btn-sso');
-                    } else if (id === 'brokenf') {
-                        btn.classList.add('pink-glow-btn');
-                        btn.classList.add('btn-sso');
+                    let isLockedClass = false;
+
+                    if (id === 'sung' || id === 'jinbang' || id === 'bogu') { btn.classList.add('yellow-glow-btn'); } 
+                    else if (id === 'sungbwar') { btn.classList.add('red-glow-btn'); } 
+                    else if (id === 'ma' || id === 'master') { btn.classList.add('white-glow-btn'); } 
+                    else if (id === 'rj') { btn.classList.add('brightred-glow-btn'); } 
+                    else if (id === 'suv' || id === 'yong') { btn.classList.add('skyblue-glow-btn'); } 
+                    else if (id === 'gam') { btn.classList.add('black-glow-btn'); } 
+                    else if (id === 'sso' || id === 'brokenf') { btn.classList.add(id === 'sso' ? 'blue-glow-btn' : 'pink-glow-btn', 'btn-sso'); }
+                    else if (id === 'class') {
+                        if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
+                            btn.classList.add('class-locked-btn');
+                            isLockedClass = true;
+                        } else {
+                            btn.classList.add('white-glow-btn', 'color-gold');
+                        }
                     }
 
                     btn.innerHTML = nodeInfo.name;
@@ -1250,27 +1130,27 @@
                     btn.onclick = () => {
                         if (isTransitioning) return;
                         
+                        if (isLockedClass) {
+                            playSfx(blockSfx, 3.0);
+                            btn.classList.remove('class-locked-shake');
+                            void btn.offsetWidth; 
+                            btn.classList.add('class-locked-shake');
+                            
+                            isTransitioning = true;
+                            focusToNode(id);
+                            setTimeout(() => { btn.classList.remove('class-locked-shake'); isTransitioning = false; }, 500);
+                            return;
+                        }
+
                         if (currentFocusedId !== id) {
-                            if (moveSfx) {
-                                moveSfx.pause();
-                                moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
-                                moveSfx.currentTime = 0.15;
-                                const p = moveSfx.play();
-                                if (p !== undefined) p.catch(()=>{});
-                            }
+                            playSfx(moveSfx, 4.5);
                             isTransitioning = true;
                             focusToNode(id);
                             setTimeout(() => { isTransitioning = false; }, 800);
                         } else {
                             isTransitioning = true;
                             history.pushState({ stage: 3, id: id }, '', '');
-                            if (pstSfx) { 
-                                pstSfx.pause();
-                                pstSfx.volume = parseFloat(seSlider.value);
-                                pstSfx.currentTime = 0; 
-                                const p = pstSfx.play();
-                                if (p !== undefined) p.catch(()=>{}); 
-                            }
+                            playSfx(pstSfx, 1.0);
                             
                             currentActiveTabId = id;
                             treeSelectionContainer.classList.remove('show');
@@ -1291,23 +1171,12 @@
                                     isTransitioning = false;
 
                                     if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
-                                        isTutorialActive = true;
-                                        tutState = { seq: 2, step: 0 };
-                                        setTimeout(() => runTutStep(), 1000);
+                                        isTutorialActive = true; tutState = { seq: 2, step: 0 }; setTimeout(() => runTutStep(), 1000);
                                     } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
-                                        isTutorialActive = true;
-                                        tutState = { seq: 5, step: 0 };
-                                        setTimeout(() => runTutStep(), 1000);
+                                        isTutorialActive = true; tutState = { seq: 5, step: 0 }; setTimeout(() => runTutStep(), 1000);
                                     }
-
                                     if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
-                                        setTimeout(() => {
-                                            if(!isTutorialActive) {
-                                                isTutorialActive = true;
-                                                tutState = { seq: 6, step: 0 };
-                                                runTutStep();
-                                            }
-                                        }, 1000); 
+                                        setTimeout(() => { if(!isTutorialActive) { isTutorialActive = true; tutState = { seq: 6, step: 0 }; runTutStep(); } }, 1000); 
                                     }
                                 }, 600);
                             }
@@ -1318,75 +1187,45 @@
                     treeNodesBox.appendChild(nodeBox);
                 });
 
-                if (resetFocus) {
-                    requestAnimationFrame(() => focusToNode(currentFocusedId));
-                }
+                if (resetFocus) requestAnimationFrame(() => focusToNode(currentFocusedId));
             }
 
             let lastWidth = window.innerWidth;
             window.addEventListener('resize', () => {
                 if (window.innerWidth !== lastWidth) {
                     lastWidth = window.innerWidth;
-                    if (currentStage === 2 && !isTransitioning) {
-                        renderTreeGrid(false);
-                    }
+                    if (currentStage === 2 && !isTransitioning) renderTreeGrid(false);
                 }
             });
 
             pressStartBtn.addEventListener('click', function() {
                 if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
-
                 history.pushState({ stage: 2 }, '', '');
-                
-                if (pstSfx) {
-                    pstSfx.pause();
-                    pstSfx.volume = parseFloat(seSlider.value);
-                    pstSfx.currentTime = 0;
-                    const p = pstSfx.play();
-                    if (p !== undefined) p.catch(()=>{});
-                }
-
+                playSfx(pstSfx, 1.0);
                 fadeAudioOut(bgmMain, 1200);
 
                 pressStartWrapper.classList.add('flash-exit');
-                setTimeout(() => {
-                    grailWrapper.classList.add('slow-fade-out');
-                    subTitle.classList.add('slow-fade-out');
-                    introNotice.classList.add('slow-fade-out');
-                }, 250);
+                setTimeout(() => { grailWrapper.classList.add('slow-fade-out'); subTitle.classList.add('slow-fade-out'); introNotice.classList.add('slow-fade-out'); }, 250);
 
                 setTimeout(() => {
                     renderTreeGrid(true); 
                     treeSelectionContainer.classList.add('show');
                     backBtnWrapper.classList.add('show');
                     currentStage = 2;
-
-                    if (bgmTheme2) {
-                        fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value) * 0.7, 1000);
-                    }
+                    fadeAudioIn(bgmTheme2, parseFloat(volumeSlider.value) * 0.7, 1000);
                     isTransitioning = false;
 
                     if (!localStorage.getItem('tut_seq1')) {
-                        setTimeout(() => {
-                            isTutorialActive = true;
-                            tutState = { seq: 1, step: 0 };
-                            runTutStep();
-                        }, 1000);
+                        setTimeout(() => { isTutorialActive = true; tutState = { seq: 1, step: 0 }; runTutStep(); }, 1000);
                     }
                 }, 1450);
             });
 
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
-
-                if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
-                    history.back(); 
-                    return;
-                }
-                
+                if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
-
                 history.back(); 
             });
 
@@ -1398,12 +1237,7 @@
             });
 
             window.addEventListener('popstate', function(event) {
-                if (isTutorialActive) {
-                    history.pushState({ stage: currentStage, id: currentActiveTabId }, '', '');
-                    endTutorial(); 
-                    return;
-                }
-
+                if (isTutorialActive) { history.pushState({ stage: currentStage, id: currentActiveTabId }, '', ''); endTutorial(); return; }
                 if (isTransitioning) return;
                 isTransitioning = true;
 
@@ -1411,24 +1245,17 @@
                 if (kiritsuguSfx) { kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0; }
                 if (kiritsuguYongSfx) { kiritsuguYongSfx.pause(); kiritsuguYongSfx.currentTime = 0; }
                 if (yongSfx) { yongSfx.pause(); yongSfx.currentTime = 0; }
+                if (bfEmiyaSfx) { bfEmiyaSfx.pause(); bfEmiyaSfx.currentTime = 0; }
+                if (jinmExcarSfx) { jinmExcarSfx.pause(); jinmExcarSfx.currentTime = 0; }
+                if (suvsoFsfSfx) { suvsoFsfSfx.pause(); suvsoFsfSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
                     currentStage = 2;
-                    if (pstSfx) { 
-                        pstSfx.pause();
-                        pstSfx.volume = parseFloat(seSlider.value);
-                        pstSfx.currentTime = 0; 
-                        const p = pstSfx.play();
-                        if (p !== undefined) p.catch(()=>{}); 
-                    }
-
+                    playSfx(pstSfx, 1.0);
                     const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                     if (activeView) activeView.classList.remove('show');
-                    
-                    const tooltipBox = document.getElementById('tooltipBox');
-                    tooltipBox.classList.remove('show');
+                    document.getElementById('tooltipBox').classList.remove('show');
                     activeAnnotation = null;
-
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
 
@@ -1438,121 +1265,80 @@
                         currentActiveTabId = null;
                         isTransitioning = false;
 
-                        if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
+                        // 컷신 호출 논리 연산
+                        const isYongVisited = sessionStorage.getItem('fate_concept_yong') === 'true';
+                        const isBoguVisited = sessionStorage.getItem('fate_concept_bogu') === 'true';
+                        const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
+                        const classNodeBox = document.querySelector(`.tree-node-box[data-id="class"]`);
+
+                        if (isYongVisited && isBoguVisited && !isClassCutsceneDone && classNodeBox) {
                             setTimeout(() => {
-                                isTutorialActive = true;
-                                tutState = { seq: 4, step: 0 };
-                                runTutStep();
-                            }, 800);
+                                const classBtn = classNodeBox.querySelector('.tab-item-btn');
+                                triggerClassCutscene(classNodeBox, classBtn);
+                            }, 500);
+                        } else if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) {
+                            setTimeout(() => { isTutorialActive = true; tutState = { seq: 4, step: 0 }; runTutStep(); }, 800);
                         }
                     }, 600); 
 
                 } else if (currentStage === 2) {
                     currentStage = 1;
-                    if (pstSfx) { 
-                        pstSfx.pause();
-                        pstSfx.volume = parseFloat(seSlider.value);
-                        pstSfx.currentTime = 0; 
-                        const p = pstSfx.play();
-                        if (p !== undefined) p.catch(()=>{}); 
-                    }
-
+                    playSfx(pstSfx, 1.0);
                     fadeAudioOut(bgmTheme2, 600);
-
                     treeSelectionContainer.classList.remove('show');
                     backBtnWrapper.classList.remove('show');
 
                     setTimeout(() => {
-                        grailWrapper.classList.remove('slow-fade-out');
-                        subTitle.classList.remove('slow-fade-out');
-                        introNotice.classList.remove('slow-fade-out');
-
-                        if (bgmMain) {
-                            fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1200);
-                        }
+                        grailWrapper.classList.remove('slow-fade-out'); subTitle.classList.remove('slow-fade-out'); introNotice.classList.remove('slow-fade-out');
+                        fadeAudioIn(bgmMain, parseFloat(volumeSlider.value), 1200);
                     }, 600);
 
                     setTimeout(() => {
                         pressStartWrapper.classList.remove('flash-exit');
-                        pressStartWrapper.style.opacity = '0';
-                        void pressStartWrapper.offsetWidth;
-                        pressStartWrapper.style.opacity = '1';
-                        pressStartWrapper.style.visibility = 'visible';
-                        pressStartWrapper.style.pointerEvents = 'auto';
+                        pressStartWrapper.style.opacity = '0'; void pressStartWrapper.offsetWidth;
+                        pressStartWrapper.style.opacity = '1'; pressStartWrapper.style.visibility = 'visible'; pressStartWrapper.style.pointerEvents = 'auto';
                         isTransitioning = false;
                     }, 1400);
-                } else {
-                    isTransitioning = false;
-                }
+                } else { isTransitioning = false; }
             });
 
             startBtn.addEventListener('click', function() {
                 if (isTransitioning || isTutorialActive) return;
                 isTransitioning = true;
 
-                // [튜토리얼 우회 모듈 동작 검증]
                 if (tutDisableCheck && tutDisableCheck.checked) {
-                    localStorage.setItem('tut_seq1', 'done');
-                    localStorage.setItem('tut_seq2', 'done');
-                    localStorage.setItem('tut_seq3', 'done');
-                    localStorage.setItem('tut_seq4', 'done');
-                    localStorage.setItem('tut_seq5', 'done');
-                    localStorage.setItem('tut_seq6', 'done');
+                    ['tut_seq1', 'tut_seq2', 'tut_seq3', 'tut_seq4', 'tut_seq5', 'tut_seq6'].forEach(seq => localStorage.setItem(seq, 'done'));
                 }
 
                 unlockAllAudioPolicy(); 
                 
-                const btnContainer = document.getElementById('btnContainer');
-                const bgLayer = document.getElementById('bgLayer');
-                const dustEffect = document.getElementById('dustEffect');
-                const controlsGroup = document.getElementById('controlsGroup');
-
-                btnContainer.classList.add('hide');
+                document.getElementById('btnContainer').classList.add('hide');
 
                 if (bgmMain) {
-                    bgmMain.volume = parseFloat(volumeSlider.value);
-                    setTimeout(() => { 
-                        const p = bgmMain.play();
-                        if (p !== undefined) p.catch(()=>{});
-                    }, 700);
+                    bgmMain.volume = parseFloat(volumeSlider.value) * getMasterVol();
+                    setTimeout(() => { bgmMain.play().catch(()=>{}); }, 700);
                 }
 
-                if (wordSfx) wordSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.0);
-                if (noshinSfx) noshinSfx.volume = parseFloat(seSlider.value);
-                
-                const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
-                if (kotomineSfx) kotomineSfx.volume = baseVoiceVol;
-                if (kiritsuguSfx) kiritsuguSfx.volume = baseVoiceVol;
-                if (kiritsuguYongSfx) kiritsuguYongSfx.volume = baseVoiceVol;
-                if (yongSfx) yongSfx.volume = baseVoiceVol;
-                if (moveSfx) moveSfx.volume = Math.min(1, parseFloat(seSlider.value) * 4.5);
+                const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * getMasterVol());
                 if (fateVoice) fateVoice.volume = baseVoiceVol * 0.45;
-                if (anneSfx) anneSfx.volume = parseFloat(seSlider.value);
 
-                setTimeout(() => bgLayer.classList.add('active'), 300);
-                setTimeout(() => dustEffect.classList.add('active'), 500);
+                setTimeout(() => document.getElementById('bgLayer').classList.add('active'), 300);
+                setTimeout(() => document.getElementById('dustEffect').classList.add('active'), 500);
                 
                 setTimeout(() => {
                     grailWrapper.classList.add('animate');
                     if (!sessionStorage.getItem('fate_voice_played')) {
                         sessionStorage.setItem('fate_voice_played', 'true');
-                        if (fateVoice) {
-                            fateVoice.currentTime = 0;
-                            const p = fateVoice.play();
-                            if (p !== undefined) p.catch(e => console.log(e));
-                        }
+                        if (fateVoice) { fateVoice.currentTime = 0; fateVoice.play().catch(e => console.log(e)); }
                     }
                 }, 1400);
 
                 setTimeout(() => {
-                    subTitle.classList.add('animate');
-                    introNotice.classList.add('animate');
-                    controlsGroup.classList.add('animate');
+                    subTitle.classList.add('animate'); introNotice.classList.add('animate'); document.getElementById('controlsGroup').classList.add('animate');
                 }, 2200);
 
                 setTimeout(() => {
-                    pressStartWrapper.classList.add('animate');
-                    isTransitioning = false;
+                    pressStartWrapper.classList.add('animate'); isTransitioning = false;
                 }, 3000);
             });
         });
