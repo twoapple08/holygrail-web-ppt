@@ -27,10 +27,20 @@
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [토스트 알림 시스템] 다중 알림 시 동일 좌표에서 독립적으로 렌더링되도록 절대좌표(Absolute) 설정 */
+        /* [토스트 알림 시스템] 다중 알림 시 동일 좌표에서 독립적으로 렌더링되도록 절대좌표(Absolute) 설정 및 튜토리얼 일시정지 제어 */
         #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
-        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-overlap-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
-        @keyframes float-overlap-fade { 0% { transform: translate(-50%, 20px); opacity: 0; } 20% { transform: translate(-50%, 0px); opacity: 1; } 80% { transform: translate(-50%, 0px); opacity: 1; } 100% { transform: translate(-50%, -20px); opacity: 0; } }
+        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
+        
+        /* 튜토리얼 진입 시 CSS 애니메이션 강제 정지 연산 */
+        body.tut-active .word-toast-item { animation-play-state: paused !important; }
+
+        /* 알림 모션 정지 구간 삭제: 지속 이동 및 동시 페이드 연산 */
+        @keyframes float-continuous-fade { 
+            0% { transform: translate(-50%, 30px); opacity: 0; } 
+            20% { transform: translate(-50%, 15px); opacity: 1; } 
+            80% { transform: translate(-50%, -15px); opacity: 1; } 
+            100% { transform: translate(-50%, -30px); opacity: 0; } 
+        }
 
         /* [상호작용 텍스트 객체] 신규개념 획득 클릭 유도 */
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
@@ -87,7 +97,7 @@
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         
         /* 컷신 카메라 이동의 정밀 연산을 위해 transform-origin 동적 제어 알고리즘 주입 구역 */
-        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; }
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; transform-origin: center center; }
         
         /* SVG 선분이 뷰포트를 넘어가도 절단되지 않도록 overflow: visible 강제 */
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
@@ -364,7 +374,7 @@
                         성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
                         성배전쟁에 참여한 것만으로도 마술사는<br>
                         마술사로서 큰 명예를 얻는다.<br>
-                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 단체.
+                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
                     </p>
                 </div>
             </div>
@@ -636,7 +646,7 @@
             'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 }
         };
 
-        // 새로고침 시 데이터 초기화 및 방문 캐시 메모리 누수 방지(Total Overhaul) 루틴
+        // 새로고침 시 데이터 초기화 및 논리 버그 유발 방문 캐시 100% 영구 소멸 루틴
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -646,7 +656,7 @@
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
                 
-                // 오작동을 유발하던 탭 방문 기록 캐시 100% 강제 삭제
+                // 버그 픽스: 세션 잔존 데이터 클리어 연산
                 sessionStorage.removeItem('fate_visited_yong');
                 sessionStorage.removeItem('fate_visited_bogu');
                 
@@ -716,6 +726,7 @@
             let currentActiveTabId = null;
             let currentFocusedId = 'sung'; 
 
+            // 통합 마스터 볼륨 스케일 연산 모듈
             function getMasterVol() { return parseFloat(masterSlider.value); }
 
             function applyLiveVolumes() {
@@ -805,7 +816,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // 어록 인터랙션 클릭 리스너 (요구된 특정 오디오에 35% 증폭 파라미터 적용)
+            // 어록 인터랙션 클릭 리스너 (요구된 특정 오디오에 35% 증폭 파라미터 적용 완료)
             document.addEventListener('click', function(e) {
                 const triggerPlay = (targetId, audioObj, boost = 1.0) => {
                     const target = e.target.closest(targetId);
@@ -900,7 +911,6 @@
                 }
             }
 
-            // 동적 조사 연산 및 다중 알림 렌더링 스레드
             function getParticle(word) {
                 const cleanWord = word.replace(/<[^>]*>?/gm, '');
                 const lastChar = cleanWord.charCodeAt(cleanWord.length - 1);
@@ -908,6 +918,7 @@
                 return (lastChar - 0xAC00) % 28 > 0 ? '을' : '를';
             }
 
+            // 동적 조사 연산 및 다중 알림 렌더링 스레드 (타이머 동기화 제어)
             function spawnAcquireToast(wordText) {
                 const toastEl = document.createElement('div');
                 toastEl.className = 'word-toast-item';
@@ -917,11 +928,25 @@
                 if (isTutorialActive && tutState.seq === 3) { document.getElementById('tutorialOverlay').classList.add('active'); } 
                 else if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.add('active'); }
                 
-                setTimeout(() => {
-                    toastEl.style.opacity = '0';
-                    if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.remove('active'); }
-                    setTimeout(() => { if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl); }, 500);
-                }, 1500);
+                let remaining = 1500;
+                let lastTime = Date.now();
+                
+                // 알림의 소멸 및 튜토리얼 락오프 일시 정지를 100% 동기화하기 위한 재설계 타이머
+                function tick() {
+                    let now = Date.now();
+                    if (!isTutorialActive) {
+                        remaining -= (now - lastTime);
+                    }
+                    lastTime = now;
+                    
+                    if (remaining <= 0) {
+                        if (toastEl && toastEl.parentNode) toastEl.parentNode.removeChild(toastEl);
+                        if (!isTutorialActive && !localStorage.getItem('tut_seq3')) { document.getElementById('tutorialOverlay').classList.remove('active'); }
+                    } else {
+                        requestAnimationFrame(tick);
+                    }
+                }
+                requestAnimationFrame(tick);
             }
 
             // 신규 개념 상호작용 클릭 리스너
@@ -1019,9 +1044,9 @@
                 
                 // 화면 줌 인(800ms) 완료 후 컷신 본격 가동
                 setTimeout(() => {
-                    playSfx(unlockSfx, 2.8); // 70% 볼륨 감소 적용
+                    playSfx(unlockSfx, 2.0); // 70% 볼륨 감소 적용 완료 (기존 2.8 -> 2.0 하향)
                     
-                    // 오버레이 페이드 아웃 및 베이스 텍스트의 동시 출현 가동
+                    // 오버레이 페이드 아웃 및 밑에 깔린 베이스 텍스트의 동시 출현 가동
                     btnObj.classList.add('is-unlocking'); 
                     
                     const numParticles = 80;
@@ -1145,8 +1170,6 @@
 
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
-                    
-                    let isLockedClass = false;
 
                     if (id === 'sung' || id === 'jinbang' || id === 'bogu') { btn.classList.add('yellow-glow-btn'); } 
                     else if (id === 'sungbwar') { btn.classList.add('red-glow-btn'); } 
@@ -1156,13 +1179,12 @@
                     else if (id === 'gam') { btn.classList.add('black-glow-btn'); } 
                     else if (id === 'sso' || id === 'brokenf') { btn.classList.add(id === 'sso' ? 'blue-glow-btn' : 'pink-glow-btn', 'btn-sso'); }
                     
-                    // 클래스 탭 이중 레이어 렌더링 분기점
+                    // 클래스 탭 이중 레이어 렌더링 분기점 및 DOM 클래스 주입
                     if (id === 'class') {
                         btn.classList.add('white-glow-btn', 'color-gold'); // 기본 베이스 스타일 항상 유지
                         if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
                             btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
                             btn.classList.add('is-locked');
-                            isLockedClass = true;
                         } else {
                             btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span>`;
                         }
@@ -1173,7 +1195,8 @@
                     btn.onclick = () => {
                         if (isTransitioning) return;
                         
-                        if (isLockedClass) {
+                        // 클로저 변수 버그 방어를 위한 DOM 클래스 직접 스캔
+                        if (btn.classList.contains('is-locked')) {
                             playSfx(blockSfx, 3.0);
                             btn.classList.remove('class-locked-shake');
                             void btn.offsetWidth; 
@@ -1271,11 +1294,20 @@
                 }, 1450);
             });
 
-            // 뒤로가기 버튼
+            // 뒤로가기 버튼 연산
             backBtn.addEventListener('click', function() { 
                 if (isTransitioning) return;
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
+
+                // 모바일 환경 오디오 정책 돌파를 위한 선행 묵음 재생
+                const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
+                const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
+                const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
+                if (currentStage === 3 && isYongVisited && isBoguVisited && !isClassCutsceneDone) {
+                    if(unlockSfx) { unlockSfx.volume = 0; unlockSfx.play().catch(()=>{}); }
+                }
+
                 history.back(); 
             });
 
@@ -1326,6 +1358,8 @@
                         const classNodeBox = document.querySelector(`.tree-node-box[data-id="class"]`);
 
                         if (isYongVisited && isBoguVisited && !isClassCutsceneDone && classNodeBox) {
+                            // 모바일 환경 오디오 컨텍스트 유지를 위한 사전 묵음 재생 2차 방어
+                            if(unlockSfx) { unlockSfx.volume = 0; unlockSfx.play().catch(()=>{}); }
                             setTimeout(() => {
                                 const classBtn = classNodeBox.querySelector('.tab-item-btn');
                                 triggerClassCutscene(classNodeBox, classBtn, savedTabId);
