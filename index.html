@@ -19,12 +19,12 @@
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         /* [알림] 토스트 컨테이너 */
-        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; transition: filter 0.5s ease; }
-        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.8s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: flex; flex-direction: column-reverse; align-items: center; gap: 10px; transition: all 0.5s ease; }
+        .word-toast-item { color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-fade-smooth 1.8s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; transition: all 0.5s ease; }
         @keyframes float-fade-smooth { 0% { transform: translateY(35px); opacity: 0; } 50% { transform: translateY(0px); opacity: 1; } 100% { transform: translateY(-35px); opacity: 0; } }
 
         /* [신규개념] 키워드 */
-        .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: color 0.3s ease, text-shadow 0.3s ease, filter 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
+        .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
@@ -32,12 +32,12 @@
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
         /* [설명창] 성우 어록 */
-        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: color 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease, filter 0.5s ease; pointer-events: auto; }
+        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
         @keyframes quote-gentle-glow { 0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); } 100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); } }
 
-        rt { font-size: 0.45em; letter-spacing: 0px; }
+        rt { font-size: 0.45em; letter-spacing: 0px; transition: all 0.5s ease; }
 
         /* --- [시작하기 창] --- */
         .start-btn-container { position: absolute; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s; }
@@ -71,23 +71,19 @@
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1); }
-        
-        /* 뷰박스 절단 한계점 해제 속성 */
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
         
         .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: opacity 0.6s ease-in-out, filter 0.5s ease; }
-        
-        /* 곡선 전용 투명 히트박스 두께 대폭 상향 */
         .tree-branch-hitbox { stroke-width: 50px; stroke: transparent; fill: none; cursor: pointer; pointer-events: stroke; opacity: 0; transition: opacity 0.6s ease-in-out; }
         
         .tree-branch-line.drawn { opacity: 1; }
         .tree-branch-hitbox.drawn { opacity: 1; }
 
-        .tree-node-box { position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: transform 0.3s ease, filter 0.5s ease; }
+        .tree-node-box { position: absolute; transform: translate(-50%, -50%); z-index: 34; display: flex; justify-content: center; align-items: center; transition: all 0.5s ease; }
         .tree-node-box.focused { z-index: 35; }
         .tree-node-box.focused .tab-item-btn { transform: scale(1.15); }
 
-        .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease; position: relative; }
+        .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
@@ -104,15 +100,17 @@
         .black-glow-btn:hover { text-shadow: 0 0 50px rgba(80, 80, 80, 1), 0 0 25px rgba(150, 150, 150, 0.9); transform: scale(1.05); }
         .blue-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 35px rgba(50, 50, 255, 0.95), 0 0 15px rgba(0, 0, 200, 0.8); }
         .blue-glow-btn:hover { text-shadow: 0 0 50px rgba(100, 100, 255, 1), 0 0 25px rgba(255, 255, 255, 0.9); transform: scale(1.05); }
+        .pink-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 35px rgba(255, 105, 180, 0.95), 0 0 15px rgba(255, 20, 147, 0.8); }
+        .pink-glow-btn:hover { text-shadow: 0 0 50px rgba(255, 105, 180, 1), 0 0 25px rgba(255, 255, 255, 0.9); transform: scale(1.05); }
         .color-gold { color: #ffd700 !important; }
 
         /* --- [설명창] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
 
-        #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class { justify-content: center; padding-left: 0; gap: 0; }
+        #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { justify-content: center; padding-left: 0; gap: 0; }
 
-        .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: filter 0.5s ease; }
+        .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
         .title-yellow { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .title-red { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8); }
@@ -121,9 +119,10 @@
         .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8); }
         .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
         .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
+        .title-pink { color: #ff66b2; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 40px rgba(255, 105, 180, 0.8); }
 
-        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: filter 0.5s ease; }
-        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: filter 0.5s ease; }
+        .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
+        .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; }
 
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
@@ -131,32 +130,36 @@
         .img-glow-suv { filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.7)); } 
         .img-glow-rj { filter: drop-shadow(0 0 30px rgba(255, 0, 0, 0.7)); } 
         .img-glow-gam { filter: drop-shadow(0 0 30px rgba(40, 40, 40, 0.9)); } 
+        .img-glow-lightgreen { filter: drop-shadow(0 0 30px rgba(100, 255, 100, 0.7)); }
+        .img-glow-blue { filter: drop-shadow(0 0 30px rgba(50, 100, 255, 0.7)); }
 
-        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: filter 0.5s ease; }
+        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: transform 0.5s ease, font-size 0.5s ease, filter 0.5s ease; }
 
-        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: filter 0.5s ease; }
+        .detail-right-box { flex: 1; max-width: 750px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: all 0.5s ease; }
 
-        .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; }
-        .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: color 0.5s, text-shadow 0.5s; }
-        .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; }
+        .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; transition: all 0.5s ease; }
+        .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: all 0.5s ease; }
+        .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; transition: all 0.5s ease; }
 
         /* --- [주석효과 (툴팁) 모듈] --- */
-        .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: text-decoration-color 0.3s, filter 0.5s ease; pointer-events: auto; z-index: 100; }
+        .annotation-word { text-decoration: underline solid rgba(255, 255, 255, 0.8); text-underline-offset: 6px; cursor: pointer; position: relative; animation: anno-pulse 2s infinite; transition: all 0.5s ease; pointer-events: auto; z-index: 100; }
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
         #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; }
         #tooltipBox.show { display: block; opacity: 1; }
-        
-        /* 툴팁 화살표 정상화 (항상 위를 가리킴) */
+        /* 툴팁 화살표 수정 (무조건 위를 가리키게 하여 단어 하단 배치에 대응) */
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
         /* --- [가이드 튜토리얼 마스킹 및 전용 조명 엔진] --- */
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
         body.tut-active .tree-selection-container.show, body.tut-active .tab-detail-view.show, body.tut-active .bottom-left-controls.show, body.tut-active #acquireToastContainer { z-index: 9001 !important; }
 
+        /* 비타겟 요소 강제 딤 처리 */
+        .tut-dimming { opacity: 0.2 !important; filter: brightness(0.4) !important; pointer-events: none !important; transition: all 0.5s ease; }
+
         /* 타겟 요소 독립 조명 (명도 복원, 클릭 강제 차단) */
-        .highlight-element { z-index: 9010 !important; position: relative !important; opacity: 1 !important; filter: none !important; pointer-events: none !important; transition: all 0.3s; }
+        .highlight-element { z-index: 9010 !important; position: relative !important; opacity: 1 !important; filter: none !important; pointer-events: none !important; transition: all 0.5s ease; }
         
         /* 상세창 테두리 강조 전용 */
         .detail-right-box.highlight-element { box-shadow: 0 0 30px rgba(255,255,255,0.7), inset 0 0 15px rgba(255,255,255,0.4) !important; background: rgba(30, 10, 10, 0.95) !important; }
@@ -164,46 +167,35 @@
         /* 이미지 강조 전용 패딩 확장 */
         img.highlight-element { filter: drop-shadow(0 0 40px rgba(255,255,255,0.9)) !important; transform: scale(1.05); background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; z-index: 9010 !important; }
         
+        /* 서브 라벨 강조 스케일업 */
+        .detail-sub-label.highlight-element { transform: scale(1.15); font-size: 1.1rem; color: #ffffff; }
+
         /* 텍스트(주석/신규개념) 및 탭 버튼 강조 전용 */
-        .highlight-text { background-color: rgba(255,255,255,0.2) !important; padding: 2px 8px !important; border-radius: 6px !important; box-shadow: 0 0 15px rgba(255,255,255,0.6) !important; color: #ffffff !important; display: inline-block; }
+        .highlight-text { background-color: rgba(255,255,255,0.2) !important; padding: 2px 8px !important; border-radius: 6px !important; box-shadow: 0 0 15px rgba(255,255,255,0.6) !important; color: #ffffff !important; display: inline-block; transition: all 0.5s ease; }
         .interactive-keyword.highlight-text { color: #ffd700 !important; text-shadow: 0 0 15px rgba(255, 215, 0, 1) !important; }
         .annotation-word.highlight-text { color: #ffffff !important; text-shadow: 0 0 15px rgba(255, 255, 255, 1) !important; text-decoration-color: #ffffff !important; }
-        .tab-item-btn.highlight-btn { box-shadow: 0 0 35px rgba(255,255,255,0.7) !important; border-radius: 15px; z-index: 9010 !important; }
-        
-        /* 튜토리얼 딤(Dimming) 효과 */
-        body.tut-active .tree-node-box:not(:has(.highlight-btn)),
-        body.tut-active .tree-branch-line,
-        body.tut-active .tree-branch-hitbox,
-        body.tut-active .detail-left-box > *:not(.highlight-element),
-        body.tut-active .static-tab-title:not(.highlight-element),
-        body.tut-active .fate-back-btn:not(.highlight-element),
-        body.tut-active .word-toast-item:not(.highlight-element) {
-            filter: brightness(0.2); pointer-events: none; transition: filter 0.5s ease;
-        }
-
-        body.tut-active .detail-right-box:not(.highlight-element) { background: rgba(15, 0, 0, 0.2) !important; border-color: rgba(160, 0, 0, 0.2) !important; box-shadow: none !important; transition: all 0.5s ease; }
-        body.tut-active .detail-right-box:not(.highlight-element) *:not(.highlight-element):not(.highlight-text):not(.highlight-box) { color: rgba(255, 255, 255, 0.2) !important; text-shadow: none !important; transition: color 0.5s ease, text-shadow 0.5s ease; }
-        body.tut-active .detail-right-box:not(.highlight-element) .interactive-keyword:not(.highlight-text) { color: rgba(255, 215, 0, 0.2) !important; }
+        .tab-item-btn.highlight-btn { box-shadow: 0 0 35px rgba(255,255,255,0.7) !important; border-radius: 15px; z-index: 9010 !important; transition: all 0.5s ease; }
 
         /* 상호작용 대기 상태 펄스 애니메이션 (이 때만 클릭 허용) */
         @keyframes pulse-glow { 0% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255,255,255,1)); } 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255,255,255,0.8)); } }
         .pulse-guide { animation: pulse-glow 1.5s infinite !important; pointer-events: auto !important; z-index: 9015 !important; position: relative; }
         
+        /* 튜토리얼 중 뒤로가기 버튼 호버 반응 강제 무효화 */
         body.tut-active .fate-back-btn:hover { transform: none !important; color: #c0c0c8 !important; background: rgba(20, 0, 0, 0.6) !important; border-color: rgba(160, 0, 0, 0.7) !important; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4) !important; }
-
-        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
-        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
-        #tutorialArrow.active { opacity: 1; visibility: visible; }
-        @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 9000; opacity: 0; visibility: hidden; transition: opacity 0.5s; pointer-events: none; }
         
-        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
+        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; transition: opacity 0.5s, top 0.5s, bottom 0.5s; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
         .guide-btn { padding: 10px 30px; background: #444; color: #fff; border: 2px solid #aaa; cursor: pointer; font-family: 'Song Myung', serif; font-size: 1.15rem; transition: background 0.3s; }
         .guide-btn:hover { background: #777; }
+
+        /* 뒤로가기 화살표 Y축 강하 애니메이션 */
+        #tutorialArrow { position: fixed; font-size: 4rem; color: #ffffff; text-shadow: 0 0 20px rgba(255, 255, 255, 0.9); z-index: 9015; opacity: 0; visibility: hidden; animation: point-down 1s infinite alternate ease-in-out; pointer-events: none; }
+        #tutorialArrow.active { opacity: 1; visibility: visible; }
+        @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
         /* --- [뒤로가기 버튼] --- */
         .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 60; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
@@ -250,6 +242,7 @@
     <audio id="kotomineSfx" src="voice/voice-holygrail-kotomine.mp3" preload="auto"></audio>
     <audio id="kiritsuguSfx" src="voice/voice-sungbwar-kiritsugu.mp3" preload="auto"></audio>
     <audio id="tosarinSfx" src="voice/voice-juju-tosarin.mp3" preload="auto"></audio>
+    <audio id="yongSfx" src="voice/voice-yong-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
     <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
@@ -282,6 +275,7 @@
     <!-- [탭 선택 창] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
+            <!-- 뷰박스 제거를 통해 선 두께 롤백 100% 보장 -->
             <svg class="tree-svg-layer" id="treeSvg"></svg>
             <div id="treeNodesBox"></div>
         </div>
@@ -294,7 +288,7 @@
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
-                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img">
+                <img src="img/img-holygrail.png" alt="Holy Grail Detail" class="detail-img img-glow-default">
                 <span class="detail-sub-label">소(小)성배</span>
             </div>
             <div class="detail-right-box">
@@ -329,7 +323,7 @@
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
-                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img">
+                <img src="img/img-ma-tosarin.png" alt="Tohsaka Rin" class="detail-img img-glow-ma">
                 <span class="detail-sub-label">제 5차 성배전쟁 참여 마술사 토오사카 린</span>
             </div>
             <div class="detail-right-box">
@@ -355,7 +349,7 @@
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
-                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img">
+                <img src="img/img-juju-kiri.png" alt="Command Spell" class="detail-img img-glow-rj">
                 <span class="detail-sub-label">제 4차 성배전쟁 참여자 에미야 키리츠구의 령주</span>
             </div>
             <div class="detail-right-box">
@@ -384,7 +378,7 @@
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
-                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img">
+                <img src="img/img-mas-kiri.png" alt="Emiya Kiritsugu" class="detail-img img-glow-master">
                 <span class="detail-sub-label">제 4차 성배전쟁 참가자 에미야 키리츠구</span>
             </div>
             <div class="detail-right-box">
@@ -409,7 +403,7 @@
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
-                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img">
+                <img src="img/img-suv-alto.png" alt="Servant" class="detail-img img-glow-suv">
                 <span class="detail-sub-label">제 5차 성배전쟁에서 소환된 서번트</span>
             </div>
             <div class="detail-right-box">
@@ -424,7 +418,7 @@
                         성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
                         서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중<br>
                         적성에 맞는 클래스가 부여된다.<br>
-                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu">보구</span>나 <span class="annotation-word" data-tooltip="추가예정">스킬</span>을 가지고 있으며<br>
+                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="추가예정">스킬</span>을 가지고 있으며<br>
                         한 개체 개체가 어마무시한 힘을 가지고 있다.
                     </p>
                 </div>
@@ -435,7 +429,7 @@
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
-                <img src="img/img-gam-kotomine.png" alt="Kotomine Kirei" class="detail-img">
+                <img src="img/img-gam-kotomine.png" alt="Kotomine Kirei" class="detail-img img-glow-gam">
                 <span class="detail-sub-label">제 5차 성배전쟁 감독관 코토미네 키레이</span>
             </div>
             <div class="detail-right-box">
@@ -469,19 +463,60 @@
         <!-- [신규] 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
+            <div class="detail-left-box">
+                <img src="img-yong-ja.png" alt="영령의 좌" class="detail-img img-glow-blue">
+                <span class="detail-sub-label">영령의 좌</span>
+            </div>
             <div class="detail-right-box">
                 <h2 class="description-title">영령이란?</h2>
                 <div class="description-content">
-                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                    <span class="description-quote" id="yongTrigger">"인간이건동물이건기계이건, 위대한 공적을 남기면 윤회의 사슬에서 벗어나서, 한 단계 위로 승화된다는 이야기, 들은 적 없어? 영령이라는 건 그런 녀석들이야. 요컨대 숭앙되고 받들어져서, 의사적인 신이 된 자들이겠지."</span>
+                    <span class="description-quote-author">-토오사카 린</span>
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        영웅의 영혼.<br>
+                        각 시대에 이루기 힘든 비범한 위업을 이룬 영웅(英雄)이 죽은 뒤에도 전설로 남아 사람들의 신앙 이 모여서 되는 존재.<br>
+                        영혼이 <span class="annotation-word" data-tooltip="추가예정">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.<br>
+                        기본적으로 생전의 기억을 가지고 있다.
+                    </p>
                 </div>
             </div>
         </section>
 
         <!-- [신규] 보구 -->
         <section class="tab-detail-view" id="tabDetail_bogu">
-            <div class="static-tab-title title-yellow">보구</div>
+            <div class="static-tab-title title-yellow"><ruby>보구<rt>노블 판타즘</rt></ruby></div>
+            <div class="detail-left-box">
+                <img src="img/img-bogu-excar.png" alt="Excalibur" class="detail-img img-glow-lightgreen">
+            </div>
             <div class="detail-right-box">
-                <h2 class="description-title">보구란?</h2>
+                <h2 class="description-title"><ruby>보구<rt>노블 판타즘</rt></ruby>란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; line-height: 1.8;">
+                        고귀한 환상, 신비의 결정, 신비의 구현.<br>
+                        생전에 사용하던 무구나 기술, 혹은 유명한 일화를 구현한 것들이며, 소환된 영령들이 가지는 필살기, 혹은 비장의 수라고도 할 수 있다. 일반적으로는 서번트 하나에 <ruby>보구<rt>노블 판타즘</rt></ruby>도 하나씩이지만, 개개인의 차이는 있어 2~3개나 5개가 넘는 경우까지 있다.<br>
+                        <ruby>보구<rt>노블 판타즘</rt></ruby>를 이용하는 방법중 하나로 <span class="interactive-keyword" data-key="brokenf">브로큰 판타즘</span>이 있다.<br>
+                        <ruby>보구<rt>노블 판타즘</rt></ruby>는 <span class="interactive-keyword" data-key="jinbang">진명개방</span>을 함으로써 본성능을 발휘한다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [신규] 진명개방 -->
+        <section class="tab-detail-view" id="tabDetail_jinbang">
+            <div class="static-tab-title title-yellow">진명개방</div>
+            <div class="detail-right-box">
+                <h2 class="description-title">진명개방이란?</h2>
+                <div class="description-content">
+                    <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- [신규] 브로큰 판타즘 -->
+        <section class="tab-detail-view" id="tabDetail_brokenf">
+            <div class="static-tab-title title-pink">브로큰 판타즘</div>
+            <div class="detail-right-box">
+                <h2 class="description-title">브로큰 판타즘이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px; color: rgba(200, 190, 175, 0.4); font-style: italic;">[내용 추후 기재 예정]</p>
                 </div>
@@ -533,15 +568,17 @@
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
-            'ma': { name: '마술사', parent: 'sungbwar', x: 20, y: 45 }, 
-            'gam': { name: '감독관', parent: 'sungbwar', x: 80, y: 45 }, 
-            'master': { name: '마스터', parent: 'sungbwar', x: 29, y: 66 }, 
+            'ma': { name: '마술사', parent: 'sungbwar', x: 18, y: 45 }, 
+            'gam': { name: '감독관', parent: 'sungbwar', x: 82, y: 45 }, 
+            'master': { name: '마스터', parent: 'sungbwar', x: 26, y: 75 }, 
             'suv': { name: '서번트', parent: 'sungbwar', x: 50, y: 75 }, 
-            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 71, y: 66 },
-            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 66 },
-            'yong': { name: '영령', parent: 'suv', x: 26, y: 95 },
+            'rj': { name: '<ruby>령주<rt>令呪</rt></ruby>', parent: 'sungbwar', x: 74, y: 75 },
+            'sso': { name: '서번트<br>소환 의식', parent: 'master', x: 8, y: 75 },
+            'yong': { name: '영령', parent: 'suv', x: 26, y: 105 },
             'class': { name: '클래스', parent: 'suv', x: 50, y: 105 },
-            'bogu': { name: '보구', parent: 'suv', x: 74, y: 95 }
+            'bogu': { name: '<ruby>보구<rt>노블 판타즘</rt></ruby>', parent: 'suv', x: 74, y: 105 },
+            'jinbang': { name: '진명개방', parent: 'bogu', x: 92, y: 105 },
+            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 88, y: 115 }
         };
 
         (function checkReloadAndReset() {
@@ -581,6 +618,7 @@
             const kotomineSfx = document.getElementById('kotomineSfx');
             const kiritsuguSfx = document.getElementById('kiritsuguSfx');
             const tosarinSfx = document.getElementById('tosarinSfx');
+            const yongSfx = document.getElementById('yongSfx');
             const moveSfx = document.getElementById('moveSfx');
             const fateVoice = document.getElementById('fateVoice');
             const anneSfx = document.getElementById('anneSfx');
@@ -629,6 +667,7 @@
                 if (kotomineSfx) kotomineSfx.volume = voiceVol; 
                 if (kiritsuguSfx) kiritsuguSfx.volume = voiceVol;
                 if (tosarinSfx) tosarinSfx.volume = voiceVol;
+                if (yongSfx) yongSfx.volume = voiceVol;
                 if (fateVoice) fateVoice.volume = voiceVol * 0.45;
             });
 
@@ -686,7 +725,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, tosarinSfx, yongSfx, moveSfx, fateVoice, anneSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -712,65 +751,66 @@
 
                 const kotomineTarget = e.target.closest('#kotomineTrigger');
                 if (kotomineTarget) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (!kotomineTarget.classList.contains('glow-fade-out')) {
-                        kotomineTarget.classList.add('glow-fade-out');
-                    }
+                    e.preventDefault(); e.stopPropagation();
+                    if (!kotomineTarget.classList.contains('glow-fade-out')) { kotomineTarget.classList.add('glow-fade-out'); }
                     if (kotomineSfx) {
-                        kotomineSfx.pause();
-                        kotomineSfx.currentTime = 0;
+                        kotomineSfx.pause(); kotomineSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                         kotomineSfx.volume = voiceVol;
                         kotomineSfx.play().catch(err => {
                             const fb = new Audio('voice/voice-holygrail-kotomine.mp3');
-                            fb.volume = voiceVol;
-                            fb.play().catch(ex => console.log('Kotomine fallback error:', ex));
+                            fb.volume = voiceVol; fb.play().catch(ex => console.log('Kotomine fallback error:', ex));
                         });
                     }
                 }
 
                 const kiritsuguTarget = e.target.closest('#kiritsuguTrigger');
                 if (kiritsuguTarget) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (!kiritsuguTarget.classList.contains('glow-fade-out')) {
-                        kiritsuguTarget.classList.add('glow-fade-out');
-                    }
+                    e.preventDefault(); e.stopPropagation();
+                    if (!kiritsuguTarget.classList.contains('glow-fade-out')) { kiritsuguTarget.classList.add('glow-fade-out'); }
                     if (kiritsuguSfx) {
-                        kiritsuguSfx.pause();
-                        kiritsuguSfx.currentTime = 0;
+                        kiritsuguSfx.pause(); kiritsuguSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                         kiritsuguSfx.volume = voiceVol;
                         kiritsuguSfx.play().catch(err => {
                             const fb = new Audio('voice/voice-sungbwar-kiritsugu.mp3');
-                            fb.volume = voiceVol;
-                            fb.play().catch(ex => console.log('Kiritsugu fallback error:', ex));
+                            fb.volume = voiceVol; fb.play().catch(ex => console.log('Kiritsugu fallback error:', ex));
                         });
                     }
                 }
                 
                 const tosarinTarget = e.target.closest('#tosarinTrigger');
                 if (tosarinTarget) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (!tosarinTarget.classList.contains('glow-fade-out')) {
-                        tosarinTarget.classList.add('glow-fade-out');
-                    }
+                    e.preventDefault(); e.stopPropagation();
+                    if (!tosarinTarget.classList.contains('glow-fade-out')) { tosarinTarget.classList.add('glow-fade-out'); }
                     if (tosarinSfx) {
-                        tosarinSfx.pause();
-                        tosarinSfx.currentTime = 0;
+                        tosarinSfx.pause(); tosarinSfx.currentTime = 0;
                         const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
                         tosarinSfx.volume = voiceVol;
                         tosarinSfx.play().catch(err => {
                             const fb = new Audio('voice/voice-juju-tosarin.mp3');
-                            fb.volume = voiceVol;
-                            fb.play().catch(ex => console.log('Tosarin fallback error:', ex));
+                            fb.volume = voiceVol; fb.play().catch(ex => console.log('Tosarin fallback error:', ex));
+                        });
+                    }
+                }
+
+                const yongTarget = e.target.closest('#yongTrigger');
+                if (yongTarget) {
+                    e.preventDefault(); e.stopPropagation();
+                    if (!yongTarget.classList.contains('glow-fade-out')) { yongTarget.classList.add('glow-fade-out'); }
+                    if (yongSfx) {
+                        yongSfx.pause(); yongSfx.currentTime = 0;
+                        const voiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2);
+                        yongSfx.volume = voiceVol;
+                        yongSfx.play().catch(err => {
+                            const fb = new Audio('voice/voice-yong-tosarin.mp3');
+                            fb.volume = voiceVol; fb.play().catch(ex => console.log('Yong fallback error:', ex));
                         });
                     }
                 }
             });
 
+            // [가이드 시스템 튜토리얼 렌더링 엔진]
             function playAnneSfx() {
                 if (anneSfx) {
                     anneSfx.pause();
@@ -784,11 +824,12 @@
             function positionArrow(targetEl) {
                 const arrow = document.getElementById('tutorialArrow');
                 const rect = targetEl.getBoundingClientRect();
+                // 위에서 아래를 가리키도록 Y축 상단 배치 (겹침 버그 소멸)
                 arrow.style.left = (rect.left + rect.width / 2 - 20) + 'px';
                 arrow.style.top = (rect.top - 65) + 'px';
             }
 
-            // [가이드 하이라이트 알고리즘 : 전역 딤(Dim) 제거 후 독립 마스킹 적용]
+            // 시각적 강조(하이라이트) 부여 함수 : 클래스 갱신 시 깜빡임 차단 적용
             function applyHighlights(els) {
                 const currentEls = els instanceof NodeList || Array.isArray(els) ? Array.from(els) : (els ? [els] : []);
                 
@@ -805,15 +846,23 @@
                 
                 currentEls.forEach(el => {
                     if (el) {
-                        el.classList.remove('tut-dimming');
+                        if (el.classList.contains('tut-dimming')) el.classList.remove('tut-dimming');
                         el.classList.add('highlight-element');
                         
+                        // 텍스트/버튼/박스 전용 추가 하이라이트 스타일링 분기
                         if (el.classList.contains('interactive-keyword') || el.classList.contains('annotation-word') || el.classList.contains('description-quote')) {
                             el.classList.add('highlight-text');
                         } else if (el.classList.contains('tab-item-btn')) {
                             el.classList.add('highlight-btn');
                         } else if (el.classList.contains('detail-right-box')) {
                             el.classList.add('highlight-box');
+                        }
+                        
+                        // 부모 태그 딤 연쇄 해제
+                        let parent = el.parentElement;
+                        while(parent && !parent.classList.contains('content-container') && parent.tagName !== 'BODY') {
+                            parent.classList.remove('tut-dimming');
+                            parent = parent.parentElement;
                         }
                     }
                 });
@@ -848,6 +897,7 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
+                // 안내창은 성배전쟁 탭 가이드를 제외하고 하단 고정
                 if (isSungbwarTab) {
                     guide.style.bottom = 'auto';
                     guide.style.top = '10%';
@@ -856,6 +906,7 @@
                     guide.style.bottom = '10%';
                 }
                 
+                // 최초 튜토리얼 딤 세팅
                 if(!document.body.classList.contains('tut-active')) {
                     document.querySelectorAll('.tree-node-box, .tree-branch-line, .tree-branch-hitbox, .detail-left-box > *, .detail-right-box, .static-tab-title, .fate-back-btn, .word-toast-item, .interactive-keyword, .description-quote, .annotation-word').forEach(el => {
                         el.classList.add('tut-dimming');
@@ -877,6 +928,7 @@
                         if (el) el.classList.add('pulse-guide');
                     });
                 }
+                // 화면 딤(어두움)은 유지하되 인터랙션은 풀어주기 위해 오버레이 제거
                 document.getElementById('tutorialOverlay').classList.remove('active');
                 isTutorialActive = false; 
             }
@@ -887,6 +939,7 @@
                 document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
                 isTutorialActive = false;
+                activeHighlightElements = [];
             }
 
             function runTutStep() {
@@ -953,7 +1006,7 @@
                             playAnneSfx(); 
                             localStorage.setItem('tut_seq4', 'done');
                             setWaitingAction(target);
-                        }, target, true); 
+                        }, target, true); // 성배전쟁만 상단 회피 허용
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) {
@@ -998,6 +1051,7 @@
                 toastEl.className = 'word-toast-item';
                 toastEl.innerHTML = `—${wordText}을(를) 획득했습니다—`;
                 
+                // 가이드 중 토스트가 발생하면 강조박스 자동할당
                 if (isTutorialActive && tutState.seq === 3) {
                     toastEl.classList.remove('tut-dimming');
                     toastEl.classList.add('highlight-element');
@@ -1030,6 +1084,7 @@
             }
 
             document.addEventListener('click', function(e) {
+                // 클릭 대상이 튜토리얼 펄스 대상이면 클릭 즉시 펄스 소거
                 if(e.target.classList.contains('pulse-guide')) {
                     e.target.classList.remove('pulse-guide');
                     document.getElementById('tutorialArrow').classList.remove('active');
@@ -1050,6 +1105,7 @@
                             const p = noshinSfx.play();
                             if (p !== undefined) p.catch(()=>{});
                         }
+                        // 방해 효과
                         keyTarget.classList.remove('keyword-error');
                         void keyTarget.offsetWidth; 
                         keyTarget.classList.add('keyword-error');
@@ -1116,6 +1172,7 @@
                     }
                     activeAnnotation = annoTarget;
                     tooltipBox.innerHTML = annoTarget.getAttribute('data-tooltip') || '추가예정';
+                    tooltipBox.classList.remove('bottom-arrow');
                     tooltipBox.classList.add('show');
                     
                     const rect = annoTarget.getBoundingClientRect();
@@ -1123,6 +1180,14 @@
                     
                     let top = rect.bottom + 15;
                     let left = rect.left + (rect.width / 2) - (boxRect.width / 2);
+                    
+                    // 툴팁 화살표 정상화 (무조건 단어 하단 배치, 위를 가리킴)
+                    if (top + boxRect.height > window.innerHeight) {
+                        top = Math.max(10, rect.top - boxRect.height - 15);
+                        tooltipBox.classList.add('bottom-arrow');
+                    } else {
+                        tooltipBox.classList.remove('bottom-arrow');
+                    }
                     
                     tooltipBox.style.top = top + 'px';
                     tooltipBox.style.left = left + 'px';
@@ -1266,7 +1331,7 @@
                     const btn = document.createElement('button');
                     btn.className = 'tab-item-btn';
                     
-                    if (id === 'sung' || id === 'bogu') {
+                    if (id === 'sung') {
                         btn.classList.add('yellow-glow-btn');
                     } else if (id === 'sungbwar') {
                         btn.classList.add('red-glow-btn');
@@ -1282,6 +1347,13 @@
                     } else if (id === 'sso') {
                         btn.classList.add('blue-glow-btn');
                         btn.classList.add('btn-sso');
+                    } else if (id === 'bogu') {
+                        btn.classList.add('yellow-glow-btn');
+                    } else if (id === 'jinbang') {
+                        btn.classList.add('yellow-glow-btn');
+                    } else if (id === 'brokenf') {
+                        btn.classList.add('pink-glow-btn');
+                        btn.classList.add('btn-sso');
                     }
 
                     btn.innerHTML = nodeInfo.name;
@@ -1290,6 +1362,7 @@
                         if (isTransitioning) return;
                         if (isTutorialActive && localStorage.getItem('tut_seq2') === 'done' && id !== 'sungbwar') return;
                         
+                        // 클릭 대상이 튜토리얼 펄스 대상이면 클릭 즉시 펄스 소거
                         if(btn.classList.contains('pulse-guide') || nodeBox.classList.contains('pulse-guide')) {
                             btn.classList.remove('pulse-guide');
                             nodeBox.classList.remove('pulse-guide');
@@ -1471,7 +1544,7 @@
             });
 
             window.addEventListener('popstate', function(event) {
-                // 튜토리얼 락오프: 강제 팝스테이트 발생 시 히스토리 복원 방어
+                // 모바일/PC 뒤로가기 팝스테이트 강제 이탈 완벽 방어 연산
                 if (isTutorialActive) {
                     history.pushState({ stage: currentStage, id: currentActiveTabId }, '', '');
                     return;
