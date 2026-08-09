@@ -85,8 +85,9 @@
         /* --- [탭 선택 창 트리 렌더링 계층] --- */
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
-        /* 컷신 카메라 워킹을 위한 트랜지션 적용 */
-        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; transform-origin: center center; }
+        
+        /* 컷신 카메라 이동의 정밀 연산을 위해 transform-origin 동적 제어 알고리즘 주입 구역 */
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; }
         
         /* SVG 선분이 뷰포트를 넘어가도 절단되지 않도록 overflow: visible 강제 */
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
@@ -124,9 +125,26 @@
         
         .color-gold { color: #ffd700 !important; }
 
-        /* [클래스 탭 잠금 및 컷신 이펙트 엔진] 타노스 스냅 파티클 및 물결 렌더링 */
-        .class-locked-btn { color: transparent !important; background: linear-gradient(0deg, #000000 0%, #000000 40%, rgba(200, 0, 0, 0.25) 50%, #000000 60%, #000000 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; cursor: not-allowed !important; }
-        .class-locked-btn:hover { text-shadow: 0 0 20px rgba(255, 0, 0, 0.95), 0 0 10px rgba(200, 0, 0, 0.8) !important; transform: none !important; }
+        /* [클래스 탭 잠금 및 컷신 이펙트 엔진] 타노스 스냅 렌더링을 위한 독립 계층 분리 */
+        .class-base-text { position: relative; z-index: 1; }
+        
+        /* 잠금 오버레이: 밑에 깔려있는 원본 텍스트의 글로우를 검은색 그림자로 100% 은폐 통제 */
+        .class-lock-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            color: transparent;
+            background: linear-gradient(0deg, #111 0%, #111 40%, rgba(200, 0, 0, 0.25) 50%, #111 60%, #111 100%);
+            background-size: 100% 200%;
+            -webkit-background-clip: text; background-clip: text;
+            animation: wave-flow 3s linear infinite;
+            text-shadow: 0 0 15px #000, 0 0 25px #000, 0 0 35px #000, 0 0 10px rgba(200, 0, 0, 0.8);
+            transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+            pointer-events: none;
+            z-index: 2;
+        }
+        
+        .is-unlocking .class-lock-overlay { opacity: 0; }
+        
         @keyframes wave-flow { 0% { background-position: 0% 100%; } 100% { background-position: 0% -100%; } }
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         
@@ -346,7 +364,7 @@
                         성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
                         성배전쟁에 참여한 것만으로도 마술사는<br>
                         마술사로서 큰 명예를 얻는다.<br>
-                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
+                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 단체.
                     </p>
                 </div>
             </div>
@@ -618,7 +636,7 @@
             'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 }
         };
 
-        // 새로고침 시 데이터 초기화 루틴
+        // 새로고침 시 데이터 초기화 및 방문 캐시 메모리 누수 방지(Total Overhaul) 루틴
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -627,6 +645,11 @@
                 Object.keys(CONCEPT_REGISTRY).forEach(id => sessionStorage.removeItem('fate_concept_' + id));
                 sessionStorage.removeItem('fate_concept_order');
                 sessionStorage.removeItem('fate_voice_played');
+                
+                // 오작동을 유발하던 탭 방문 기록 캐시 100% 강제 삭제
+                sessionStorage.removeItem('fate_visited_yong');
+                sessionStorage.removeItem('fate_visited_bogu');
+                
                 localStorage.removeItem('tut_seq1');
                 localStorage.removeItem('tut_seq2');
                 localStorage.removeItem('tut_seq3');
@@ -967,7 +990,7 @@
                 }
             });
 
-            // 트리 좌표 및 포커싱 계산 렌더링
+            // 트리 좌표 및 포커싱 계산 렌더링 (Transform Origin 동적 할당 재설계 완료)
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
@@ -980,12 +1003,15 @@
                 }, 100);
 
                 currentFocusedId = targetId;
+                
+                // 오차율 0%의 중앙 포커싱을 위한 2D 변환 행렬 연산식 주입
+                treeMatrixWorld.style.transformOrigin = `${nodeInfo.x}% ${nodeInfo.y}%`;
                 const offsetX = 50 - nodeInfo.x;
                 const offsetY = 50 - nodeInfo.y;
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh) scale(${currentScale})`;
             }
 
-            // 컷신 카메라 워킹 및 타노스 스냅 파티클 연산 엔진
+            // 컷신 카메라 워킹 및 타노스 스냅 파티클 연산 엔진 (이중 레이어 동시 렌더링 적용 완료)
             function triggerClassCutscene(nodeBox, btnObj, prevFocusedId) {
                 isTransitioning = true;
                 currentScale = 1.6;
@@ -993,14 +1019,12 @@
                 
                 // 화면 줌 인(800ms) 완료 후 컷신 본격 가동
                 setTimeout(() => {
-                    playSfx(unlockSfx, 4.0);
+                    playSfx(unlockSfx, 2.8); // 70% 볼륨 감소 적용
                     
-                    // 버튼의 스타일을 서서히 페이드 아웃시키기 위한 트랜지션 할당
-                    btnObj.style.transition = 'color 1.5s, text-shadow 1.5s, opacity 1.5s';
-                    btnObj.style.opacity = '0';
+                    // 오버레이 페이드 아웃 및 베이스 텍스트의 동시 출현 가동
+                    btnObj.classList.add('is-unlocking'); 
                     
                     const numParticles = 80;
-                    const rect = btnObj.getBoundingClientRect();
                     for (let i = 0; i < numParticles; i++) {
                         const pt = document.createElement('div');
                         pt.className = 'dust-particle';
@@ -1023,20 +1047,18 @@
                         setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 1600);
                     }
 
-                    // 먼지 페이드아웃 종료 후 복귀 페이즈
+                    // 먼지 및 오버레이 페이드아웃 종료 후 복귀 페이즈
                     setTimeout(() => {
-                        btnObj.classList.remove('class-locked-btn', 'class-locked-shake');
-                        btnObj.classList.add('white-glow-btn', 'color-gold');
-                        btnObj.innerHTML = CONCEPT_REGISTRY['class'].name;
-                        btnObj.style.opacity = '1'; // 버튼 복구
+                        btnObj.classList.remove('is-locked', 'is-unlocking', 'class-locked-shake');
+                        const lockOverlay = btnObj.querySelector('.class-lock-overlay');
+                        if (lockOverlay) lockOverlay.remove();
+                        
                         localStorage.setItem('fate_class_cutscene', 'true');
                         
-                        // 배율 정상화 후 원래 머물렀던 탭으로 카메라 회귀
-                        setTimeout(() => {
-                            currentScale = 1.0;
-                            focusToNode(prevFocusedId);
-                            setTimeout(() => { isTransitioning = false; }, 800);
-                        }, 500);
+                        // 배율 정상화 후 원래 머물렀던 탭으로 카메라 회귀 연산 가동
+                        currentScale = 1.0;
+                        focusToNode(prevFocusedId);
+                        setTimeout(() => { isTransitioning = false; }, 800);
                     }, 1600);
                 }, 800);
             }
@@ -1108,7 +1130,7 @@
                     }
                 });
 
-                // 잠금 프로토콜 판별용 데이터 색인
+                // 잠금 프로토콜 판별용 데이터 색인 (논리적 방문 기록에 한정)
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                 const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
                 const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
@@ -1133,16 +1155,20 @@
                     else if (id === 'suv' || id === 'yong') { btn.classList.add('skyblue-glow-btn'); } 
                     else if (id === 'gam') { btn.classList.add('black-glow-btn'); } 
                     else if (id === 'sso' || id === 'brokenf') { btn.classList.add(id === 'sso' ? 'blue-glow-btn' : 'pink-glow-btn', 'btn-sso'); }
-                    else if (id === 'class') {
+                    
+                    // 클래스 탭 이중 레이어 렌더링 분기점
+                    if (id === 'class') {
+                        btn.classList.add('white-glow-btn', 'color-gold'); // 기본 베이스 스타일 항상 유지
                         if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
-                            btn.classList.add('class-locked-btn');
+                            btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
+                            btn.classList.add('is-locked');
                             isLockedClass = true;
                         } else {
-                            btn.classList.add('white-glow-btn', 'color-gold');
+                            btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span>`;
                         }
+                    } else {
+                        btn.innerHTML = nodeInfo.name;
                     }
-
-                    btn.innerHTML = nodeInfo.name;
                     
                     btn.onclick = () => {
                         if (isTransitioning) return;
@@ -1180,7 +1206,7 @@
                                 document.getElementById('dustEffect').style.opacity = '0.55';
                             }
 
-                            // 컷신 판별을 위한 방문 탭 식별자 기록
+                            // 컷신 개방 판별을 위한 논리적 방문 식별자 기록
                             if (id === 'yong' || id === 'bogu') {
                                 sessionStorage.setItem('fate_visited_' + id, 'true');
                             }
@@ -1285,7 +1311,7 @@
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
                     
-                    const savedTabId = currentActiveTabId; // 이전 방문지 캐시 보존
+                    const savedTabId = currentActiveTabId; // 이전 방문지 캐시 보존 연산 가동
 
                     setTimeout(() => {
                         renderTreeGrid(false);
