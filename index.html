@@ -7,29 +7,25 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      Z-Index 기반 튜토리얼 암막 시각 제어, 오디오 다중 채널 엔진이 적용되어 있습니다.
+      복제 오브젝트 기반 튜토리얼 Z-Index 시각 제어 엔진 및 오디오 다중 채널 엔진이 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
-        /* [CSS 전역 초기화] 
-           터치 하이라이트 제거 및 스크롤 바운스 차단을 위한 전역 설정 */
+        /* [CSS 전역 초기화] */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
-        /* [메인화면 배경 레이어 및 붉은 먼지 이펙트] 
-           페이드 인/아웃 트랜지션 및 CSS 애니메이션으로 구성된 세계관 배경 묘사 */
+        /* [메인화면 배경 레이어 및 붉은 먼지 이펙트] */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
         .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [토스트 알림 시스템] 
-           신규 개념 획득 시 팝업되며 강제 세로 줄바꿈을 차단(max-content, nowrap)한 동적 메시지 창 */
+        /* [토스트 알림 시스템] */
         #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
         .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap !important; width: max-content !important; padding: 10px 20px; border-radius: 8px; transition: filter 0.5s ease; }
         
-        /* 튜토리얼 락온 시 토스트 애니메이션 강제 동결 제어 클래스 */
         .tut-paused { animation-play-state: paused !important; }
         .tut-running { animation-play-state: running !important; }
 
@@ -45,8 +41,6 @@
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9) !important; }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
-        /* [에러 이펙트 (쿨타임 중 클릭 시 발동하는 붉은 진동 방어 로직)] 
-           호버(hover) 시에도 색상과 섀도우가 최우선 유지되도록 !important 적용 */
         @keyframes keyword-error-shake { 0% { transform: translateX(0); } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); } 100% { transform: translateX(0); } }
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out !important; color: #ff3333 !important; text-shadow: 0 0 10px red !important; pointer-events: none !important; }
 
@@ -58,8 +52,7 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
-        /* --- [시작하기 창 및 메인화면 절대 중앙 정렬 컨테이너] --- 
-           화면 해상도나 부모 속성 변화에 무관하게 정중앙에 고정되도록 Absolute 연산식 적용 */
+        /* --- [시작하기 창 및 메인화면 절대 중앙 정렬 컨테이너] --- */
         .start-btn-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, visibility 0.6s; }
         .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
         .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
@@ -145,15 +138,13 @@
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어 (Absolute Hardcoding)] 
-           Flexbox 의존성을 완전히 탈피하고 수평 좌표계를 고정하여 레이아웃 붕괴를 원천 차단합니다. */
+        /* [클래스 탭 전용 독립 절대좌표 레이어 (Absolute Hardcoding)] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
         .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.5s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; transition: filter 0.5s ease; pointer-events: none; }
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 1.0s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
-        /* 각 카드별 독립 수평 절대 좌표 부여 (중앙 기준 -/+ 배수) */
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -163,11 +154,9 @@
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
 
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff); transform: translate(-50%, calc(-50% - 10px)); }
-        .class-card.falling { top: 150vh !important; }
-        /* 명도 감소 로직 파기, 순수 Blur 처리만 적용 */
+        .class-card.falling { top: 150vh !important; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1) !important; }
         .class-blurred { filter: blur(12px) !important; pointer-events: none; }
         
-        /* 일러스트 타겟 스폰 위치 강제 중앙 제어 (!important 사용으로 상속 파기) */
         .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
@@ -186,11 +175,9 @@
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
         
-        /* 영령 탭 전용 이미지 스케일 1.15배 증폭 패치 (35% 확대 적용 완료) */
         #tabDetail_yong .detail-img { transform: scale(1.15); animation: yong-gentle-float 3.5s infinite ease-in-out; }
         @keyframes yong-gentle-float { 0%, 100% { transform: scale(1.15) translateY(0); } 50% { transform: scale(1.15) translateY(-4px); } }
 
-        /* [개별 이미지 글로우 이펙트] */
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
         .img-glow-master { filter: drop-shadow(0 0 30px rgba(150, 150, 150, 0.7)); } 
@@ -217,14 +204,11 @@
         #tooltipBox.show { display: block; opacity: 1; }
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
-        /* --- [Z-Index 팝업 기반 무결점 시각 제어 엔진 (튜토리얼)] --- 
-           모든 CSS 필터 충돌(명도 상속, 글로우 증발)을 막기 위해 화면 전역에 흑색 반투명 막을 렌더링하고,
-           강조해야 할 대상만 z-index를 올려 팝업시키는 원본 보존 방식입니다. */
+        /* --- [Z-Index 팝업 기반 무결점 시각 제어 엔진 및 복제 오브젝트 시스템] --- */
         #tutorialDimOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 8400; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: none; }
         #tutorialDimOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
-        /* 튜토리얼 하이라이트 애니메이션 제거로 인한 명도만 제어 가능하도록 패치 */
-        .tut-highlight { z-index: 8500 !important; position: relative !important; }
+        .clone-tutorial-highlight { position: fixed !important; z-index: 8500 !important; transition: opacity 0.5s ease-in-out !important; pointer-events: none !important; }
 
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 9000; opacity: 0; visibility: hidden; pointer-events: none; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -287,7 +271,7 @@
         <img id="imageViewTarget" src="" alt="Zoomed Detail View">
     </div>
 
-    <!-- [오디오 자산 매핑] 파라미터 적용 (pst 115%, unlock 200%) -->
+    <!-- [오디오 자산 매핑] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -344,7 +328,7 @@
         </div>
     </div>
 
-    <!-- [설명창 뷰 모듈 - 다중 탭 렌더링] -->
+    <!-- [설명창 뷰 모듈 - 다중 탭 렌더링 및 텍스트 파츠 세분화] -->
     <div id="dynamicTabDetailViews">
         
         <!-- 1. 성배 -->
@@ -373,10 +357,10 @@
                     <span class="description-quote" id="kiritsuguTrigger">"온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전.<br>그게 성배전쟁이다."</span>
                     <span class="description-quote-author">- 토오사카 토키오미</span>
                     <p style="margin-top: 12px;">
-                        성배의 소유권을 둘러싸고 벌이는 전쟁.<br>
-                        성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 내려<br>
-                        <span class="interactive-keyword" data-key="master">마스터</span>의 역할과 <span class="interactive-keyword" data-key="suv">서번트</span> 소환 자격을 부여하고<br>
-                        <span class="interactive-keyword" data-key="gam">감독관</span>의 감독하에 진행이 되는 전쟁.
+                        <span class="text-part">성배의 소유권을 둘러싸고 벌이는 전쟁.</span><br>
+                        <span class="text-part">성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 내려</span><br>
+                        <span class="text-part"><span class="interactive-keyword" data-key="master">마스터</span>의 역할과 <span class="interactive-keyword" data-key="suv">서번트</span> 소환 자격을 부여하고</span><br>
+                        <span class="text-part"><span class="interactive-keyword" data-key="gam">감독관</span>의 감독하에 진행이 되는 전쟁.</span>
                     </p>
                 </div>
             </div>
@@ -393,16 +377,16 @@
                 <h2 class="description-title">마술사란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="마력을 사용해 원소를 다루며<br>초현실적인 일을 벌일 수 있는 기술<br>마술각인 같은 마술회로가 없으면 사용할 수 없다.">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="세계의 진리를 추구하는 학문">마도</span>(魔道)를 걸으며,<br>
-                        <span class="annotation-word" data-tooltip="만물의 시작과 끝이자,<br>모든 진리와 정보가 기록된<br>우주의 중심(소용돌이)">근원</span>을 추구하는 자를 일컫는다.<br>
-                        마술사는 되고 싶다고 되는 것이 아니고<br>
-                        특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.<br>
-                        마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="형체를 지닌 마술회로로, 일종의 장기.<br>마술사의 연구 성과를<br>다음 세대에 남기기 위한 각인.">마술각인</span>을 이어받는다.<br>
-                        대부분의 마술사는 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span>에 소속되어 있다.<br>
-                        성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.<br>
-                        성배전쟁에 참여한 것만으로도 마술사는<br>
-                        마술사로서 큰 명예를 얻는다.<br>
-                        마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.
+                        <span class="text-part"><span class="annotation-word" data-tooltip="마력을 사용해 원소를 다루며<br>초현실적인 일을 벌일 수 있는 기술<br>마술각인 같은 마술회로가 없으면 사용할 수 없다.">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="세계의 진리를 추구하는 학문">마도</span>(魔道)를 걸으며,</span><br>
+                        <span class="text-part"><span class="annotation-word" data-tooltip="만물의 시작과 끝이자,<br>모든 진리와 정보가 기록된<br>우주의 중심(소용돌이)">근원</span>을 추구하는 자를 일컫는다.</span><br>
+                        <span class="text-part">마술사는 되고 싶다고 되는 것이 아니고</span><br>
+                        <span class="text-part">특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.</span><br>
+                        <span class="text-part">마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="형체를 지닌 마술회로로, 일종의 장기.<br>마술사의 연구 성과를<br>다음 세대에 남기기 위한 각인.">마술각인</span>을 이어받는다.</span><br>
+                        <span class="text-part">대부분의 마술사는 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span>에 소속되어 있다.</span><br>
+                        <span class="text-part">성배로부터 <ruby>령주<rt>令呪</rt></ruby>를 받아 마스터 자격을 얻을 수 있다.</span><br>
+                        <span class="text-part">성배전쟁에 참여한 것만으로도 마술사는</span><br>
+                        <span class="text-part">마술사로서 큰 명예를 얻는다.</span><br>
+                        <span class="text-part">마술사는 일반인에게 마술의 존재를 은폐하며 살아야 하는 철칙이 있다.</span>
                     </p>
                 </div>
             </div>
@@ -421,17 +405,17 @@
                     <span class="description-quote" id="kiritsuguYongTrigger">"령주를 통해 명한다"</span>
                     <span class="description-quote-author">-에미야 키리츠구</span>
                     <p style="margin-top: 12px;">
-                        서번트와 계약한 마스터가 3회에 걸쳐<br>
-                        서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
-                        그 형태는 <span class="annotation-word" data-tooltip="주로 손등이다.">신체 어딘가</span>에 나타나는 <span class="annotation-word" data-tooltip="말이 선이지 3파트로 나뉘어진 그림에 가깝다.">3획의 선 형태</span>의<br>
-                        붉은 멍처럼 보이는 문양으로 나타나며<br>
-                        세부적인 형태는 마스터마다 전부 다르다.<br>
-                        성배가 주는 강대한 마력 덩어리로<br>
-                        특정 명령을 강제하는 힘을 가졌다.<br>
-                        서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만<br>
-                        이를 역으로 이용해서 서번트의 의사와 일치하는 행동에 <ruby>령주<rt>令呪</rt></ruby>를 사용하면<br>
-                        그 강대한 마력을 강화용으로 사용할 수 있다.<br>
-                        여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.
+                        <span class="text-part">서번트와 계약한 마스터가 3회에 걸쳐</span><br>
+                        <span class="text-part">서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.</span><br>
+                        <span class="text-part">그 형태는 <span class="annotation-word" data-tooltip="주로 손등이다.">신체 어딘가</span>에 나타나는 <span class="annotation-word" data-tooltip="말이 선이지 3파트로 나뉘어진 그림에 가깝다.">3획의 선 형태</span>의</span><br>
+                        <span class="text-part">붉은 멍처럼 보이는 문양으로 나타나며</span><br>
+                        <span class="text-part">세부적인 형태는 마스터마다 전부 다르다.</span><br>
+                        <span class="text-part">성배가 주는 강대한 마력 덩어리로</span><br>
+                        <span class="text-part">특정 명령을 강제하는 힘을 가졌다.</span><br>
+                        <span class="text-part">서번트의 의지에 어긋나는 행동을 강제로 하게 만들 수 있지만</span><br>
+                        <span class="text-part">이를 역으로 이용해서 서번트의 의사와 일치하는 행동에 <ruby>령주<rt>令呪</rt></ruby>를 사용하면</span><br>
+                        <span class="text-part">그 강대한 마력을 강화용으로 사용할 수 있다.</span><br>
+                        <span class="text-part">여러 상황에 따라 소유권 이전, 탈취 또한 가능하다.</span>
                     </p>
                 </div>
             </div>
@@ -448,15 +432,15 @@
                 <h2 class="description-title">마스터란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.<br>
-                        성배전쟁에서 선출되는 마스터는 보통은 7명이며<br>
-                        이 중 3~4명은 <span class="annotation-word" data-tooltip="성배전쟁의 기초를 닦은 세 가문인<br>아인츠베른, 토오사카, 마토를 지칭하는 말.">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span> 측에서 한 명씩 선출해<br>
-                        등록할 수 있는 권한을 가지고 있다.<br>
-                        나머지는 성배가 알아서 배분한다.<br>
-                        마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며<br>
-                        <ruby>령주<rt>令呪</rt></ruby>가 있으면 <span class="interactive-keyword" data-key="sso">서번트 소환 의식</span>을 치루고 소환된 서번트와 계약을 맺을 수 있다.<br>
-                        계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며,<br>
-                        마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.
+                        <span class="text-part">성배전쟁에 참가해 성배를 쟁취하기 위해 서번트를 소환해 싸우는 마술사.</span><br>
+                        <span class="text-part">성배전쟁에서 선출되는 마스터는 보통은 7명이며</span><br>
+                        <span class="text-part">이 중 3~4명은 <span class="annotation-word" data-tooltip="성배전쟁의 기초를 닦은 세 가문인<br>아인츠베른, 토오사카, 마토를 지칭하는 말.">시작의 세 가문</span>과 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span> 측에서 한 명씩 선출해</span><br>
+                        <span class="text-part">등록할 수 있는 권한을 가지고 있다.</span><br>
+                        <span class="text-part">나머지는 성배가 알아서 배분한다.</span><br>
+                        <span class="text-part">마스터의 증표로는 <ruby>령주<rt>令呪</rt></ruby>가 있으며</span><br>
+                        <span class="text-part"><ruby>령주<rt>令呪</rt></ruby>가 있으면 <span class="interactive-keyword" data-key="sso">서번트 소환 의식</span>을 치루고 소환된 서번트와 계약을 맺을 수 있다.</span><br>
+                        <span class="text-part">계약한 서번트와는 링크가 생겨 서번트에게 마력을 보급하게 되며,</span><br>
+                        <span class="text-part">마스터의 신체는 서번트가 현세에 머무르는 매개체가 된다.</span>
                     </p>
                 </div>
             </div>
@@ -473,16 +457,16 @@
                 <h2 class="description-title">서번트란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="interactive-keyword" data-key="yong">영령</span>이라는 기록체를 마력으로 실체화시킨 것으로,<br>
-                        일종의 고차원 생명체다.<br>
-                        성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만<br>
-                        원본은 따로 있다.<br>
-                        본래는 소환이나 사역도 불가능하지만<br>
-                        성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.<br>
-                        서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중<br>
-                        적성에 맞는 클래스가 부여된다.<br>
-                        강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="서번트들이 보유한 능력.<br>서번트가 생전에 익힌 기술이나<br>원전이 되는 전승에서 유래한 것들이 대부분이다.">스킬</span>을 가지고 있으며<br>
-                        한 개체 개체가 어마무시한 힘을 가지고 있다.
+                        <span class="text-part"><span class="interactive-keyword" data-key="yong">영령</span>이라는 기록체를 마력으로 실체화시킨 것으로,</span><br>
+                        <span class="text-part">일종의 고차원 생명체다.</span><br>
+                        <span class="text-part">성배의 힘을 빌려 소환, 성배전쟁의 전투원으로 사역되지만</span><br>
+                        <span class="text-part">원본은 따로 있다.</span><br>
+                        <span class="text-part">본래는 소환이나 사역도 불가능하지만</span><br>
+                        <span class="text-part">성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.</span><br>
+                        <span class="text-part">서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중</span><br>
+                        <span class="text-part">적성에 맞는 클래스가 부여된다.</span><br>
+                        <span class="text-part">강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="서번트들이 보유한 능력.<br>서번트가 생전에 익힌 기술이나<br>원전이 되는 전승에서 유래한 것들이 대부분이다.">스킬</span>을 가지고 있으며</span><br>
+                        <span class="text-part">한 개체 개체가 어마무시한 힘을 가지고 있다.</span>
                     </p>
                 </div>
             </div>
@@ -499,14 +483,14 @@
                 <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        <span class="annotation-word" data-tooltip="그리스도교의 이면에 존재하는 비밀 조직이다.<br>세상을 운행하는 과학적인 물리 법칙을 신의 섭리라 신봉하며<br>이에 거스르는 자를 이단으로 규정하며 박멸하는 것이 목표이다.">성당교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
-                        성배전쟁을 참여하길 거부하거나<br>
-                        서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.<br>
-                        성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며<br>
-                        다음 성배전쟁이 시작되면 성당교회에서 파견된<br>
-                        감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.<br>
-                        감독관의 재량에 따라 다른 사람에게 양도하거나<br>
-                        다른 용도로 사용하는 것이 가능하다.
+                        <span class="text-part"><span class="annotation-word" data-tooltip="그리스도교의 이면에 존재하는 비밀 조직이다.<br>세상을 운행하는 과학적인 물리 법칙을 신의 섭리라 신봉하며<br>이에 거스르는 자를 이단으로 규정하며 박멸하는 것이 목표이다.">성당교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.</span><br>
+                        <span class="text-part">성배전쟁을 참여하길 거부하거나</span><br>
+                        <span class="text-part">서번트를 잃어버려 탈락해버린 마스터를 보호할 의무가 있다.</span><br>
+                        <span class="text-part">성배전쟁에서 다 사용하지 못한 <ruby>령주<rt>令呪</rt></ruby>는 기본적으로 성배가 회수하며</span><br>
+                        <span class="text-part">다음 성배전쟁이 시작되면 성당교회에서 파견된</span><br>
+                        <span class="text-part">감독역이 받아서 보관 <ruby>령주<rt>令呪</rt></ruby>의 형태로 관리한다.</span><br>
+                        <span class="text-part">감독관의 재량에 따라 다른 사람에게 양도하거나</span><br>
+                        <span class="text-part">다른 용도로 사용하는 것이 가능하다.</span>
                     </p>
                 </div>
             </div>
@@ -525,12 +509,12 @@
                     <span class="description-quote" id="suvsoTrigger">"세트. 소재로는 은과 철. 초석에는 돌과 계약의 대공.<br>내려서는 바람에는 벽을, 사방의 문은 닫히고,<br>왕관에서 나와, 왕국에 이르는 삼거리는 순환하라!<br>채워라, 채워라, 채워라, 채워라, 채워라!<br>거듭 반복하기를 5번. 그저 채워지는 때를 파각한다.<br>고한다. 그대의 몸은 나의 곁에, 나의 운명은 그대의 검에.<br>성배의 인도에 따라, 이 뜻, 이 이치에 따른다면 대답하라!"</span>
                     <span class="description-quote-author">- 스노우 필드의 성배전쟁에서 사용된 영창</span>
                     <p style="margin-top: 12px;">
-                        서번트를 소환하기 위해 행하는 의식<br>
-                        서번트를 소환하기 위해서는 촉매가 필요하다.<br>
-                        그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.<br>
-                        서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.<br>
-                        이 소환 자체는 성배가 도와주는 것이기 때문에<br>
-                        소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르기도 한다.
+                        <span class="text-part">서번트를 소환하기 위해 행하는 의식</span><br>
+                        <span class="text-part">서번트를 소환하기 위해서는 촉매가 필요하다.</span><br>
+                        <span class="text-part">그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.</span><br>
+                        <span class="text-part">서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.</span><br>
+                        <span class="text-part">이 소환 자체는 성배가 도와주는 것이기 때문에</span><br>
+                        <span class="text-part">소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르기도 한다.</span>
                     </p>
                 </div>
             </div>
@@ -547,11 +531,11 @@
                 <h2 class="description-title">영령이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        영웅의 영혼.<br>
-                        각 시대에 이루기 힘든 비범한 위업을 이룬 영웅(英雄)이 죽은 뒤에도<br>
-                        전설로 남아 사람들의 신앙이 모여서 되는 존재.<br>
-                        영혼이 <span class="annotation-word" data-tooltip="일반적인 인간의 영혼이 거치는<br>삶과 죽음의 반복">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.<br>
-                        기본적으로 생전의 기억을 가지고 있다.
+                        <span class="text-part">영웅의 영혼.</span><br>
+                        <span class="text-part">각 시대에 이루기 힘든 비범한 위업을 이룬 영웅(英雄)이 죽은 뒤에도</span><br>
+                        <span class="text-part">전설로 남아 사람들의 신앙이 모여서 되는 존재.</span><br>
+                        <span class="text-part">영혼이 <span class="annotation-word" data-tooltip="일반적인 인간의 영혼이 거치는<br>삶과 죽음의 반복">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.</span><br>
+                        <span class="text-part">기본적으로 생전의 기억을 가지고 있다.</span>
                     </p>
                 </div>
             </div>
@@ -568,13 +552,13 @@
                 <h2 class="description-title"><ruby>보구<rt>노블 판타즘</rt></ruby>란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
-                        고귀한 환상, 신비의 결정, 신비의 구현.<br>
-                        생전에 사용하던 무구나 기술, 혹은 유명한 일화를 구현한 것들이며,<br>
-                        소환된 영령들이 가지는 필살기, 혹은 비장의 수라고도 할 수 있다.<br>
-                        일반적으로는 서번트 하나에 <ruby>보구<rt>노블 판타즘</rt></ruby>도 하나씩이지만,<br>
-                        개개인의 차이는 있어 2~3개나 5개가 넘는 경우까지 있다.<br>
-                        <ruby>보구<rt>노블 판타즘</rt></ruby>를 이용하는 방법중 하나로 <span class="interactive-keyword" data-key="brokenf">브로큰 판타즘</span>이 있다.<br>
-                        <ruby>보구<rt>노블 판타즘</rt></ruby>는 <span class="interactive-keyword" data-key="jinbang">진명개방</span>을 함으로써 본성능을 발휘한다.
+                        <span class="text-part">고귀한 환상, 신비의 결정, 신비의 구현.</span><br>
+                        <span class="text-part">생전에 사용하던 무구나 기술, 혹은 유명한 일화를 구현한 것들이며,</span><br>
+                        <span class="text-part">소환된 영령들이 가지는 필살기, 혹은 비장의 수라고도 할 수 있다.</span><br>
+                        <span class="text-part">일반적으로는 서번트 하나에 <ruby>보구<rt>노블 판타즘</rt></ruby>도 하나씩이지만,</span><br>
+                        <span class="text-part">개개인의 차이는 있어 2~3개나 5개가 넘는 경우까지 있다.</span><br>
+                        <span class="text-part"><ruby>보구<rt>노블 판타즘</rt></ruby>를 이용하는 방법중 하나로 <span class="interactive-keyword" data-key="brokenf">브로큰 판타즘</span>이 있다.</span><br>
+                        <span class="text-part"><ruby>보구<rt>노블 판타즘</rt></ruby>는 <span class="interactive-keyword" data-key="jinbang">진명개방</span>을 함으로써 본성능을 발휘한다.</span>
                     </p>
                 </div>
             </div>
@@ -589,12 +573,13 @@
                     <span class="description-quote" id="jinmTrigger"><ruby>엑스칼리버어어—!<rt>약속된 승리의 검</rt></ruby></span>
                     <span class="description-quote-author">-제 4차 성배전쟁 서번트</span>
                     <p style="margin-top: 12px;">
-                        보구의 진정한 힘을 사용하기 위해 진정한 보구의 이름을 외치는 것.<br>
-                        진명개방을 하기 전까지 대부분의 보구들은 대체적으로 그냥 강력한 냉병기에 지나지 않지만<br>이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.<br>
-                        진명개방을 하기 위해서는 <span class="annotation-word" data-tooltip="두 손으로 보구를 들고 진명개방을 해야 한다든지 등.">선행조건</span>을 갖춰야 하는 경우도 있으며<br>
-                        무구의 이름과 진명개방의 명칭이 일치하는 경우,<br>
-                        무구의 이름과 진명개방이 일치하지 않는 경우 등<br>
-                        진명개방의 방식도 여러가지가 있다.
+                        <span class="text-part">보구의 진정한 힘을 사용하기 위해 진정한 보구의 이름을 외치는 것.</span><br>
+                        <span class="text-part">진명개방을 하기 전까지 대부분의 보구들은 대체적으로 그냥 강력한 냉병기에 지나지 않지만</span><br>
+                        <span class="text-part">이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.</span><br>
+                        <span class="text-part">진명개방을 하기 위해서는 <span class="annotation-word" data-tooltip="두 손으로 보구를 들고 진명개방을 해야 한다든지 등.">선행조건</span>을 갖춰야 하는 경우도 있으며</span><br>
+                        <span class="text-part">무구의 이름과 진명개방의 명칭이 일치하는 경우,</span><br>
+                        <span class="text-part">무구의 이름과 진명개방이 일치하지 않는 경우 등</span><br>
+                        <span class="text-part">진명개방의 방식도 여러가지가 있다.</span>
                     </p>
                 </div>
             </div>
@@ -609,26 +594,26 @@
                     <span class="description-quote" id="bfTrigger">"브로큰 판타즘!"</span>
                     <span class="description-quote-author">-제 5차 성배전쟁 서번트</span>
                     <p style="margin-top: 12px;">
-                        보구의 특수한 사용법.<br>
-                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.<br>
-                        이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
-                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라서 원형은 잠시 유지되지만 마력이 사라졌기에 곧 소멸한다.
+                        <span class="text-part">보구의 특수한 사용법.</span><br>
+                        <span class="text-part">보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.</span><br>
+                        <span class="text-part">이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.</span><br>
+                        <span class="text-part">마력이 터지는 것이지 보구 자체가 터지는 것이 아니라서 원형은 잠시 유지되지만 마력이 사라졌기에 곧 소멸한다.</span>
                     </p>
                 </div>
             </div>
         </section>
 
-        <!-- 13. 클래스 (독립 계층 및 절대 좌표 패치된 컷신 모듈) -->
+        <!-- 13. 클래스 -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="class-bg-layer"></div>
             <div class="class-cards-container">
                 <img src="classes/class-back.png" class="class-card" data-idx="0" alt="Card Saber">
                 <img src="classes/class-back.png" class="class-card" data-idx="1" alt="Card Lancer">
-                <img src="classes/class-back.png" class="class-card" data-idx="2" alt="Card Archer">
-                <img src="classes/class-back.png" class="class-card" data-idx="3" alt="Card Rider">
-                <img src="classes/class-back.png" class="class-card" data-idx="4" alt="Card Caster">
-                <img src="classes/class-back.png" class="class-card" data-idx="5" alt="Card Assassin">
-                <img src="classes/class-back.png" class="class-card" data-idx="6" alt="Card Berserker">
+                <img src="classes/class-card.png" class="class-card" data-idx="2" alt="Card Archer">
+                <img src="classes/class-card.png" class="class-card" data-idx="3" alt="Card Rider">
+                <img src="classes/class-card.png" class="class-card" data-idx="4" alt="Card Caster">
+                <img src="classes/class-card.png" class="class-card" data-idx="5" alt="Card Assassin">
+                <img src="classes/class-card.png" class="class-card" data-idx="6" alt="Card Berserker">
             </div>
             <img src="" class="class-illust-target detail-img" id="classIllustTarget" alt="Class Illustration">
         </section>
@@ -670,6 +655,7 @@
         let currentScale = 1.0; 
         let tutState = { seq: 0, step: 0 };
         let classTabPhase = 0;
+        let cloneHighlightEls = []; // 복제 오브젝트 관리 배열
 
         // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
@@ -749,7 +735,7 @@
             const bfEmiyaSfx = document.getElementById('bfEmiyaSfx');
             const jinmExcarSfx = document.getElementById('jinmExcarSfx');
             const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
-            const classOpenSfx = document.getElementById('classOpenSfx');
+            const classOpenSfx = document.getElementById('classes/sfx-card-open.mp3');
 
             const masterSlider = document.getElementById('masterSlider');
             const volumeSlider = document.getElementById('volumeSlider');
@@ -895,18 +881,56 @@
                     .replace(/\{(.*?)\}/g, '<span style="text-shadow: 0 0 10px #ffffff;">$1</span>');
             }
 
-            // [튜토리얼 무결점 Z-Index 제어 모듈]
-            function resetTutClasses() {
-                document.querySelectorAll('.tut-highlight').forEach(el => {
-                    el.classList.remove('tut-highlight');
+            // [복제 오브젝트 생성 및 제거 관리 엔진]
+            function clearCloneHighlights() {
+                cloneHighlightEls.forEach(el => {
+                    if (el && el.parentNode) el.parentNode.removeChild(el);
                 });
-                document.querySelectorAll('.word-toast-item').forEach(el => el.classList.remove('tut-paused'));
+                cloneHighlightEls = [];
+            }
+
+            function spawnCloneHighlight(sourceEl, instantFade = false, customStyle = {}) {
+                if (!sourceEl) return null;
+                const rect = sourceEl.getBoundingClientRect();
+                const clone = sourceEl.cloneNode(true);
+                clone.className = (clone.className || '') + ' clone-tutorial-highlight';
+                clone.style.top = rect.top + 'px';
+                clone.style.left = rect.left + 'px';
+                clone.style.width = rect.width + 'px';
+                clone.style.height = rect.height + 'px';
+                clone.style.margin = '0';
+                
+                Object.keys(customStyle).forEach(k => {
+                    clone.style[k] = customStyle[k];
+                });
+
+                if (instantFade) {
+                    clone.style.opacity = '1';
+                } else {
+                    clone.style.opacity = '0';
+                    setTimeout(() => { clone.style.opacity = '1'; }, 20);
+                }
+
+                document.body.appendChild(clone);
+                cloneHighlightEls.push(clone);
+                return clone;
+            }
+
+            function removeCloneHighlight(clone, fadeOutDuration = 600) {
+                if (!clone) return;
+                clone.style.transition = `opacity ${fadeOutDuration}ms ease-out`;
+                clone.style.opacity = '0';
+                setTimeout(() => {
+                    if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
+                    const idx = cloneHighlightEls.indexOf(clone);
+                    if (idx > -1) cloneHighlightEls.splice(idx, 1);
+                }, fadeOutDuration);
             }
 
             function endTutorial() {
                 document.getElementById('tutorialArrow').classList.remove('active');
                 document.getElementById('tutorialOverlay').classList.remove('active');
-                document.getElementById('tutorialDimOverlay').classList.remove('active'); // 흑색 암막 해제
+                document.getElementById('tutorialDimOverlay').classList.remove('active');
                 document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
                 
@@ -915,7 +939,7 @@
                     el.classList.add('tut-running');
                 });
                 
-                resetTutClasses();
+                clearCloneHighlights();
                 isTutorialActive = false;
             }
 
@@ -924,7 +948,7 @@
                 const dimOverlay = document.getElementById('tutorialDimOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 
-                dimOverlay.classList.add('active'); // 전역 암막(Brightness 저하 상속 원인 파괴용) 가동
+                dimOverlay.classList.add('active');
                 guide.innerHTML = `<p>${formatTutText(text)}</p>`;
                 
                 const btnWrapper = document.createElement('div');
@@ -959,55 +983,97 @@
                 guide.classList.add('active');
             }
 
+            let currentActiveClone = null;
+
             function runTutStep() {
-                // 각 스텝 진입 시 클래스 초기화 후 타겟 재지정
-                resetTutClasses();
+                clearCloneHighlights();
                 
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); } 
                     else if (tutState.step === 1) { showTutorialGuide("이곳은 여러 개념들이 있는 장소 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 2) { showTutorialGuide("우선 개념의 상세한 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 3) { 
-                        showTutorialGuide("성배를 눌러 성배 상세 페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq1', 'done'); endTutorial(); }); 
+                        showTutorialGuide("성배를 눌러 성배 상세 페이지로 접속해봅시다.", "확인", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            setTimeout(() => {
+                                localStorage.setItem('tut_seq1', 'done'); 
+                                endTutorial();
+                            }, 600);
+                        }); 
                         const sungBtn = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
-                        if (sungBtn) sungBtn.classList.add('tut-highlight');
+                        if (sungBtn) currentActiveClone = spawnCloneHighlight(sungBtn, false);
                     }
                 } else if (tutState.seq === 2) { 
                     if (tutState.step === 0) { showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); } 
                     else if (tutState.step === 1) { 
-                        showTutorialGuide("이곳은 개념과 관련된 사진이 있는 곳입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                        showTutorialGuide("이곳은 개념과 관련된 사진이 있는 곳입니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }); 
                         const img = document.querySelector('#tabDetail_sung .detail-img');
-                        if(img) img.classList.add('tut-highlight');
+                        if(img) currentActiveClone = spawnCloneHighlight(img, false);
                     } 
                     else if (tutState.step === 2) { 
-                        showTutorialGuide("이건 배치 된 사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                        showTutorialGuide("이건 배치 된 사진이 무엇인지 알려주는 글입니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }); 
                         const label = document.querySelector('#tabDetail_sung .detail-sub-label');
-                        if(label) label.classList.add('tut-highlight');
+                        if(label) currentActiveClone = spawnCloneHighlight(label, false);
                     } 
                     else if (tutState.step === 3) { 
-                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                        showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }); 
                         const box = document.querySelector('#tabDetail_sung .detail-right-box');
-                        if(box) box.classList.add('tut-highlight');
+                        if(box) currentActiveClone = spawnCloneHighlight(box, false);
                     } 
                     else if (tutState.step === 4) { 
-                        showTutorialGuide("이건 어록 입니다. 이걸 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                        showTutorialGuide("이건 어록 입니다. 이걸 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }); 
                         const quote = document.querySelector('#tabDetail_sung .description-quote');
-                        if(quote) quote.classList.add('tut-highlight');
+                        if(quote) currentActiveClone = spawnCloneHighlight(quote, false);
                     } 
                     else if (tutState.step === 5) { 
                         showTutorialGuide("이렇게 노란색으로 표시된 단어는 [신규개념] 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
                         const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
-                        if(kw) kw.classList.add('tut-highlight');
+                        if(kw) currentActiveClone = spawnCloneHighlight(kw, false);
                     } 
                     else if (tutState.step === 6) { 
-                        showTutorialGuide("[신규개념]은 단어를 누르는 것으로 획득할 수 있습니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }); 
+                        showTutorialGuide("[신규개념]은 단어를 누르는 것으로 획득할 수 있습니다.", "확인", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            setTimeout(() => {
+                                localStorage.setItem('tut_seq2', 'done'); 
+                                endTutorial();
+                            }, 600);
+                        }); 
                         const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
-                        if(kw) kw.classList.add('tut-highlight');
+                        if(kw) currentActiveClone = spawnCloneHighlight(kw, false);
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) { 
                         document.querySelectorAll('.word-toast-item').forEach(el => el.classList.add('tut-paused'));
-                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); 
+                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }, {bottomAlign: true}); 
+                        const toastItem = document.querySelector('.word-toast-item');
+                        if (toastItem) currentActiveClone = spawnCloneHighlight(toastItem, true); // 이번만 페이드 인 없이 즉시 소환
                     } 
                     else if (tutState.step === 1) { 
                         const backBtn = document.getElementById('backBtn');
@@ -1016,16 +1082,37 @@
                         document.getElementById('tutorialArrow').style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
                         document.getElementById('tutorialArrow').style.top = (rect.top - 65) + 'px';
                         
-                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
-                        if(backBtn) backBtn.classList.add('tut-highlight');
+                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다.", "확인", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            setTimeout(() => {
+                                localStorage.setItem('tut_seq3', 'done'); 
+                                endTutorial();
+                            }, 600);
+                        }); 
+                        if(backBtn) currentActiveClone = spawnCloneHighlight(backBtn, false);
                     }
                 } else if (tutState.seq === 4) { 
                     if (tutState.step === 0) { 
-                        showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {topAlign: true, fadeIn: true}); 
+                        showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            tutState.step++; 
+                            runTutStep(); 
+                        }, {topAlign: true, fadeIn: true}); 
                         const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
-                        if (sungbwarBtn) sungbwarBtn.classList.add('tut-highlight');
+                        if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true); // 이번만 즉시 소환
                     } else if (tutState.step === 1) {
-                        showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }, {topAlign: true});
+                        showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
+                            playSfx(anneSfx); 
+                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            setTimeout(() => {
+                                localStorage.setItem('tut_seq4', 'done'); 
+                                endTutorial();
+                            }, 600);
+                        }, {topAlign: true});
+                        const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
+                        if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true);
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) { 
@@ -1033,15 +1120,30 @@
                     }
                 } else if (tutState.seq === 6) { 
                     if (tutState.step === 0) { 
-                        showTutorialGuide("이것은 {주석}이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); 
+                        showTutorialGuide("이것은 {주석}이 달린 단어입니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            clearCloneHighlights();
+                            tutState.step++; 
+                            runTutStep(); 
+                        }, {bottomAlign: true}); 
                         const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                         if(activeView) {
-                            const annos = activeView.querySelectorAll('.annotation-word');
-                            annos.forEach(a => a.classList.add('tut-highlight'));
+                            activeView.querySelectorAll('.annotation-word').forEach(a => {
+                                spawnCloneHighlight(a, true); // 이번만 즉시 소환
+                            });
                         }
                     } 
                     else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
-                    else if (tutState.step === 2) { showTutorialGuide("그리고 {주석}이 달린 단어를 누르면 {주석창}이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 {주석창}이 다시 접혀집니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }); }
+                    else if (tutState.step === 2) { 
+                        showTutorialGuide("그리고 {주석}이 달린 단어를 누르면 {주석창}이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 {주석창}이 다시 접혀집니다.", "확인", () => { 
+                            playSfx(anneSfx); 
+                            clearCloneHighlights();
+                            setTimeout(() => {
+                                localStorage.setItem('tut_seq6', 'done'); 
+                                endTutorial();
+                            }, 600);
+                        }); 
+                    }
                 }
             }
 
@@ -1102,12 +1204,10 @@
                         }
                         playSfx(wordSfx, 4.0);
                         
-                        // HTML 태그 정제하여 순수 텍스트만 Toast에 전달 (줄바꿈 현상 완벽 방어)
-                        const cleanWordText = keyTarget.innerHTML.replace(/<[^>]*>?/gm, '').trim();
+                        const cleanWordText = keyTarget.innerText.trim();
                         spawnAcquireToast(cleanWordText);
 
                         if (!localStorage.getItem('tut_seq3')) {
-                            // 완벽한 500ms 동기화 제어
                             setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500);
                         }
                     }
@@ -1141,7 +1241,7 @@
                 }
             });
 
-            // [이미지 자세히보기 뷰어 모듈]
+            // [이미지 자세히보기 뷰어 모듈 (클래스 탭 일러스트 포함 전역 작동)]
             const ivOverlay = document.getElementById('imageViewOverlay');
             const ivTarget = document.getElementById('imageViewTarget');
             let ivScale = 1; let ivPanX = 0; let ivPanY = 0;
@@ -1149,8 +1249,8 @@
             
             document.addEventListener('click', (e) => {
                 if (isTutorialActive) return;
-                const img = e.target.closest('.detail-img');
-                if (img) {
+                const img = e.target.closest('.detail-img') || e.target.closest('.class-illust-target');
+                if (img && img.src) {
                     playSfx(pstSfx, 1.15);
                     ivTarget.src = img.src;
                     ivScale = 1; ivPanX = 0; ivPanY = 0;
@@ -1281,7 +1381,6 @@
                         
                         localStorage.setItem('fate_class_cutscene', 'true');
                         
-                        // 카메라 프레임 이중 분리로 끊김 현상 제거
                         requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
                                 currentScale = 1.0;
@@ -1500,10 +1599,10 @@
                         
                         setTimeout(() => {
                             illustTarget.classList.add('move-left');
-                            classTabPhase = 2; // 일러스트 안착 상태
+                            classTabPhase = 2;
                             isTransitioning = false;
                         }, 1000);
-                    }, 1000); // 카드가 내려가는 시간 대기
+                    }, 1000);
                 });
             });
 
@@ -1537,7 +1636,6 @@
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
 
-                // 클래스 탭 일러스트 상태 인터셉트 롤백
                 if (currentStage === 3 && currentActiveTabId === 'class' && classTabPhase === 2) {
                     isTransitioning = true;
                     playSfx(pstSfx, 1.15);
@@ -1549,7 +1647,7 @@
                     });
                     classTabPhase = 0;
                     setTimeout(() => { isTransitioning = false; }, 1000);
-                    return; // 브라우저 히스토리 롤백 차단
+                    return;
                 }
 
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
@@ -1594,7 +1692,6 @@
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
                     
-                    // 탭 탈출 시 클래스 탭 상태 완전히 초기화
                     if (currentActiveTabId === 'class') {
                         classTabPhase = 0;
                         const illustTarget = document.getElementById('classIllustTarget');
