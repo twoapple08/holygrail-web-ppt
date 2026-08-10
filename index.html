@@ -879,15 +879,40 @@
                 const clone = sourceEl.cloneNode(true);
                 clone.className = (clone.className || '') + ' clone-tutorial-highlight';
                 
-                // 원본의 실제 화면 바운딩 박스를 기준으로 절대 배치 및 스케일 유지
-                clone.style.top = rect.top + 'px';
-                clone.style.left = rect.left + 'px';
-                clone.style.width = rect.width + 'px';
-                clone.style.height = rect.height + 'px';
-                clone.style.fontSize = computedStyle.fontSize;
-                clone.style.lineHeight = computedStyle.lineHeight;
-                clone.style.transform = 'none'; // 클론 자체의 오정렬 방지
+                // 원본의 실제 화면 바운딩 박스를 기준으로 절대 배치
+                clone.style.position = 'fixed';
                 clone.style.margin = '0';
+                clone.style.boxSizing = computedStyle.boxSizing;
+                clone.style.padding = computedStyle.padding;
+                clone.style.fontFamily = computedStyle.fontFamily;
+                clone.style.fontSize = computedStyle.fontSize;
+                clone.style.fontWeight = computedStyle.fontWeight;
+                clone.style.letterSpacing = computedStyle.letterSpacing;
+                clone.style.lineHeight = computedStyle.lineHeight;
+                clone.style.color = computedStyle.color;
+                clone.style.textShadow = computedStyle.textShadow;
+                clone.style.textAlign = computedStyle.textAlign;
+                clone.style.display = computedStyle.display === 'inline' ? 'inline-block' : computedStyle.display;
+                
+                const transformMatrix = computedStyle.transform;
+                if (transformMatrix && transformMatrix !== 'none') {
+                    clone.style.transform = transformMatrix;
+                    clone.style.transformOrigin = computedStyle.transformOrigin;
+                    
+                    const unscaledWidth = sourceEl.offsetWidth;
+                    const unscaledHeight = sourceEl.offsetHeight;
+                    clone.style.width = unscaledWidth + 'px';
+                    clone.style.height = unscaledHeight + 'px';
+                    
+                    clone.style.left = (rect.left + (rect.width - unscaledWidth) / 2) + 'px';
+                    clone.style.top = (rect.top + (rect.height - unscaledHeight) / 2) + 'px';
+                } else {
+                    clone.style.transform = 'none';
+                    clone.style.width = rect.width + 'px';
+                    clone.style.height = rect.height + 'px';
+                    clone.style.left = rect.left + 'px';
+                    clone.style.top = rect.top + 'px';
+                }
                 
                 Object.keys(customStyle).forEach(k => {
                     clone.style[k] = customStyle[k];
@@ -904,12 +929,17 @@
                     });
                 }
 
+                clone.sourceEl = sourceEl; 
                 document.body.appendChild(clone);
                 cloneHighlightEls.push(clone);
                 return clone;
             }
 
             function transitionCloneHighlight(newSourceEl, instant = false) {
+                if (currentActiveClone && currentActiveClone.sourceEl === newSourceEl) {
+                    return currentActiveClone;
+                }
+
                 const oldClone = currentActiveClone;
                 const newClone = spawnCloneHighlight(newSourceEl, instant);
                 currentActiveClone = newClone;
@@ -1104,7 +1134,7 @@
                             }, 500);
                         }, {topAlign: true});
                         const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
-                        if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true);
+                        if (sungbwarBtn) currentActiveClone = transitionCloneHighlight(sungbwarBtn, true);
                     }
                 } else if (tutState.seq === 5) { 
                     if (tutState.step === 0) { 
@@ -1590,6 +1620,7 @@
                     illustTarget.src = CLASS_ILLUST_MAP[idx];
 
                     setTimeout(() => {
+                        illustTarget.style.opacity = ''; // 인라인 투명도 해제하여 CSS 클래스의 투명도를 적용시킴
                         illustTarget.classList.add('rise');
                         
                         setTimeout(() => {
