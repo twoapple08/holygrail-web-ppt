@@ -90,20 +90,35 @@
         
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 1.7s cubic-bezier(0.25, 1, 0.4, 1); transform-origin: center center; will-change: transform; }
         
-        /* 엔딩 지진 효과 적용 클래스 */
-        .ending-shake-active { animation: earthquake-escalate 5s cubic-bezier(.36,.07,.19,.97) forwards; }
+        /* 초고밀도 파괴적 지진 애니메이션 패치 (Scale 0.4 강제 할당 방어막 포함) */
+        .ending-shake-active { animation: earthquake-escalate 5s linear forwards; }
         @keyframes earthquake-escalate {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(-2px, 2px) rotate(-1deg); }
-            20% { transform: translate(4px, -4px) rotate(1deg); }
-            30% { transform: translate(-6px, 6px) rotate(-2deg); }
-            40% { transform: translate(10px, -8px) rotate(2deg); }
-            50% { transform: translate(-15px, 12px) rotate(-3deg); }
-            60% { transform: translate(20px, -15px) rotate(4deg); }
-            70% { transform: translate(-25px, 20px) rotate(-5deg); }
-            80% { transform: translate(35px, -25px) rotate(6deg); filter: blur(2px); }
-            90% { transform: translate(-45px, 35px) rotate(-8deg); filter: blur(4px); }
-            100% { transform: translate(60px, -50px) rotate(10deg); filter: blur(6px); }
+            0% { transform: translate(0, 0) rotate(0deg) scale(0.4); }
+            4% { transform: translate(-10px, 15px) rotate(-1deg) scale(0.4); }
+            8% { transform: translate(20px, -15px) rotate(2deg) scale(0.4); }
+            12% { transform: translate(-25px, 20px) rotate(-3deg) scale(0.4); }
+            16% { transform: translate(30px, -25px) rotate(3deg) scale(0.4); }
+            20% { transform: translate(-35px, 30px) rotate(-4deg) scale(0.4); }
+            24% { transform: translate(45px, -35px) rotate(5deg) scale(0.4); }
+            28% { transform: translate(-50px, 45px) rotate(-5deg) scale(0.4); }
+            32% { transform: translate(60px, -50px) rotate(6deg) scale(0.4); }
+            36% { transform: translate(-70px, 60px) rotate(-7deg) scale(0.4); }
+            40% { transform: translate(80px, -70px) rotate(8deg) scale(0.4); filter: blur(0px); }
+            44% { transform: translate(-95px, 80px) rotate(-9deg) scale(0.4); filter: blur(1px); }
+            48% { transform: translate(110px, -95px) rotate(10deg) scale(0.4); filter: blur(1px); }
+            52% { transform: translate(-125px, 110px) rotate(-12deg) scale(0.4); filter: blur(2px); }
+            56% { transform: translate(140px, -125px) rotate(14deg) scale(0.4); filter: blur(2px); }
+            60% { transform: translate(-160px, 140px) rotate(-16deg) scale(0.4); filter: blur(3px); }
+            64% { transform: translate(180px, -160px) rotate(18deg) scale(0.4); filter: blur(3px); }
+            68% { transform: translate(-200px, 180px) rotate(-20deg) scale(0.4); filter: blur(4px); }
+            72% { transform: translate(220px, -200px) rotate(22deg) scale(0.4); filter: blur(4px); }
+            76% { transform: translate(-250px, 220px) rotate(-25deg) scale(0.4); filter: blur(5px); }
+            80% { transform: translate(280px, -250px) rotate(28deg) scale(0.4); filter: blur(5px); }
+            84% { transform: translate(-310px, 280px) rotate(-31deg) scale(0.4); filter: blur(6px); }
+            88% { transform: translate(350px, -310px) rotate(35deg) scale(0.4); filter: blur(6px); }
+            92% { transform: translate(-390px, 350px) rotate(-39deg) scale(0.4); filter: blur(7px); }
+            96% { transform: translate(440px, -390px) rotate(44deg) scale(0.4); filter: blur(7px); }
+            100% { transform: translate(-500px, 440px) rotate(-50deg) scale(0.4); filter: blur(8px); }
         }
 
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
@@ -120,11 +135,11 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
-        /* [엔딩 마방진 렌더링 스타일] */
+        /* [엔딩 마방진 렌더링 스타일 - 백색 발광 데이터 소각 완료] */
         .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.6) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #ffffff); transition: transform 0.3s ease; }
-        .mahojin-container:hover .mahojin-img { transform: scale(1.1); filter: sepia(1) hue-rotate(-50deg) saturate(6) brightness(0.8) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #ffffff); }
-        .mahojin-spark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: 85%; border-radius: 50%; box-shadow: 0 0 60px 20px rgba(255, 0, 0, 0.8), inset 0 0 40px 10px rgba(255, 200, 200, 0.6); animation: spark-pulse 0.4s infinite alternate; pointer-events: none; }
+        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.6) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #aa0000); transition: transform 0.3s ease; }
+        .mahojin-container:hover .mahojin-img { transform: scale(1.1); filter: sepia(1) hue-rotate(-50deg) saturate(6) brightness(0.8) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
+        .mahojin-spark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: 85%; border-radius: 50%; box-shadow: 0 0 60px 20px rgba(255, 0, 0, 0.8), inset 0 0 40px 10px rgba(200, 0, 0, 0.6); animation: spark-pulse 0.4s infinite alternate; pointer-events: none; }
         
         @keyframes spin-slow { 100% { transform: rotate(360deg); } }
         @keyframes spark-pulse { 0% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
@@ -174,8 +189,10 @@
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
         .class-card[data-idx="3"] { left: 50%; }
         .class-card[data-idx="4"] { left: calc(50% + 12vw); }
-        .class-card[data-idx="5"] { left: calc(50% + 24vw); }
+        .class-card[data-idx="5"] { left: calc(50% - 24vw); /* 원래 우측이어야 하나 코드 유지, 수정하려면 +24vw로 교체 요망 */ }
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
+
+        .class-card[data-idx="5"] { left: calc(50% + 24vw) !important; } /* 우측 배치 좌표 오차 픽스 패치 */
 
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff); transform: translate(-50%, -50%); }
         .class-card.falling { top: 150vh !important; transition: top 1.4s cubic-bezier(0.25, 1, 0.5, 1) !important; }
@@ -248,12 +265,14 @@
         #tutorialArrow.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0s linear 0s; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
-        /* [엔딩 연출 오버레이 및 유튜브 컨테이너] */
-        #endingWhiteOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 20000; opacity: 0; pointer-events: none; transition: opacity 5s linear; display: none; }
-        #endingBlackOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; z-index: 25000; opacity: 0; pointer-events: none; display: none; }
-        #youtubeContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; }
-        #youtubePlayer { width: 100vw; height: 100vh; }
+        /* [엔딩 연출 오버레이 및 유튜브 컨테이너 - Z-Index 역전 락 적용] */
+        #youtubeContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; overflow: hidden; }
+        #youtubePlayer { position: absolute; top: 50%; left: 50%; width: 2560px; height: 1440px; transform-origin: center center; }
         #youtubeClickBlocker { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 23000; cursor: pointer; }
+        
+        /* 백색 암막을 유튜브 컨테이너보다 상위(24000)로 배치하여 로딩 UI 은폐 */
+        #endingWhiteOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 24000; opacity: 0; pointer-events: none; display: none; }
+        #endingBlackOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; z-index: 25000; opacity: 0; pointer-events: none; display: none; }
 
         /* [뒤로가기 버튼] */
         .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 8500; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
@@ -617,7 +636,7 @@
                     <p style="margin-top: 12px;">
                         <span class="text-part">보구의 특수한 사용법.</span><br>
                         <span class="text-part">보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.</span><br>
-                        <span class="text-part">이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기 단 1번만 쓸 수 있다.</span><br>
+                        <span class="text-part">이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.</span><br>
                         <span class="text-part">마력이 터지는 것이지 보구 자체가 터지는 것이 아니라서 원형은 잠시 유지되지만 마력이 사라졌기에 곧 소멸한다.</span>
                     </p>
                 </div>
@@ -729,6 +748,7 @@
         })();
 
         let youtubePlayer = null;
+        let youtubeUIHidden = false;
         function onYouTubeIframeAPIReady() { }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -941,6 +961,7 @@
                 clone.style.textShadow = computedStyle.textShadow;
                 clone.style.textAlign = computedStyle.textAlign;
                 
+                // transform 연산 오버라이드 픽스: 원본 크기 추출 후 위치 강제 고정
                 const transformMatrix = computedStyle.transform;
                 if (transformMatrix && transformMatrix !== 'none') {
                     clone.style.transform = transformMatrix;
@@ -1477,12 +1498,20 @@
                 }, 1200);
             }
 
+            function resizeYoutubeHack() {
+                const player = document.getElementById('youtubePlayer');
+                if (player) {
+                    const scale = Math.max(window.innerWidth / 2560, window.innerHeight / 1440);
+                    player.style.transform = `translate(-50%, -50%) scale(${scale})`;
+                }
+            }
+            window.addEventListener('resize', resizeYoutubeHack);
+
             // [엔딩 컷신 및 유튜브 재생 동기화 시퀀스]
             function triggerEndingCutscene() {
                 isTransitioning = true;
                 playSfx(mahojinSfx, 1.5);
                 
-                // 트리를 전부 조망할 수 있는 스케일로 축소
                 currentScale = 0.4;
                 focusToNode('sung');
 
@@ -1493,16 +1522,15 @@
                     
                     requestAnimationFrame(() => {
                         requestAnimationFrame(() => {
+                            whiteOverlay.style.transition = 'opacity 5s linear';
                             whiteOverlay.style.opacity = '1';
                         });
                     });
 
-                    // 페이드 인 완료 1.22초 전 (5000 - 1220 = 3780)
                     setTimeout(() => {
                         playSfx(risingSfx, 1.5);
                     }, 3780);
 
-                    // 페이드 인 완료 후 1초 대기 (5000 + 1000 = 6000)
                     setTimeout(() => {
                         startYoutubeEnding();
                     }, 6000);
@@ -1513,6 +1541,7 @@
             function startYoutubeEnding() {
                 const ytContainer = document.getElementById('youtubeContainer');
                 ytContainer.style.display = 'block';
+                resizeYoutubeHack();
 
                 if (typeof YT !== 'undefined' && YT.Player) {
                     youtubePlayer = new YT.Player('youtubePlayer', {
@@ -1525,7 +1554,8 @@
                             'modestbranding': 1,
                             'rel': 0,
                             'showinfo': 0,
-                            'vq': 'hd1440'
+                            'iv_load_policy': 3,
+                            'vq': 'hd1440' 
                         },
                         events: {
                             'onReady': onPlayerReady,
@@ -1539,7 +1569,6 @@
                 event.target.setPlaybackQuality('hd1440');
                 event.target.playVideo();
                 
-                // 동기화 영상 잔여 시간 스캔 
                 videoEndingInterval = setInterval(() => {
                     const duration = event.target.getDuration();
                     const current = event.target.getCurrentTime();
@@ -1551,14 +1580,19 @@
             }
 
             function onPlayerStateChange(event) {
-                // 재생이 끝나면 확실히 초기화 루프 돌입
+                if (event.data === YT.PlayerState.PLAYING && !youtubeUIHidden) {
+                    youtubeUIHidden = true;
+                    const whiteOverlay = document.getElementById('endingWhiteOverlay');
+                    whiteOverlay.style.transition = 'opacity 1.0s ease-out';
+                    whiteOverlay.style.opacity = '0';
+                    setTimeout(() => { whiteOverlay.style.display = 'none'; }, 1000);
+                }
                 if (event.data === YT.PlayerState.ENDED) {
                     clearInterval(videoEndingInterval);
                     executeEndingBlackout(0);
                 }
             }
 
-            // 5회 연속 클릭 스킵 리스너
             let skipClickCount = 0;
             let skipClickTimer;
             document.getElementById('youtubeClickBlocker').addEventListener('click', () => {
@@ -1584,7 +1618,6 @@
                     });
                 });
 
-                // 암전 완료 후 2초 대기 후 초기화
                 setTimeout(() => {
                     localStorage.clear();
                     sessionStorage.clear();
@@ -1882,7 +1915,6 @@
                     classTabPhase = 0;
                     setTimeout(() => { isTransitioning = false; }, 1000);
 
-                    // 클래스 7장 획득 검증 완료 시 엔딩 노드 해금
                     if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
                         sessionStorage.setItem('ending_unlocked', 'true');
                     }
@@ -1944,7 +1976,6 @@
                             c.classList.remove('class-blurred', 'falling');
                         });
                         
-                        // 클래스 7장 획득 검증 완료 시 엔딩 노드 해금
                         if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
                             sessionStorage.setItem('ending_unlocked', 'true');
                         }
