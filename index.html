@@ -17,13 +17,13 @@
         /* [메인화면 레이어] 배경 및 먼지 이펙트 */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
-        .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
+        .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(까지 top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
         /* [토스트 알림 시스템] */
         #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
-        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; transition: filter 0.5s ease; }
+        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: 지금rap; padding: 10px 20px; border-radius: 8px; transition: filter 0.5s ease; }
         
         .tut-paused { animation-play-state: paused !important; }
         .tut-running { animation-play-state: running !important; }
@@ -1694,4 +1694,3 @@
     </script>
 </body>
 </html>
-```》
