@@ -147,13 +147,13 @@
 
         /* [클래스 탭 전용 독립 절대좌표 레이어 및 동기화 블러 필터 적용] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
-        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.7s ease-in-out; opacity: 0; pointer-events: none; }
+        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; filter: blur(0px); transition: filter 0.7s ease-in-out; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; }
         
         /* 1.5초 트랜지션 (1.3배 가속 하강) 및 0.7초 블러 페이드 인 완벽 동기화 */
-        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: top 1.5s ease-in-out, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
+        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 1.5s ease-in-out, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -162,19 +162,19 @@
         .class-card[data-idx="5"] { left: calc(50% + 24vw) !important; } 
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
 
-        .class-card:hover { filter: drop-shadow(0 0 20px #ffffff); transform: translate(-50%, -50%); }
+        .class-card:hover { filter: drop-shadow(0 0 20px #ffffff) blur(0px); transform: translate(-50%, -50%); }
         .class-card.falling { top: 150vh !important; pointer-events: none; }
         .class-blurred { filter: blur(12px) !important; pointer-events: none; }
         
-        .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
+        .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
         /* [신규 클래스 정보 텍스트 UI] */
-        .class-info-container { position: absolute; top: 25%; right: 8%; width: 450px; text-align: center; opacity: 0; transition: opacity 0.8s ease; z-index: 40; pointer-events: none; }
-        .class-info-container.show { opacity: 1; }
-        .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; transition: all 0.5s ease; letter-spacing: 4px; }
-        .class-info-desc { font-size: 1.458rem; line-height: 1.85; color: #d0c5b5; word-break: keep-all; }
+        .class-info-container { position: absolute; top: 20%; right: 5%; width: 450px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
+        .class-info-container.show { opacity: 1; pointer-events: auto; }
+        .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
+        .class-info-desc { font-size: 1.3rem; line-height: 1.7; color: #d0c5b5; word-break: keep-all; text-align: left; }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -185,7 +185,7 @@
         .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8); }
         .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
         .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
-        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 35px rgba(255, 105, 180, 0.95), 0 0 15px rgba(200, 50, 150, 0.8); }
+        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 40px rgba(255, 105, 180, 0.8); }
 
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
@@ -280,18 +280,22 @@
 </head>
 <body>
 
+    <!-- [안내창 가이드 및 Z-Popup 암막 시스템] -->
     <div id="tutorialDimOverlay"></div>
     <div id="tutorialOverlay"></div>
     <div id="tutorialGuide"></div>
     <div id="tutorialArrow">⇩</div>
     
+    <!-- [툴팁 박스 및 알림 컨테이너] -->
     <div id="tooltipBox"></div>
     <div id="acquireToastContainer"></div>
 
+    <!-- [이미지 자세히보기 뷰어] -->
     <div id="imageViewOverlay">
         <img id="imageViewTarget" src="" alt="Zoomed Detail View">
     </div>
 
+    <!-- [엔딩 시각 차단 오버레이 및 비메오 컨테이너] -->
     <div id="endingWhiteOverlay"></div>
     <div id="endingBlackOverlay"></div>
     <div id="vimeoContainer">
@@ -299,6 +303,7 @@
         <div id="videoClickBlocker"></div>
     </div>
 
+    <!-- [오디오 자산 매핑] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -319,7 +324,9 @@
     <audio id="classOpenSfx" src="classes/sfx-card-open.mp3" preload="auto"></audio>
     <audio id="mahojinSfx" src="sfx/sfx-mahojin.mp3" preload="auto"></audio>
     <audio id="risingSfx" src="sfx/sfx-rising.mp3" preload="auto"></audio>
+    <audio id="zabaSfx" src="voice/voice-class-zaba.mp3" preload="auto"></audio>
 
+    <!-- [메인화면 레이어 전개] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
@@ -348,6 +355,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
+    <!-- [탭 선택 창 트리 렌더링 마인드맵 뷰] -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <div class="tree-matrix-inner" id="treeMatrixInner">
@@ -357,7 +365,9 @@
         </div>
     </div>
 
+    <!-- [설명창 뷰 모듈 - 다중 탭 렌더링] -->
     <div id="dynamicTabDetailViews">
+        <!-- 1. 성배 -->
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
@@ -374,6 +384,7 @@
             </div>
         </section>
 
+        <!-- 2. 성배전쟁 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
             <div class="static-tab-title title-red">성배전쟁</div>
             <div class="detail-right-box">
@@ -391,6 +402,7 @@
             </div>
         </section>
 
+        <!-- 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
@@ -416,6 +428,7 @@
             </div>
         </section>
         
+        <!-- 4. 령주 -->
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
@@ -444,6 +457,7 @@
             </div>
         </section>
 
+        <!-- 5. 마스터 -->
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
@@ -468,6 +482,7 @@
             </div>
         </section>
 
+        <!-- 6. 서번트 -->
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
@@ -493,6 +508,7 @@
             </div>
         </section>
 
+        <!-- 7. 감독관 -->
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
@@ -516,6 +532,7 @@
             </div>
         </section>
 
+        <!-- 8. 서번트 소환 의식 -->
         <section class="tab-detail-view" id="tabDetail_sso">
             <div class="static-tab-title title-blue">서번트 소환 의식</div>
             <div class="detail-left-box">
@@ -539,6 +556,7 @@
             </div>
         </section>
 
+        <!-- 9. 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
@@ -559,6 +577,7 @@
             </div>
         </section>
 
+        <!-- 10. 보구 -->
         <section class="tab-detail-view" id="tabDetail_bogu">
             <div class="static-tab-title title-yellow"><ruby>보구<rt>노블 판타즘</rt></ruby></div>
             <div class="detail-left-box">
@@ -581,6 +600,7 @@
             </div>
         </section>
         
+        <!-- 11. 진명개방 -->
         <section class="tab-detail-view" id="tabDetail_jinbang">
             <div class="static-tab-title title-yellow">진명개방</div>
             <div class="detail-right-box">
@@ -601,6 +621,7 @@
             </div>
         </section>
         
+        <!-- 12. 브로큰 판타즘 -->
         <section class="tab-detail-view" id="tabDetail_brokenf">
             <div class="static-tab-title title-pink">브로큰 판타즘</div>
             <div class="detail-right-box">
@@ -618,6 +639,7 @@
             </div>
         </section>
 
+        <!-- 13. 클래스 -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="class-bg-layer"></div>
             <div class="class-cards-container">
@@ -633,15 +655,17 @@
             
             <div id="classInfoContainer" class="class-info-container">
                 <div id="classInfoName" class="class-info-name"></div>
-                <div id="classInfoDesc" class="class-info-desc">더미 텍스트입니다. 추후 설명글이 업데이트될 예정입니다.</div>
+                <div id="classInfoDesc" class="class-info-desc"></div>
             </div>
         </section>
     </div>
 
+    <!-- [뒤로가기 버튼] -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
+    <!-- [마스터 오디오 통합 제어 모듈 및 워터마크] -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -664,6 +688,7 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
+    <!-- [시스템 코어 프로세서 자바스크립트 엔진] -->
     <script>
         let isTransitioning = false;
         let isKeywordLocked = false;
@@ -675,7 +700,6 @@
         let currentActiveClone = null;
         let visitedClasses = JSON.parse(sessionStorage.getItem('fate_visited_classes') || '[]');
 
-        // [방사형 매트릭스 좌표 맵핑 - 마방진 노드 유지]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -703,18 +727,37 @@
             'classes/class-berserker.png'
         ];
 
-        // [클래스 텍스트 UI 글로우 및 이름 매핑 데이터 - 마스터 할당 색상 적용]
         const CLASS_INFO_DATA = [
-            { name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '' }, 
-            { name: '랜서', shadow: '0 0 15px #4169e1, 0 0 30px #0000cd', extraSize: '' }, 
-            { name: '아처', shadow: '0 0 15px #ff4444, 0 0 30px #aa0000', extraSize: '' }, 
-            { name: '라이더', shadow: '0 0 15px #da70d6, 0 0 30px #800080', extraSize: '' }, 
-            { name: '캐스터', shadow: '0 0 15px #000080, 0 0 30px #000033', extraSize: '' }, 
-            { name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '4.8rem' }, 
-            { name: '버서커', shadow: '0 0 15px #8b0000, 0 0 30px #330000', extraSize: '' }  
+            { 
+                name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '',
+                desc: '검사의 영령, 검의 영령.<br>검을 주 무기로 사용하는 기마검격형 클래스이다.<br>단순한검사가 아닌 검기병이라서 「기승」스킬이 클래스의 고유 스킬이다.<br>일반적으로 세이버는 강하다. 유명한 영웅은 거의 대부분이 검을 사용하는 영웅이기 때문이기도 하다. 유명한 설화의 주인공은 대부분 대영웅이니 메리트가 많아 대부분의 마스터들은 세이버를 소환하는 것을 목표로한다.<br>세이버 클래스가 될 수 있는 인물들은 대표적으로 엑스칼리버를 소유한 아서왕, 일본의 전설적인 검객 미야모토 무사시 등이 있다.'
+            }, 
+            { 
+                name: '랜서', shadow: '0 0 15px #4169e1, 0 0 30px #0000cd', extraSize: '',
+                desc: '창의 영령.<br>창을 주 무기로 사용하는 클래스이다.<br>전투 스타일은 창의 리치와 속도를 살린 일격이탈 전법을 사용하는, 화려하진 않으나 견실하게 강한 타입이다. 기사 출신 영령은 대부분 랜서 적성을 지녔다.<br>랜서 클래스가 될 수 있는 인물들은 대표적으로 창의 이름부터 자신의 이름이 들어간 롱기누스, 말을 타고 다니지만 창술을 구사하는 돈키호테 또한 랜서로서 소환될 수 있다.'
+            }, 
+            { 
+                name: '아처', shadow: '0 0 15px #ff4444, 0 0 30px #aa0000', extraSize: '',
+                desc: '궁병의 영령, 궁의 영령.<br>아처 클래스 적성 조건은 투척 형태의 무구나 사격에 관련된 특수능력을 지닐 것으로 꼭 활이 아니여도 된다. 원거리 공격의 특화된 서번트 답게 백병전 정면대결은 잘 하지 않는다. 아처에게는 「단독행동」이라는 특수한 스킬이 존재한다. 이스킬은 마스터가 서번트에게 지속적으로 마력을 보내줘야 소환이 유지될 수 있는 규칙을 일시적으로 무시할 수 있다. 그리고 이 스킬은 머리나 심장같은 급소에 해당하는 곳이 손상되어도 버틸 수 있게해준다. 하지만 단점으로는 마스터가 서번트를 완전히 복종시키는게 어려워진다.<br>아처 클래스가 될 수 있는 인물들은 대표적으로 명궁의 대명사 로빈 후드, 별자리로 유명한 오리온, 대포 또한 원거리 공격수단이기 때문에 나폴레옹 또한 아처 클래스가 될 수 있다.'
+            }, 
+            { 
+                name: '라이더', shadow: '0 0 15px #da70d6, 0 0 30px #800080', extraSize: '',
+                desc: '기승병(기병)의 영령, 기의 영령.<br>라이더 클래스의 적성 조건은 탑승물과 관련된 전설을 지녔을 것. 혹은 탑승물 그자체, 그래서 주무기로 뭘쓰든 무언가에 탑승했던 것이 유명하다면 라이더가 될 수 있다. 주로 높은 기동성을 소유하고있다.세이버 클래스와 마찬가지로 「기승」 스킬을 보유하고있지만 세이버가 차량 까지만 운전이 가능하다고 치면 라이더는 비행기나 헬리콥터 같은 조작이 어려운 탈 것을 운용할 수 있다.<br>라이더 클래스가 될 수 있는 인물들은 대표적으로 삼국지의 적토마와 함께 나오는 여포 혹은 적토마 그자체, 절단된 메두사의 목의 피에서 태어난 순백의 천마 페가수스의 전설이 있는 메두사 등이 있다.'
+            }, 
+            { 
+                name: '캐스터', shadow: '0 0 15px #000080, 0 0 30px #000033', extraSize: '',
+                desc: '마술사의 영령.<br>보통 무력보다는 책략가 같이 지력이 대표적인 인물들이 보통 캐스터 클래스에 부합하다. 예술가나 문인도 캐스터 클래스에 부합하다. 그렇기에 싸움과는 어울리지 않는 서번트이다. 그렇기에 캐스터에게는 「진지작성」 스킬이 있다. 이 스킬은 어떠한 환경에서도 최단기간으로 완벽한 수준의 "공방"이라는 거점을 구축할 수 있는 스킬이다. 캐스터의 거점에 정면 돌파하는 행위는 세이버 클래스라 할지라도 자살 행위에 가깝다.<br>캐스터 클래스가 될 수 있는 인물들은 대표적으로 중국 최고의 책략가 제갈량, 지혜로운 사람의 대명사 솔로몬, 아서왕 전설에 등장하는 전설의 대마법사이자 현자인 원탁의 기사 멀린 등이 있다.'
+            }, 
+            { 
+                name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '4.8rem',
+                desc: '<span class="description-quote" id="zabaTrigger">"자바니야"<br>-어새신 클래스의 대표적인 보구 이름</span><br><br>암살자의 영령, 그림자의 영령.<br>어새신 클래스는 특이하게 영웅이 아닌 존재를 소환할 수 있다. 그리고 소환되는 서번트들중 많은 수가 전설적인 암살집단 클래스의 어원이기도 한 어쌔신(아사신)을 만든 자 하산 에 사바흐의 이름과 의지를 계승받아 ○○의 하산 이라는 이름의 서번트가 대부분이다. 총 19명이 존재하며, 그들 모두가 해골 모양의 가면을 쓰고, 보구 또한 똑같이 자바니야라는 이름을 가진다. 그러나 겉으로 나온 이름만 같을 뿐 속은 가지각색이다. 닌자나 살인귀 그리고 처형인과 스파이 또한 어새신 클래스가 될 수 있다. 주 특기는 잠입, 정찰 그리고 공작. 높은 민첩성을 자랑한다. 하지만 다른 능력들이 떨어지는 편이다. 주된 공격방식은 기습과 다른 클래스의 서번트와의 정면대결은 승산이 없는 수준이기에 마스터만을 노리는 방식을 주로 사용한다.<br>어새신 클래스가 될 수 있는 인물들은 대표적으로 전설의 살인귀 잭 더 리퍼, 하산 에 사바흐 본인인 산의 노인 등이 있다.'
+            }, 
+            { 
+                name: '버서커', shadow: '0 0 15px #8b0000, 0 0 30px #330000', extraSize: '',
+                desc: '광전사의 영령, 광의 영령.<br>영령을 미치게 만드는 클래스.생전에 전투에서 미쳐날뛴 전적이 있는 영령은 버서커 클래스의 적성을 갖는다. 서번트 소환 의식 영창에 특정한 문구를 삽입 하면 버서커 클래스를 특정하여 소환 할 수 있다. 버서커로 소환되면 미쳐날뛰던 시절의 면모로 나오며, 「광화」라는 스킬이 부여되어 사고능력이 제약돼 미친 상태로 고정된다. 미치는 정도는 영령별로 다르다. 하지만 그로인해 어마무시한 전투력을 얻는다. 이런 특징들 덕분에 마스터와의 의사소통 자체가 힘들어 통제도 힘들다.<br>버서커 클래스가 될 수 있는 인물들은 대표적으로 두개의 인격 지킬&하이드, 빅터 프랑켄슈타인이 만든 인조인간인 괴물 프랑켄슈타인 등이 있다.'
+            }  
         ];
 
-        // 캐시 데이터 소멸자
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -774,6 +817,7 @@
             const classOpenSfx = document.getElementById('classOpenSfx');
             const mahojinSfx = document.getElementById('mahojinSfx');
             const risingSfx = document.getElementById('risingSfx');
+            const zabaSfx = document.getElementById('zabaSfx');
 
             const masterSlider = document.getElementById('masterSlider');
             const volumeSlider = document.getElementById('volumeSlider');
@@ -872,7 +916,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, classOpenSfx, mahojinSfx, risingSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, classOpenSfx, mahojinSfx, risingSfx, zabaSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -911,6 +955,7 @@
                 triggerPlay('#bfTrigger', bfEmiyaSfx, 3.213); 
                 triggerPlay('#jinmTrigger', jinmExcarSfx, 3.213); 
                 triggerPlay('#suvsoTrigger', suvsoFsfSfx, 5.2785); 
+                triggerPlay('#zabaTrigger', zabaSfx, 2.0); 
             });
 
             function formatTutText(text) {
@@ -1487,7 +1532,7 @@
                 }, 1200);
             }
 
-            // [비메오(Vimeo) 재생 동기화 시퀀스 및 BGM 페이드 아웃 연동]
+            // [비메오(Vimeo) 재생 동기화 및 비율 100% 매핑 시퀀스]
             function triggerEndingCutscene() {
                 isTransitioning = true;
                 
@@ -1796,14 +1841,14 @@
                 }
             });
 
-            // [클래스 탭 전용 카드 클릭 컷신 엔진 (방문 로그 수집 연동 및 블러 동기화 패치)]
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 1.0초 오버랩 패치 적용)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
                     playSfx(classOpenSfx, 1.0);
                     
-                    this.classList.add('falling');
+                    this.classList.add('falling'); // 하강 모션 1.5초
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1819,7 +1864,7 @@
                     const infoContainer = document.getElementById('classInfoContainer');
                     infoContainer.classList.remove('show');
 
-                    // 1.5초 하강 완료 후 일러스트 상승 및 블러 동기화 가동
+                    // 1.5초의 하강 모션 중 0.5초(1.0초 앞당김) 시점에 일러스트 상승 및 블러 동기화 가동
                     setTimeout(() => {
                         document.querySelector('.class-bg-layer').classList.add('class-blurred');
                         document.querySelectorAll('.class-card').forEach(c => {
@@ -1829,14 +1874,14 @@
                         illustTarget.style.opacity = '';
                         illustTarget.classList.add('rise'); // 0.7초 상승
                         
-                        // 상승 완료 0.7초 후 1.0초 대기 (총 1.7초)
                         setTimeout(() => {
                             illustTarget.classList.add('move-left'); // 1.0초 좌측 이동
                             
-                            // 좌측 이동 완료 후 텍스트 UI 렌더링
                             setTimeout(() => {
                                 const data = CLASS_INFO_DATA[idx];
                                 const nameEl = document.getElementById('classInfoName');
+                                const descEl = document.getElementById('classInfoDesc');
+                                
                                 nameEl.innerText = data.name;
                                 nameEl.style.textShadow = data.shadow;
                                 if(data.extraSize) {
@@ -1844,13 +1889,15 @@
                                 } else {
                                     nameEl.style.fontSize = '4rem';
                                 }
+                                descEl.innerHTML = data.desc;
+
                                 infoContainer.classList.add('show');
                                 
                                 classTabPhase = 2;
                                 isTransitioning = false;
                             }, 1000);
                         }, 1700); 
-                    }, 1500); 
+                    }, 500); 
                 });
             });
 
@@ -1878,13 +1925,13 @@
                 }, 1450);
             });
 
+            // [클래스 탭 역순 애니메이션 ESC 브릿지 구축 및 락 해제 오버랩 동기화]
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
 
-                // 클래스 탭 역순 애니메이션 동기화 로직 적용
                 if (currentStage === 3 && currentActiveTabId === 'class' && classTabPhase === 2) {
                     isTransitioning = true;
                     playSfx(pstSfx, 1.15);
@@ -1892,38 +1939,35 @@
                     const illustTarget = document.getElementById('classIllustTarget');
                     const infoContainer = document.getElementById('classInfoContainer');
                     
-                    // 1단계: 텍스트 UI 소멸 (0.5s 소요)
                     infoContainer.classList.remove('show');
                     
                     setTimeout(() => {
-                        // 2단계: 일러스트 중앙 이동 복귀 (1.0s 소요)
                         illustTarget.classList.remove('move-left');
                         
+                        // 1.0s 앞당겨진 역순 오버랩 연산: 중앙 정렬 완료 직후 하강과 동시에 카드 부상 가동
                         setTimeout(() => {
-                            // 3단계: 일러스트 0.7초간 하강 소멸 및 블러 해제 동기화
-                            illustTarget.classList.remove('rise');
+                            illustTarget.classList.remove('rise'); // 0.7초 하강
                             document.querySelector('.class-bg-layer').classList.remove('class-blurred');
                             document.querySelectorAll('.class-card').forEach(c => {
                                 c.classList.remove('class-blurred');
                             });
                             
+                            // 카드 1.5초 부상 모션 즉각(동시) 가동
+                            document.querySelectorAll('.class-card.falling').forEach(c => {
+                                c.classList.remove('falling');
+                            });
+                            
+                            // 모든 애니메이션 종료 대기 (가장 긴 모션인 카드 부상 1.5초 기준)
                             setTimeout(() => {
-                                // 4단계: 타겟 카드 본위치로 1.5초간 상승 복귀
-                                document.querySelectorAll('.class-card.falling').forEach(c => {
-                                    c.classList.remove('falling');
-                                });
-                                
-                                setTimeout(() => {
-                                    illustTarget.style.opacity = '0'; 
-                                    classTabPhase = 0;
-                                    isTransitioning = false;
+                                illustTarget.style.opacity = '0'; 
+                                classTabPhase = 0;
+                                isTransitioning = false;
 
-                                    if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
-                                        sessionStorage.setItem('ending_unlocked', 'true');
-                                        renderTreeGrid(false); 
-                                    }
-                                }, 1500);
-                            }, 700);
+                                if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
+                                    sessionStorage.setItem('ending_unlocked', 'true');
+                                    renderTreeGrid(false); 
+                                }
+                            }, 1500);
                         }, 1000);
                     }, 500);
 
@@ -1943,6 +1987,7 @@
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
                     if (isTransitioning || currentStage <= 1 || isTutorialActive) return;
+                    // ESC 입력 시 즉각 백버튼 리스너로 이벤트 바이패스
                     backBtn.click();
                 }
             });
@@ -1960,6 +2005,7 @@
                 if (bfEmiyaSfx) { bfEmiyaSfx.pause(); bfEmiyaSfx.currentTime = 0; }
                 if (jinmExcarSfx) { jinmExcarSfx.pause(); jinmExcarSfx.currentTime = 0; }
                 if (suvsoFsfSfx) { suvsoFsfSfx.pause(); suvsoFsfSfx.currentTime = 0; }
+                if (zabaSfx) { zabaSfx.pause(); zabaSfx.currentTime = 0; }
 
                 if (currentStage === 3) {
                     currentStage = 2;
@@ -2079,4 +2125,3 @@
     </script>
 </body>
 </html>
-
