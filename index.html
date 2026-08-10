@@ -7,7 +7,7 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      복제 오브젝트 기반 튜토리얼 Z-Index 시각 제어 엔진 및 오디오 다중 채널 엔진이 적용되어 있습니다.
+      크로스 페이드 기반 복제 오브젝트 매니저 및 오디오 다중 채널 엔진이 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
@@ -138,7 +138,7 @@
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어 (Absolute Hardcoding)] */
+        /* [클래스 탭 전용 독립 절대좌표 레이어] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
         .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.5s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
@@ -208,7 +208,7 @@
         #tutorialDimOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 8400; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: none; }
         #tutorialDimOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .clone-tutorial-highlight { position: fixed !important; z-index: 8500 !important; transition: opacity 0.5s ease-in-out !important; pointer-events: none !important; }
+        .clone-tutorial-highlight { position: fixed !important; z-index: 8500 !important; box-sizing: border-box !important; transition: opacity 0.5s ease-in-out !important; pointer-events: none !important; }
 
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 9000; opacity: 0; visibility: hidden; pointer-events: none; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -603,17 +603,17 @@
             </div>
         </section>
 
-        <!-- 13. 클래스 -->
+        <!-- 13. 클래스 (카드 7개 전체 src 경로 복구 완료) -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="class-bg-layer"></div>
             <div class="class-cards-container">
                 <img src="classes/class-back.png" class="class-card" data-idx="0" alt="Card Saber">
                 <img src="classes/class-back.png" class="class-card" data-idx="1" alt="Card Lancer">
-                <img src="classes/class-card.png" class="class-card" data-idx="2" alt="Card Archer">
-                <img src="classes/class-card.png" class="class-card" data-idx="3" alt="Card Rider">
-                <img src="classes/class-card.png" class="class-card" data-idx="4" alt="Card Caster">
-                <img src="classes/class-card.png" class="class-card" data-idx="5" alt="Card Assassin">
-                <img src="classes/class-card.png" class="class-card" data-idx="6" alt="Card Berserker">
+                <img src="classes/class-back.png" class="class-card" data-idx="2" alt="Card Archer">
+                <img src="classes/class-back.png" class="class-card" data-idx="3" alt="Card Rider">
+                <img src="classes/class-back.png" class="class-card" data-idx="4" alt="Card Caster">
+                <img src="classes/class-back.png" class="class-card" data-idx="5" alt="Card Assassin">
+                <img src="classes/class-back.png" class="class-card" data-idx="6" alt="Card Berserker">
             </div>
             <img src="" class="class-illust-target detail-img" id="classIllustTarget" alt="Class Illustration">
         </section>
@@ -655,7 +655,8 @@
         let currentScale = 1.0; 
         let tutState = { seq: 0, step: 0 };
         let classTabPhase = 0;
-        let cloneHighlightEls = []; // 복제 오브젝트 관리 배열
+        let cloneHighlightEls = []; 
+        let currentActiveClone = null;
 
         // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
@@ -735,7 +736,7 @@
             const bfEmiyaSfx = document.getElementById('bfEmiyaSfx');
             const jinmExcarSfx = document.getElementById('jinmExcarSfx');
             const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
-            const classOpenSfx = document.getElementById('classes/sfx-card-open.mp3');
+            const classOpenSfx = document.getElementById('classOpenSfx');
 
             const masterSlider = document.getElementById('masterSlider');
             const volumeSlider = document.getElementById('volumeSlider');
@@ -881,12 +882,17 @@
                     .replace(/\{(.*?)\}/g, '<span style="text-shadow: 0 0 10px #ffffff;">$1</span>');
             }
 
-            // [복제 오브젝트 생성 및 제거 관리 엔진]
+            // [크로스 페이드 기반 복제 오브젝트 매니저 엔진]
             function clearCloneHighlights() {
                 cloneHighlightEls.forEach(el => {
-                    if (el && el.parentNode) el.parentNode.removeChild(el);
+                    if (el && el.parentNode) {
+                        el.style.transition = 'opacity 0.5s ease-out';
+                        el.style.opacity = '0';
+                        setTimeout(() => { if (el.parentNode) el.parentNode.removeChild(el); }, 500);
+                    }
                 });
                 cloneHighlightEls = [];
+                currentActiveClone = null;
             }
 
             function spawnCloneHighlight(sourceEl, instantFade = false, customStyle = {}) {
@@ -908,7 +914,11 @@
                     clone.style.opacity = '1';
                 } else {
                     clone.style.opacity = '0';
-                    setTimeout(() => { clone.style.opacity = '1'; }, 20);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            clone.style.opacity = '1';
+                        });
+                    });
                 }
 
                 document.body.appendChild(clone);
@@ -916,15 +926,20 @@
                 return clone;
             }
 
-            function removeCloneHighlight(clone, fadeOutDuration = 600) {
-                if (!clone) return;
-                clone.style.transition = `opacity ${fadeOutDuration}ms ease-out`;
-                clone.style.opacity = '0';
-                setTimeout(() => {
-                    if (clone && clone.parentNode) clone.parentNode.removeChild(clone);
-                    const idx = cloneHighlightEls.indexOf(clone);
-                    if (idx > -1) cloneHighlightEls.splice(idx, 1);
-                }, fadeOutDuration);
+            function transitionCloneHighlight(newSourceEl, instant = false) {
+                const oldClone = currentActiveClone;
+                const newClone = spawnCloneHighlight(newSourceEl, instant);
+                currentActiveClone = newClone;
+                if (oldClone) {
+                    oldClone.style.transition = 'opacity 0.5s ease-out';
+                    oldClone.style.opacity = '0';
+                    setTimeout(() => {
+                        if (oldClone && oldClone.parentNode) oldClone.parentNode.removeChild(oldClone);
+                        const idx = cloneHighlightEls.indexOf(oldClone);
+                        if (idx > -1) cloneHighlightEls.splice(idx, 1);
+                    }, 500);
+                }
+                return newClone;
             }
 
             function endTutorial() {
@@ -983,11 +998,7 @@
                 guide.classList.add('active');
             }
 
-            let currentActiveClone = null;
-
             function runTutStep() {
-                clearCloneHighlights();
-                
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); } 
                     else if (tutState.step === 1) { showTutorialGuide("이곳은 여러 개념들이 있는 장소 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
@@ -995,11 +1006,11 @@
                     else if (tutState.step === 3) { 
                         showTutorialGuide("성배를 눌러 성배 상세 페이지로 접속해봅시다.", "확인", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            clearCloneHighlights();
                             setTimeout(() => {
                                 localStorage.setItem('tut_seq1', 'done'); 
                                 endTutorial();
-                            }, 600);
+                            }, 500);
                         }); 
                         const sungBtn = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
                         if (sungBtn) currentActiveClone = spawnCloneHighlight(sungBtn, false);
@@ -1009,71 +1020,70 @@
                     else if (tutState.step === 1) { 
                         showTutorialGuide("이곳은 개념과 관련된 사진이 있는 곳입니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }); 
                         const img = document.querySelector('#tabDetail_sung .detail-img');
-                        if(img) currentActiveClone = spawnCloneHighlight(img, false);
+                        if(img) currentActiveClone = transitionCloneHighlight(img, false);
                     } 
                     else if (tutState.step === 2) { 
                         showTutorialGuide("이건 배치 된 사진이 무엇인지 알려주는 글입니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }); 
                         const label = document.querySelector('#tabDetail_sung .detail-sub-label');
-                        if(label) currentActiveClone = spawnCloneHighlight(label, false);
+                        if(label) currentActiveClone = transitionCloneHighlight(label, false);
                     } 
                     else if (tutState.step === 3) { 
                         showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }); 
                         const box = document.querySelector('#tabDetail_sung .detail-right-box');
-                        if(box) currentActiveClone = spawnCloneHighlight(box, false);
+                        if(box) currentActiveClone = transitionCloneHighlight(box, false);
                     } 
                     else if (tutState.step === 4) { 
                         showTutorialGuide("이건 어록 입니다. 이걸 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }); 
                         const quote = document.querySelector('#tabDetail_sung .description-quote');
-                        if(quote) currentActiveClone = spawnCloneHighlight(quote, false);
+                        if(quote) currentActiveClone = transitionCloneHighlight(quote, false);
                     } 
                     else if (tutState.step === 5) { 
-                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 [신규개념] 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                        showTutorialGuide("이렇게 노란색으로 표시된 단어는 [신규개념] 입니다.", "다음", () => { 
+                            playSfx(anneSfx); 
+                            tutState.step++; 
+                            runTutStep(); 
+                        }); 
                         const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
-                        if(kw) currentActiveClone = spawnCloneHighlight(kw, false);
+                        if(kw) currentActiveClone = transitionCloneHighlight(kw, false);
                     } 
                     else if (tutState.step === 6) { 
                         showTutorialGuide("[신규개념]은 단어를 누르는 것으로 획득할 수 있습니다.", "확인", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            clearCloneHighlights();
                             setTimeout(() => {
                                 localStorage.setItem('tut_seq2', 'done'); 
                                 endTutorial();
-                            }, 600);
+                            }, 500);
                         }); 
                         const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
-                        if(kw) currentActiveClone = spawnCloneHighlight(kw, false);
+                        if(kw) currentActiveClone = transitionCloneHighlight(kw, false);
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) { 
                         document.querySelectorAll('.word-toast-item').forEach(el => el.classList.add('tut-paused'));
                         showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }, {bottomAlign: true}); 
                         const toastItem = document.querySelector('.word-toast-item');
-                        if (toastItem) currentActiveClone = spawnCloneHighlight(toastItem, true); // 이번만 페이드 인 없이 즉시 소환
+                        if (toastItem) currentActiveClone = spawnCloneHighlight(toastItem, true); 
                     } 
                     else if (tutState.step === 1) { 
                         const backBtn = document.getElementById('backBtn');
@@ -1084,32 +1094,31 @@
                         
                         showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다.", "확인", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            clearCloneHighlights();
                             setTimeout(() => {
                                 localStorage.setItem('tut_seq3', 'done'); 
                                 endTutorial();
-                            }, 600);
+                            }, 500);
                         }); 
-                        if(backBtn) currentActiveClone = spawnCloneHighlight(backBtn, false);
+                        if(backBtn) currentActiveClone = transitionCloneHighlight(backBtn, false);
                     }
                 } else if (tutState.seq === 4) { 
                     if (tutState.step === 0) { 
                         showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
                             tutState.step++; 
                             runTutStep(); 
                         }, {topAlign: true, fadeIn: true}); 
                         const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
-                        if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true); // 이번만 즉시 소환
+                        if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true); 
                     } else if (tutState.step === 1) {
                         showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { 
                             playSfx(anneSfx); 
-                            if (currentActiveClone) removeCloneHighlight(currentActiveClone, 600);
+                            clearCloneHighlights();
                             setTimeout(() => {
                                 localStorage.setItem('tut_seq4', 'done'); 
                                 endTutorial();
-                            }, 600);
+                            }, 500);
                         }, {topAlign: true});
                         const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
                         if (sungbwarBtn) currentActiveClone = spawnCloneHighlight(sungbwarBtn, true);
@@ -1129,7 +1138,7 @@
                         const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
                         if(activeView) {
                             activeView.querySelectorAll('.annotation-word').forEach(a => {
-                                spawnCloneHighlight(a, true); // 이번만 즉시 소환
+                                spawnCloneHighlight(a, true); 
                             });
                         }
                     } 
@@ -1141,7 +1150,7 @@
                             setTimeout(() => {
                                 localStorage.setItem('tut_seq6', 'done'); 
                                 endTutorial();
-                            }, 600);
+                            }, 500);
                         }); 
                     }
                 }
@@ -1241,7 +1250,7 @@
                 }
             });
 
-            // [이미지 자세히보기 뷰어 모듈 (클래스 탭 일러스트 포함 전역 작동)]
+            // [이미지 자세히보기 뷰어 모듈]
             const ivOverlay = document.getElementById('imageViewOverlay');
             const ivTarget = document.getElementById('imageViewTarget');
             let ivScale = 1; let ivPanX = 0; let ivPanY = 0;
