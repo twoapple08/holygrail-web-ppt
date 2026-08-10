@@ -2,12 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      모바일 가로 모드 강제화, Z-Index 기반 튜토리얼 암막 시각 제어, 오디오 다중 채널 엔진이 적용되어 있습니다.
+      Z-Index 기반 튜토리얼 암막 시각 제어, 오디오 다중 채널 엔진이 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
@@ -15,16 +15,6 @@
            터치 하이라이트 제거 및 스크롤 바운스 차단을 위한 전역 설정 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
-
-        /* [모바일 가로 모드 강제화 오버레이] 
-           세로 화면 진입 시 렌더링을 차단하고 기기 회전을 요구하는 최상위 계층 경고창 */
-        #landscapeWarning { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; }
-        #landscapeWarning h2 { font-size: 2.5rem; color: #ff3333; margin-bottom: 15px; letter-spacing: 2px; }
-        #landscapeWarning p { font-size: 1.5rem; color: #d0c5b5; letter-spacing: 1px; }
-
-        @media (max-width: 1024px) and (orientation: portrait) {
-            #landscapeWarning { display: flex !important; }
-        }
 
         /* [메인화면 배경 레이어 및 붉은 먼지 이펙트] 
            페이드 인/아웃 트랜지션 및 CSS 애니메이션으로 구성된 세계관 배경 묘사 */
@@ -233,7 +223,8 @@
         #tutorialDimOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 8400; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: none; }
         #tutorialDimOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
         
-        .tut-highlight { z-index: 8500 !important; position: relative !important; transition: all 0.5s ease-in-out !important; }
+        /* 튜토리얼 하이라이트 애니메이션 제거로 인한 명도만 제어 가능하도록 패치 */
+        .tut-highlight { z-index: 8500 !important; position: relative !important; }
 
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 9000; opacity: 0; visibility: hidden; pointer-events: none; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -280,12 +271,6 @@
     </style>
 </head>
 <body>
-
-    <!-- [모바일 가로 모드 강제화 오버레이] -->
-    <div id="landscapeWarning">
-        <h2>세로 모드 감지됨</h2>
-        <p>최적의 레이아웃을 위해 기기를 가로로 회전하십시오.</p>
-    </div>
 
     <!-- [안내창 가이드 및 Z-Popup 암막 시스템] -->
     <div id="tutorialDimOverlay"></div>
@@ -1072,10 +1057,6 @@
                 toastEl.className = 'word-toast-item';
                 toastEl.innerHTML = `—${wordText}${getParticle(wordText)} 획득했습니다—`;
                 acquireToastContainer.prepend(toastEl);
-                
-                if(isTutorialActive || !localStorage.getItem('tut_seq3')) {
-                    toastEl.classList.add('tut-paused');
-                }
                 
                 let remaining = 1500;
                 let lastTime = Date.now();
