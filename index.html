@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
+    <script src="https://www.youtube.com/iframe_api"></script>
     <style>
         /* [CSS 전역 초기화] */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -64,7 +65,6 @@
         .holy-grail-wrapper.animate { animation: grail-smooth-fadein 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         .fate-logo-img { width: 270px; height: auto; animation: grail-gentle-float 3s infinite ease-in-out; filter: drop-shadow(0 0 22px rgba(200, 20, 20, 0.85)); }
         
-        /* 튜토리얼 활성화 시 애니메이션 정지 제어 클래스 */
         body.tut-active .detail-img,
         body.tut-active .fate-logo-img { animation-play-state: paused !important; }
 
@@ -88,8 +88,24 @@
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         
-        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1); transform-origin: center center; will-change: transform; }
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 1.7s cubic-bezier(0.25, 1, 0.4, 1); transform-origin: center center; will-change: transform; }
         
+        /* 엔딩 지진 효과 적용 클래스 */
+        .ending-shake-active { animation: earthquake-escalate 5s cubic-bezier(.36,.07,.19,.97) forwards; }
+        @keyframes earthquake-escalate {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-2px, 2px) rotate(-1deg); }
+            20% { transform: translate(4px, -4px) rotate(1deg); }
+            30% { transform: translate(-6px, 6px) rotate(-2deg); }
+            40% { transform: translate(10px, -8px) rotate(2deg); }
+            50% { transform: translate(-15px, 12px) rotate(-3deg); }
+            60% { transform: translate(20px, -15px) rotate(4deg); }
+            70% { transform: translate(-25px, 20px) rotate(-5deg); }
+            80% { transform: translate(35px, -25px) rotate(6deg); filter: blur(2px); }
+            90% { transform: translate(-45px, 35px) rotate(-8deg); filter: blur(4px); }
+            100% { transform: translate(60px, -50px) rotate(10deg); filter: blur(6px); }
+        }
+
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
         
         .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: all 0.5s ease; }
@@ -103,6 +119,15 @@
 
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
+
+        /* [엔딩 마방진 렌더링 스타일] */
+        .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
+        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: sepia(1) hue-rotate(-50deg) saturate(5) brightness(0.6) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #ffffff); transition: transform 0.3s ease; }
+        .mahojin-container:hover .mahojin-img { transform: scale(1.1); filter: sepia(1) hue-rotate(-50deg) saturate(6) brightness(0.8) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #ffffff); }
+        .mahojin-spark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 85%; height: 85%; border-radius: 50%; box-shadow: 0 0 60px 20px rgba(255, 0, 0, 0.8), inset 0 0 40px 10px rgba(255, 200, 200, 0.6); animation: spark-pulse 0.4s infinite alternate; pointer-events: none; }
+        
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+        @keyframes spark-pulse { 0% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
 
         /* [개념별 발광 버튼 필터 세트] */
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
@@ -124,7 +149,6 @@
         
         .color-gold { color: #ffd700 !important; }
 
-        /* [봉인된 노드 인터페이스 및 먼지 파티클 애니메이션] */
         .class-base-text { position: relative; z-index: 1; }
         .class-lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: transparent; background: linear-gradient(0deg, #111 0%, #111 40%, rgba(200, 0, 0, 0.25) 50%, #111 60%, #111 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 15px #000, 0 0 25px #000, 0 0 35px #000, 0 0 10px rgba(200, 0, 0, 0.8); transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; z-index: 2; }
         .is-unlocking .class-lock-overlay { opacity: 0; }
@@ -144,7 +168,7 @@
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; transition: filter 0.5s ease; pointer-events: none; }
-        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 1.0s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
+        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -224,6 +248,13 @@
         #tutorialArrow.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0s linear 0s; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
+        /* [엔딩 연출 오버레이 및 유튜브 컨테이너] */
+        #endingWhiteOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 20000; opacity: 0; pointer-events: none; transition: opacity 5s linear; display: none; }
+        #endingBlackOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; z-index: 25000; opacity: 0; pointer-events: none; display: none; }
+        #youtubeContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; }
+        #youtubePlayer { width: 100vw; height: 100vh; }
+        #youtubeClickBlocker { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 23000; cursor: pointer; }
+
         /* [뒤로가기 버튼] */
         .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 8500; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
@@ -268,6 +299,13 @@
         <img id="imageViewTarget" src="" alt="Zoomed Detail View">
     </div>
 
+    <div id="endingWhiteOverlay"></div>
+    <div id="endingBlackOverlay"></div>
+    <div id="youtubeContainer">
+        <div id="youtubePlayer"></div>
+        <div id="youtubeClickBlocker"></div>
+    </div>
+
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -286,6 +324,8 @@
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
     <audio id="classOpenSfx" src="classes/sfx-card-open.mp3" preload="auto"></audio>
+    <audio id="mahojinSfx" src="sfx/sfx-mahojin.mp3" preload="auto"></audio>
+    <audio id="risingSfx" src="sfx/sfx-rising.mp3" preload="auto"></audio>
 
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
@@ -577,7 +617,7 @@
                     <p style="margin-top: 12px;">
                         <span class="text-part">보구의 특수한 사용법.</span><br>
                         <span class="text-part">보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.</span><br>
-                        <span class="text-part">이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.</span><br>
+                        <span class="text-part">이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기 단 1번만 쓸 수 있다.</span><br>
                         <span class="text-part">마력이 터지는 것이지 보구 자체가 터지는 것이 아니라서 원형은 잠시 유지되지만 마력이 사라졌기에 곧 소멸한다.</span>
                     </p>
                 </div>
@@ -634,8 +674,9 @@
         let classTabPhase = 0;
         let cloneHighlightEls = []; 
         let currentActiveClone = null;
+        let visitedClasses = JSON.parse(sessionStorage.getItem('fate_visited_classes') || '[]');
 
-        // [방사형 매트릭스 좌표 맵핑]
+        // [방사형 매트릭스 좌표 맵핑 - 마방진 노드 추가]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -649,7 +690,8 @@
             'class': { name: '클래스', parent: 'suv', x: 50, y: 98 },
             'bogu': { name: '<ruby>보구<rt>노블 판타즘</rt></ruby>', parent: 'suv', x: 67.7, y: 90.6 },
             'jinbang': { name: '진명개방', parent: 'bogu', x: 87.7, y: 90.6 },
-            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 }
+            'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 },
+            'mahojin': { name: '', parent: 'class', x: 50, y: 140 }
         };
 
         const CLASS_ILLUST_MAP = [
@@ -673,6 +715,8 @@
                 sessionStorage.removeItem('fate_voice_played');
                 sessionStorage.removeItem('fate_visited_yong');
                 sessionStorage.removeItem('fate_visited_bogu');
+                sessionStorage.removeItem('fate_visited_classes');
+                sessionStorage.removeItem('ending_unlocked');
                 
                 localStorage.removeItem('tut_seq1');
                 localStorage.removeItem('tut_seq2');
@@ -683,6 +727,9 @@
                 localStorage.removeItem('fate_class_cutscene');
             }
         })();
+
+        let youtubePlayer = null;
+        function onYouTubeIframeAPIReady() { }
 
         document.addEventListener('DOMContentLoaded', function() {
             if (!history.state || history.state.stage !== 1) {
@@ -714,6 +761,8 @@
             const jinmExcarSfx = document.getElementById('jinmExcarSfx');
             const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
             const classOpenSfx = document.getElementById('classOpenSfx');
+            const mahojinSfx = document.getElementById('mahojinSfx');
+            const risingSfx = document.getElementById('risingSfx');
 
             const masterSlider = document.getElementById('masterSlider');
             const volumeSlider = document.getElementById('volumeSlider');
@@ -811,7 +860,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, classOpenSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, classOpenSfx, mahojinSfx, risingSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -1428,6 +1477,121 @@
                 }, 1200);
             }
 
+            // [엔딩 컷신 및 유튜브 재생 동기화 시퀀스]
+            function triggerEndingCutscene() {
+                isTransitioning = true;
+                playSfx(mahojinSfx, 1.5);
+                
+                // 트리를 전부 조망할 수 있는 스케일로 축소
+                currentScale = 0.4;
+                focusToNode('sung');
+
+                setTimeout(() => {
+                    treeMatrixWorld.classList.add('ending-shake-active');
+                    const whiteOverlay = document.getElementById('endingWhiteOverlay');
+                    whiteOverlay.style.display = 'block';
+                    
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            whiteOverlay.style.opacity = '1';
+                        });
+                    });
+
+                    // 페이드 인 완료 1.22초 전 (5000 - 1220 = 3780)
+                    setTimeout(() => {
+                        playSfx(risingSfx, 1.5);
+                    }, 3780);
+
+                    // 페이드 인 완료 후 1초 대기 (5000 + 1000 = 6000)
+                    setTimeout(() => {
+                        startYoutubeEnding();
+                    }, 6000);
+                }, 1700);
+            }
+
+            let videoEndingInterval;
+            function startYoutubeEnding() {
+                const ytContainer = document.getElementById('youtubeContainer');
+                ytContainer.style.display = 'block';
+
+                if (typeof YT !== 'undefined' && YT.Player) {
+                    youtubePlayer = new YT.Player('youtubePlayer', {
+                        videoId: 'z-1S1CyyjOk',
+                        playerVars: {
+                            'autoplay': 1,
+                            'controls': 0,
+                            'disablekb': 1,
+                            'fs': 0,
+                            'modestbranding': 1,
+                            'rel': 0,
+                            'showinfo': 0,
+                            'vq': 'hd1440'
+                        },
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange
+                        }
+                    });
+                }
+            }
+
+            function onPlayerReady(event) {
+                event.target.setPlaybackQuality('hd1440');
+                event.target.playVideo();
+                
+                // 동기화 영상 잔여 시간 스캔 
+                videoEndingInterval = setInterval(() => {
+                    const duration = event.target.getDuration();
+                    const current = event.target.getCurrentTime();
+                    if (duration > 0 && (duration - current <= 3)) {
+                        clearInterval(videoEndingInterval);
+                        executeEndingBlackout(3000);
+                    }
+                }, 500);
+            }
+
+            function onPlayerStateChange(event) {
+                // 재생이 끝나면 확실히 초기화 루프 돌입
+                if (event.data === YT.PlayerState.ENDED) {
+                    clearInterval(videoEndingInterval);
+                    executeEndingBlackout(0);
+                }
+            }
+
+            // 5회 연속 클릭 스킵 리스너
+            let skipClickCount = 0;
+            let skipClickTimer;
+            document.getElementById('youtubeClickBlocker').addEventListener('click', () => {
+                skipClickCount++;
+                clearTimeout(skipClickTimer);
+                if (skipClickCount >= 5) {
+                    clearInterval(videoEndingInterval);
+                    if (youtubePlayer && youtubePlayer.pauseVideo) youtubePlayer.pauseVideo();
+                    executeEndingBlackout(0);
+                } else {
+                    skipClickTimer = setTimeout(() => { skipClickCount = 0; }, 1000);
+                }
+            });
+
+            function executeEndingBlackout(durationMs) {
+                const blackOverlay = document.getElementById('endingBlackOverlay');
+                blackOverlay.style.display = 'block';
+                blackOverlay.style.transition = `opacity ${durationMs}ms linear`;
+                
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        blackOverlay.style.opacity = '1';
+                    });
+                });
+
+                // 암전 완료 후 2초 대기 후 초기화
+                setTimeout(() => {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    location.reload();
+                }, durationMs + 2000);
+            }
+
             function renderTreeGrid(resetFocus = false) {
                 treeSvg.innerHTML = '<defs></defs>';
                 const svgDefs = treeSvg.querySelector('defs');
@@ -1435,6 +1599,11 @@
                 
                 const orderList = JSON.parse(sessionStorage.getItem('fate_concept_order') || '[]');
                 const unlockedIds = orderList.filter(id => sessionStorage.getItem('fate_concept_' + id) === 'true' && CONCEPT_REGISTRY[id]);
+                
+                const isEndingUnlocked = sessionStorage.getItem('ending_unlocked') === 'true';
+                if (isEndingUnlocked && !unlockedIds.includes('mahojin')) {
+                    unlockedIds.push('mahojin');
+                }
 
                 const svgW = treeSvg.clientWidth || window.innerWidth;
                 const svgH = treeSvg.clientHeight || window.innerHeight;
@@ -1506,98 +1675,118 @@
                     nodeBox.style.top = nodeInfo.y + '%';
                     nodeBox.setAttribute('data-id', id);
 
-                    const btn = document.createElement('button');
-                    btn.className = 'tab-item-btn';
-
-                    if (id === 'sung' || id === 'jinbang' || id === 'bogu') { btn.classList.add('yellow-glow-btn'); } 
-                    else if (id === 'sungbwar') { btn.classList.add('red-glow-btn'); } 
-                    else if (id === 'ma' || id === 'master') { btn.classList.add('white-glow-btn'); } 
-                    else if (id === 'rj') { btn.classList.add('brightred-glow-btn'); } 
-                    else if (id === 'suv' || id === 'yong') { btn.classList.add('skyblue-glow-btn'); } 
-                    else if (id === 'gam') { btn.classList.add('black-glow-btn'); } 
-                    else if (id === 'sso' || id === 'brokenf') { btn.classList.add(id === 'sso' ? 'blue-glow-btn' : 'pink-glow-btn', 'btn-sso'); }
-                    
-                    if (id === 'class') {
-                        btn.classList.add('white-glow-btn', 'color-gold');
-                        if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
-                            btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
-                            btn.classList.add('is-locked');
-                        } else {
-                            btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span>`;
-                        }
+                    if (id === 'mahojin') {
+                        const mContainer = document.createElement('div');
+                        mContainer.className = 'mahojin-container';
+                        mContainer.innerHTML = `
+                            <img src="img/img-suvso-mahojin.png" class="mahojin-img" alt="Mahojin">
+                            <div class="mahojin-spark"></div>
+                        `;
+                        mContainer.onclick = () => {
+                            if (isTransitioning || ivOverlay.classList.contains('show')) return;
+                            if (currentFocusedId !== 'mahojin') {
+                                playSfx(moveSfx, 4.5);
+                                isTransitioning = true;
+                                focusToNode('mahojin');
+                                setTimeout(() => { isTransitioning = false; }, 1200);
+                            } else {
+                                triggerEndingCutscene();
+                            }
+                        };
+                        nodeBox.appendChild(mContainer);
                     } else {
-                        btn.innerHTML = nodeInfo.name;
-                    }
-                    
-                    btn.onclick = () => {
-                        if (isTransitioning || ivOverlay.classList.contains('show')) return;
+                        const btn = document.createElement('button');
+                        btn.className = 'tab-item-btn';
+
+                        if (id === 'sung' || id === 'jinbang' || id === 'bogu') { btn.classList.add('yellow-glow-btn'); } 
+                        else if (id === 'sungbwar') { btn.classList.add('red-glow-btn'); } 
+                        else if (id === 'ma' || id === 'master') { btn.classList.add('white-glow-btn'); } 
+                        else if (id === 'rj') { btn.classList.add('brightred-glow-btn'); } 
+                        else if (id === 'suv' || id === 'yong') { btn.classList.add('skyblue-glow-btn'); } 
+                        else if (id === 'gam') { btn.classList.add('black-glow-btn'); } 
+                        else if (id === 'sso' || id === 'brokenf') { btn.classList.add(id === 'sso' ? 'blue-glow-btn' : 'pink-glow-btn', 'btn-sso'); }
                         
-                        if (btn.classList.contains('is-locked')) {
+                        if (id === 'class') {
+                            btn.classList.add('white-glow-btn', 'color-gold');
+                            if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
+                                btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
+                                btn.classList.add('is-locked');
+                            } else {
+                                btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span>`;
+                            }
+                        } else {
+                            btn.innerHTML = nodeInfo.name;
+                        }
+                        
+                        btn.onclick = () => {
+                            if (isTransitioning || ivOverlay.classList.contains('show')) return;
+                            
+                            if (btn.classList.contains('is-locked')) {
+                                if (currentFocusedId !== id) {
+                                    playSfx(moveSfx, 4.5);
+                                    isTransitioning = true;
+                                    focusToNode(id);
+                                    setTimeout(() => { isTransitioning = false; }, 1200);
+                                } else {
+                                    playSfx(blockSfx, 3.0);
+                                    btn.classList.remove('class-locked-shake');
+                                    void btn.offsetWidth; 
+                                    btn.classList.add('class-locked-shake');
+                                    isTransitioning = true;
+                                    focusToNode(id);
+                                    setTimeout(() => { btn.classList.remove('class-locked-shake'); isTransitioning = false; }, 500);
+                                }
+                                return;
+                            }
+
                             if (currentFocusedId !== id) {
                                 playSfx(moveSfx, 4.5);
                                 isTransitioning = true;
                                 focusToNode(id);
                                 setTimeout(() => { isTransitioning = false; }, 1200);
                             } else {
-                                playSfx(blockSfx, 3.0);
-                                btn.classList.remove('class-locked-shake');
-                                void btn.offsetWidth; 
-                                btn.classList.add('class-locked-shake');
                                 isTransitioning = true;
-                                focusToNode(id);
-                                setTimeout(() => { btn.classList.remove('class-locked-shake'); isTransitioning = false; }, 500);
+                                history.pushState({ stage: 3, id: id }, '', '');
+                                playSfx(pstSfx, 1.15);
+                                
+                                currentActiveTabId = id;
+                                treeSelectionContainer.classList.remove('show');
+                                
+                                if (id === 'class') {
+                                    document.getElementById('bgLayer').style.opacity = '0';
+                                    document.getElementById('dustEffect').style.opacity = '0';
+                                } else {
+                                    document.getElementById('bgLayer').style.opacity = '1';
+                                    document.getElementById('dustEffect').style.opacity = '0.55';
+                                }
+
+                                if (id === 'yong' || id === 'bogu') {
+                                    sessionStorage.setItem('fate_visited_' + id, 'true');
+                                }
+
+                                const targetView = document.getElementById('tabDetail_' + id);
+                                if (targetView) {
+                                    setTimeout(() => {
+                                        targetView.classList.add('show');
+                                        currentStage = 3;
+                                        isTransitioning = false;
+
+                                        if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
+                                            isTutorialActive = true; tutState = { seq: 2, step: 0 }; setTimeout(() => runTutStep(), 1000);
+                                        } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
+                                            isTutorialActive = true; tutState = { seq: 5, step: 0 }; setTimeout(() => runTutStep(), 1000);
+                                        }
+                                        
+                                        const annoTabs = ['ma', 'master', 'gam', 'rj', 'suv'];
+                                        if (annoTabs.includes(id) && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
+                                            setTimeout(() => { if(!isTutorialActive) { isTutorialActive = true; tutState = { seq: 6, step: 0 }; runTutStep(); } }, 1000); 
+                                        }
+                                    }, 600);
+                                }
                             }
-                            return;
-                        }
-
-                        if (currentFocusedId !== id) {
-                            playSfx(moveSfx, 4.5);
-                            isTransitioning = true;
-                            focusToNode(id);
-                            setTimeout(() => { isTransitioning = false; }, 1200);
-                        } else {
-                            isTransitioning = true;
-                            history.pushState({ stage: 3, id: id }, '', '');
-                            playSfx(pstSfx, 1.15);
-                            
-                            currentActiveTabId = id;
-                            treeSelectionContainer.classList.remove('show');
-                            
-                            if (id === 'class') {
-                                document.getElementById('bgLayer').style.opacity = '0';
-                                document.getElementById('dustEffect').style.opacity = '0';
-                            } else {
-                                document.getElementById('bgLayer').style.opacity = '1';
-                                document.getElementById('dustEffect').style.opacity = '0.55';
-                            }
-
-                            if (id === 'yong' || id === 'bogu') {
-                                sessionStorage.setItem('fate_visited_' + id, 'true');
-                            }
-
-                            const targetView = document.getElementById('tabDetail_' + id);
-                            if (targetView) {
-                                setTimeout(() => {
-                                    targetView.classList.add('show');
-                                    currentStage = 3;
-                                    isTransitioning = false;
-
-                                    if (id === 'sung' && !localStorage.getItem('tut_seq2')) {
-                                        isTutorialActive = true; tutState = { seq: 2, step: 0 }; setTimeout(() => runTutStep(), 1000);
-                                    } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
-                                        isTutorialActive = true; tutState = { seq: 5, step: 0 }; setTimeout(() => runTutStep(), 1000);
-                                    }
-                                    
-                                    const annoTabs = ['ma', 'master', 'gam', 'rj', 'suv'];
-                                    if (annoTabs.includes(id) && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
-                                        setTimeout(() => { if(!isTutorialActive) { isTutorialActive = true; tutState = { seq: 6, step: 0 }; runTutStep(); } }, 1000); 
-                                    }
-                                }, 600);
-                            }
-                        }
-                    };
-
-                    nodeBox.appendChild(btn);
+                        };
+                        nodeBox.appendChild(btn);
+                    }
                     treeNodesBox.appendChild(nodeBox);
                 });
 
@@ -1612,7 +1801,7 @@
                 }
             });
 
-            // [클래스 탭 전용 카드 클릭 컷신 엔진]
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (방문 로그 수집 연동)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
@@ -1627,8 +1816,13 @@
                     });
 
                     const idx = parseInt(this.getAttribute('data-idx'));
-                    const illustTarget = document.getElementById('classIllustTarget');
+                    
+                    if(!visitedClasses.includes(idx)) {
+                        visitedClasses.push(idx);
+                        sessionStorage.setItem('fate_visited_classes', JSON.stringify(visitedClasses));
+                    }
 
+                    const illustTarget = document.getElementById('classIllustTarget');
                     illustTarget.style.opacity = '0';
                     illustTarget.src = CLASS_ILLUST_MAP[idx];
 
@@ -1641,7 +1835,7 @@
                             classTabPhase = 2;
                             isTransitioning = false;
                         }, 1000);
-                    }, 1400); // 하강 트랜지션 타임 1.4s에 완벽 동기화 완료
+                    }, 1400); 
                 });
             });
 
@@ -1687,6 +1881,11 @@
                     });
                     classTabPhase = 0;
                     setTimeout(() => { isTransitioning = false; }, 1000);
+
+                    // 클래스 7장 획득 검증 완료 시 엔딩 노드 해금
+                    if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
+                        sessionStorage.setItem('ending_unlocked', 'true');
+                    }
                     return;
                 }
 
@@ -1744,6 +1943,11 @@
                         document.querySelectorAll('.class-card').forEach(c => {
                             c.classList.remove('class-blurred', 'falling');
                         });
+                        
+                        // 클래스 7장 획득 검증 완료 시 엔딩 노드 해금
+                        if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
+                            sessionStorage.setItem('ending_unlocked', 'true');
+                        }
                     }
 
                     const savedTabId = currentActiveTabId; 
@@ -1834,4 +2038,3 @@
     </script>
 </body>
 </html>
-
