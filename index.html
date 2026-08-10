@@ -7,24 +7,39 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
+      모바일 가로 모드 강제화, Z-Index 기반 튜토리얼 암막 시각 제어, 오디오 다중 채널 엔진이 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
-        /* [CSS 전역 초기화] */
+        /* [CSS 전역 초기화] 
+           터치 하이라이트 제거 및 스크롤 바운스 차단을 위한 전역 설정 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
-        /* [메인화면 레이어] 배경 및 먼지 이펙트 */
+        /* [모바일 가로 모드 강제화 오버레이] 
+           세로 화면 진입 시 렌더링을 차단하고 기기 회전을 요구하는 최상위 계층 경고창 */
+        #landscapeWarning { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.95); z-index: 200000; display: none; flex-direction: column; justify-content: center; align-items: center; color: #fff; text-align: center; }
+        #landscapeWarning h2 { font-size: 2.5rem; color: #ff3333; margin-bottom: 15px; letter-spacing: 2px; }
+        #landscapeWarning p { font-size: 1.5rem; color: #d0c5b5; letter-spacing: 1px; }
+
+        @media (max-width: 1024px) and (orientation: portrait) {
+            #landscapeWarning { display: flex !important; }
+        }
+
+        /* [메인화면 배경 레이어 및 붉은 먼지 이펙트] 
+           페이드 인/아웃 트랜지션 및 CSS 애니메이션으로 구성된 세계관 배경 묘사 */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out; }
         .main-background-layer.active { opacity: 1; }
-        .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(까지 top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
+        .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        /* [토스트 알림 시스템] */
+        /* [토스트 알림 시스템] 
+           신규 개념 획득 시 팝업되며 강제 세로 줄바꿈을 차단(max-content, nowrap)한 동적 메시지 창 */
         #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
-        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: 지금rap; padding: 10px 20px; border-radius: 8px; transition: filter 0.5s ease; }
+        .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap !important; width: max-content !important; padding: 10px 20px; border-radius: 8px; transition: filter 0.5s ease; }
         
+        /* 튜토리얼 락온 시 토스트 애니메이션 강제 동결 제어 클래스 */
         .tut-paused { animation-play-state: paused !important; }
         .tut-running { animation-play-state: running !important; }
 
@@ -35,15 +50,15 @@
             100% { transform: translate(-50%, -30px); opacity: 0; } 
         }
 
-        /* [상호작용 텍스트 객체] */
+        /* [상호작용 신규개념 텍스트 객체] */
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9) !important; }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
 
-        /* 에러 이펙트 최우선 강제 선언 (호버 색상 방어) */
+        /* [에러 이펙트 (쿨타임 중 클릭 시 발동하는 붉은 진동 방어 로직)] 
+           호버(hover) 시에도 색상과 섀도우가 최우선 유지되도록 !important 적용 */
         @keyframes keyword-error-shake { 0% { transform: translateX(0); } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); } 100% { transform: translateX(0); } }
-        .keyword-error { animation: keyword-error-shake 0.3s ease-in-out !important; color: #ff3333 !important; text-shadow: 0 0 10px red !important; }
-        .keyword-error:hover { color: #ff3333 !important; text-shadow: 0 0 10px red !important; }
+        .keyword-error { animation: keyword-error-shake 0.3s ease-in-out !important; color: #ff3333 !important; text-shadow: 0 0 10px red !important; pointer-events: none !important; }
 
         /* [어록 및 텍스트 파츠] */
         .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; font-size: 1.458rem; }
@@ -53,7 +68,8 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
-        /* --- [시작하기 창 및 메인화면 절대 중앙 정렬] --- */
+        /* --- [시작하기 창 및 메인화면 절대 중앙 정렬 컨테이너] --- 
+           화면 해상도나 부모 속성 변화에 무관하게 정중앙에 고정되도록 Absolute 연산식 적용 */
         .start-btn-container { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, visibility 0.6s; }
         .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
         .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
@@ -85,7 +101,7 @@
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
-        /* --- [탭 선택 창 트리 렌더링] --- */
+        /* --- [탭 선택 창 트리 렌더링 마인드맵 뷰] --- */
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         
@@ -105,6 +121,7 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
+        /* [개념별 발광 버튼 필터 세트] */
         .yellow-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .yellow-glow-btn:hover { text-shadow: 0 0 50px rgba(255, 255, 100, 1), 0 0 25px rgba(255, 255, 255, 0.9); transform: scale(1.05); }
         .red-glow-btn { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8); }
@@ -124,6 +141,7 @@
         
         .color-gold { color: #ffd700 !important; }
 
+        /* [봉인된 노드 인터페이스 및 먼지 파티클 애니메이션] */
         .class-base-text { position: relative; z-index: 1; }
         .class-lock-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; color: transparent; background: linear-gradient(0deg, #111 0%, #111 40%, rgba(200, 0, 0, 0.25) 50%, #111 60%, #111 100%); background-size: 100% 200%; -webkit-background-clip: text; background-clip: text; animation: wave-flow 3s linear infinite; text-shadow: 0 0 15px #000, 0 0 25px #000, 0 0 35px #000, 0 0 10px rgba(200, 0, 0, 0.8); transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; z-index: 2; }
         .is-unlocking .class-lock-overlay { opacity: 0; }
@@ -131,19 +149,21 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        /* --- [상세 설명창 뷰 모듈] --- */
+        /* --- [상세 설명창 뷰 모듈 - 강제 정렬 분리 적용] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어] */
+        /* [클래스 탭 전용 독립 절대좌표 레이어 (Absolute Hardcoding)] 
+           Flexbox 의존성을 완전히 탈피하고 수평 좌표계를 고정하여 레이아웃 붕괴를 원천 차단합니다. */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
         .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.5s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; transition: filter 0.5s ease; pointer-events: none; }
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 1.0s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
+        /* 각 카드별 독립 수평 절대 좌표 부여 (중앙 기준 -/+ 배수) */
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -154,11 +174,13 @@
 
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff); transform: translate(-50%, calc(-50% - 10px)); }
         .class-card.falling { top: 150vh !important; }
-        .class-blurred { filter: blur(12px) brightness(0.7) !important; pointer-events: none; }
+        /* 명도 감소 로직 파기, 순수 Blur 처리만 적용 */
+        .class-blurred { filter: blur(12px) !important; pointer-events: none; }
         
-        .class-illust-target { position: absolute; top: 150%; left: 50%; transform: translate(-50%, -50%); height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
-        .class-illust-target.rise { top: 50%; opacity: 1; pointer-events: auto; }
-        .class-illust-target.move-left { left: 25%; }
+        /* 일러스트 타겟 스폰 위치 강제 중앙 제어 (!important 사용으로 상속 파기) */
+        .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
+        .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
+        .class-illust-target.move-left { left: 25% !important; }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -174,10 +196,11 @@
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
         
-        /* 영령 탭 이미지 스케일 1.15배 증폭 업데이트 */
+        /* 영령 탭 전용 이미지 스케일 1.15배 증폭 패치 (35% 확대 적용 완료) */
         #tabDetail_yong .detail-img { transform: scale(1.15); animation: yong-gentle-float 3.5s infinite ease-in-out; }
         @keyframes yong-gentle-float { 0%, 100% { transform: scale(1.15) translateY(0); } 50% { transform: scale(1.15) translateY(-4px); } }
 
+        /* [개별 이미지 글로우 이펙트] */
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
         .img-glow-master { filter: drop-shadow(0 0 30px rgba(150, 150, 150, 0.7)); } 
@@ -199,13 +222,18 @@
         .annotation-word:hover { text-decoration-color: #ffd700; }
         @keyframes anno-pulse { 0% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } 50% { text-shadow: 0 0 10px rgba(255,255,255,0.9); } 100% { text-shadow: 0 0 2px rgba(255,255,255,0.4); } }
 
+        /* [주석 툴팁 패널] */
         #tooltipBox { position: absolute; background: rgba(20, 20, 20, 0.95); border: 1px solid #ffd700; color: #fff; padding: 15px; border-radius: 8px; font-size: 1.15rem; max-width: 320px; z-index: 10000; pointer-events: none; opacity: 0; transition: opacity 0.3s; box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); display: none; word-break: keep-all; line-height: 1.6; text-align: left; }
         #tooltipBox.show { display: block; opacity: 1; }
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
-        /* [가이드 시스템 및 Z-Index 암막 레이어] */
+        /* --- [Z-Index 팝업 기반 무결점 시각 제어 엔진 (튜토리얼)] --- 
+           모든 CSS 필터 충돌(명도 상속, 글로우 증발)을 막기 위해 화면 전역에 흑색 반투명 막을 렌더링하고,
+           강조해야 할 대상만 z-index를 올려 팝업시키는 원본 보존 방식입니다. */
         #tutorialDimOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.6); z-index: 8400; opacity: 0; visibility: hidden; transition: opacity 0.5s ease; pointer-events: none; }
         #tutorialDimOverlay.active { opacity: 1; visibility: visible; pointer-events: auto; }
+        
+        .tut-highlight { z-index: 8500 !important; position: relative !important; transition: all 0.5s ease-in-out !important; }
 
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 9000; opacity: 0; visibility: hidden; pointer-events: none; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; pointer-events: auto; }
@@ -226,7 +254,7 @@
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
         .fate-back-btn { font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.5s ease; position: relative; }
 
-        /* [마스터 오디오 제어 모듈] */
+        /* [마스터 오디오 제어 모듈 및 워터마크] */
         .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999 !important; opacity: 0; pointer-events: none; }
         .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
@@ -253,6 +281,12 @@
 </head>
 <body>
 
+    <!-- [모바일 가로 모드 강제화 오버레이] -->
+    <div id="landscapeWarning">
+        <h2>세로 모드 감지됨</h2>
+        <p>최적의 레이아웃을 위해 기기를 가로로 회전하십시오.</p>
+    </div>
+
     <!-- [안내창 가이드 및 Z-Popup 암막 시스템] -->
     <div id="tutorialDimOverlay"></div>
     <div id="tutorialOverlay"></div>
@@ -268,7 +302,7 @@
         <img id="imageViewTarget" src="" alt="Zoomed Detail View">
     </div>
 
-    <!-- [오디오 자산] -->
+    <!-- [오디오 자산 매핑] 파라미터 적용 (pst 115%, unlock 200%) -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -288,7 +322,7 @@
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
     <audio id="classOpenSfx" src="classes/sfx-card-open.mp3" preload="auto"></audio>
 
-    <!-- [메인화면 레이어] -->
+    <!-- [메인화면 레이어 전개] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
@@ -317,7 +351,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
-    <!-- [탭 선택 화면] 트리 노드 매트릭스 -->
+    <!-- [탭 선택 화면] 트리 노드 마인드맵 -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -325,7 +359,7 @@
         </div>
     </div>
 
-    <!-- [설명창 뷰 모듈] -->
+    <!-- [설명창 뷰 모듈 - 다중 탭 렌더링] -->
     <div id="dynamicTabDetailViews">
         
         <!-- 1. 성배 -->
@@ -599,7 +633,7 @@
             </div>
         </section>
 
-        <!-- 13. 클래스 (독립 계층 분리 모듈 절대 좌표 하드코딩 패치) -->
+        <!-- 13. 클래스 (독립 계층 및 절대 좌표 패치된 컷신 모듈) -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="class-bg-layer"></div>
             <div class="class-cards-container">
@@ -643,7 +677,7 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
-    <!-- [시스템 코어 프로세서] -->
+    <!-- [시스템 코어 프로세서 자바스크립트 엔진] -->
     <script>
         let isTransitioning = false;
         let isKeywordLocked = false;
@@ -679,6 +713,7 @@
             'classes/class-berserker.png'
         ];
 
+        // 캐시 데이터 소멸자 (초기화)
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -868,56 +903,25 @@
                 triggerPlay('#suvsoTrigger', suvsoFsfSfx, 5.2785); 
             });
 
+            // [튜토리얼 텍스트 렌더링 파서] 
             function formatTutText(text) {
                 return text
                     .replace(/\[(.*?)\]/g, '<span style="color:#ffd700;">$1</span>')
                     .replace(/\{(.*?)\}/g, '<span style="text-shadow: 0 0 10px #ffffff;">$1</span>');
             }
 
-            // [Z-Index 팝업 기반 무결점 시각 통제 엔진]
-            let activeZNodes = [];
-            function applyZPopup(targetSelector, scale = 1.0) {
-                document.querySelectorAll(targetSelector).forEach(target => {
-                    const rect = target.getBoundingClientRect();
-                    const computed = window.getComputedStyle(target);
-                    
-                    const ghost = document.createElement(target.tagName);
-                    ghost.className = target.className;
-                    ghost.style.visibility = 'hidden';
-                    ghost.innerHTML = target.innerHTML;
-                    
-                    target.parentNode.insertBefore(ghost, target);
-                    target.setAttribute('data-orig-css', target.style.cssText);
-                    
-                    target.style.position = 'fixed';
-                    target.style.top = rect.top + 'px';
-                    target.style.left = rect.left + 'px';
-                    target.style.width = rect.width + 'px';
-                    target.style.height = rect.height + 'px';
-                    target.style.margin = '0';
-                    target.style.zIndex = '8500';
-                    target.style.transition = 'all 0.5s ease-in-out';
-                    target.style.transform = `scale(${scale})`;
-                    target.style.display = computed.display === 'inline' ? 'inline-block' : computed.display;
-                    target.style.textAlign = computed.textAlign;
-                    
-                    activeZNodes.push({ target, ghost });
+            // [튜토리얼 무결점 Z-Index 제어 모듈]
+            function resetTutClasses() {
+                document.querySelectorAll('.tut-highlight').forEach(el => {
+                    el.classList.remove('tut-highlight');
                 });
-            }
-
-            function clearZPopups() {
-                activeZNodes.forEach(item => {
-                    item.target.style.cssText = item.target.getAttribute('data-orig-css') || '';
-                    item.target.removeAttribute('data-orig-css');
-                    if (item.ghost && item.ghost.parentNode) item.ghost.parentNode.removeChild(item.ghost);
-                });
-                activeZNodes = [];
+                document.querySelectorAll('.word-toast-item').forEach(el => el.classList.remove('tut-paused'));
             }
 
             function endTutorial() {
                 document.getElementById('tutorialArrow').classList.remove('active');
                 document.getElementById('tutorialOverlay').classList.remove('active');
-                document.getElementById('tutorialDimOverlay').classList.remove('active');
+                document.getElementById('tutorialDimOverlay').classList.remove('active'); // 흑색 암막 해제
                 document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
                 
@@ -926,7 +930,7 @@
                     el.classList.add('tut-running');
                 });
                 
-                clearZPopups();
+                resetTutClasses();
                 isTutorialActive = false;
             }
 
@@ -935,7 +939,7 @@
                 const dimOverlay = document.getElementById('tutorialDimOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 
-                dimOverlay.classList.add('active');
+                dimOverlay.classList.add('active'); // 전역 암막(Brightness 저하 상속 원인 파괴용) 가동
                 guide.innerHTML = `<p>${formatTutText(text)}</p>`;
                 
                 const btnWrapper = document.createElement('div');
@@ -971,45 +975,49 @@
             }
 
             function runTutStep() {
+                // 각 스텝 진입 시 클래스 초기화 후 타겟 재지정
+                resetTutClasses();
+                
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); } 
                     else if (tutState.step === 1) { showTutorialGuide("이곳은 여러 개념들이 있는 장소 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 2) { showTutorialGuide("우선 개념의 상세한 설명을 확인하기 위해서는 단어를 눌러 상세 페이지로 접속을 해야합니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 3) { 
                         showTutorialGuide("성배를 눌러 성배 상세 페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq1', 'done'); endTutorial(); }); 
-                        clearZPopups();
-                        applyZPopup('.tree-node-box[data-id="sung"] .tab-item-btn', 1.1);
+                        const sungBtn = document.querySelector('.tree-node-box[data-id="sung"] .tab-item-btn');
+                        if (sungBtn) sungBtn.classList.add('tut-highlight');
                     }
                 } else if (tutState.seq === 2) { 
                     if (tutState.step === 0) { showTutorialGuide("이곳이 개념의 상세 페이지입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); } 
                     else if (tutState.step === 1) { 
                         showTutorialGuide("이곳은 개념과 관련된 사진이 있는 곳입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_sung .detail-img', 1.05);
+                        const img = document.querySelector('#tabDetail_sung .detail-img');
+                        if(img) img.classList.add('tut-highlight');
                     } 
                     else if (tutState.step === 2) { 
                         showTutorialGuide("이건 배치 된 사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_sung .detail-sub-label', 1.25);
+                        const label = document.querySelector('#tabDetail_sung .detail-sub-label');
+                        if(label) label.classList.add('tut-highlight');
                     } 
                     else if (tutState.step === 3) { 
                         showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_sung .detail-right-box', 1.05);
+                        const box = document.querySelector('#tabDetail_sung .detail-right-box');
+                        if(box) box.classList.add('tut-highlight');
                     } 
                     else if (tutState.step === 4) { 
                         showTutorialGuide("이건 어록 입니다. 이걸 누르면 캐릭터의 음성이 나와 대사를 읊어줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_sung .description-quote', 1.05);
+                        const quote = document.querySelector('#tabDetail_sung .description-quote');
+                        if(quote) quote.classList.add('tut-highlight');
                     } 
                     else if (tutState.step === 5) { 
                         showTutorialGuide("이렇게 노란색으로 표시된 단어는 [신규개념] 입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_sung .interactive-keyword', 1.18);
+                        const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
+                        if(kw) kw.classList.add('tut-highlight');
                     } 
                     else if (tutState.step === 6) { 
                         showTutorialGuide("[신규개념]은 단어를 누르는 것으로 획득할 수 있습니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }); 
-                        // ZPopup is maintained to show keyword clearly
+                        const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
+                        if(kw) kw.classList.add('tut-highlight');
                     }
                 } else if (tutState.seq === 3) { 
                     if (tutState.step === 0) { 
@@ -1024,14 +1032,13 @@
                         document.getElementById('tutorialArrow').style.top = (rect.top - 65) + 'px';
                         
                         showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
-                        clearZPopups();
-                        applyZPopup('#backBtn', 1.1);
+                        if(backBtn) backBtn.classList.add('tut-highlight');
                     }
                 } else if (tutState.seq === 4) { 
                     if (tutState.step === 0) { 
                         showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {topAlign: true, fadeIn: true}); 
-                        clearZPopups();
-                        applyZPopup('.tree-node-box[data-id="sungbwar"] .tab-item-btn', 1.1);
+                        const sungbwarBtn = document.querySelector('.tree-node-box[data-id="sungbwar"] .tab-item-btn');
+                        if (sungbwarBtn) sungbwarBtn.classList.add('tut-highlight');
                     } else if (tutState.step === 1) {
                         showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }, {topAlign: true});
                     }
@@ -1042,8 +1049,11 @@
                 } else if (tutState.seq === 6) { 
                     if (tutState.step === 0) { 
                         showTutorialGuide("이것은 {주석}이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, {bottomAlign: true}); 
-                        clearZPopups();
-                        applyZPopup('#tabDetail_' + currentActiveTabId + ' .annotation-word', 1.18);
+                        const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
+                        if(activeView) {
+                            const annos = activeView.querySelectorAll('.annotation-word');
+                            annos.forEach(a => a.classList.add('tut-highlight'));
+                        }
                     } 
                     else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 2) { showTutorialGuide("그리고 {주석}이 달린 단어를 누르면 {주석창}이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 {주석창}이 다시 접혀집니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }); }
@@ -1062,6 +1072,10 @@
                 toastEl.className = 'word-toast-item';
                 toastEl.innerHTML = `—${wordText}${getParticle(wordText)} 획득했습니다—`;
                 acquireToastContainer.prepend(toastEl);
+                
+                if(isTutorialActive || !localStorage.getItem('tut_seq3')) {
+                    toastEl.classList.add('tut-paused');
+                }
                 
                 let remaining = 1500;
                 let lastTime = Date.now();
@@ -1106,10 +1120,13 @@
                             sessionStorage.setItem('fate_concept_order', JSON.stringify(orderList));
                         }
                         playSfx(wordSfx, 4.0);
-                        spawnAcquireToast(keyTarget.innerHTML.trim());
+                        
+                        // HTML 태그 정제하여 순수 텍스트만 Toast에 전달 (줄바꿈 현상 완벽 방어)
+                        const cleanWordText = keyTarget.innerHTML.replace(/<[^>]*>?/gm, '').trim();
+                        spawnAcquireToast(cleanWordText);
 
                         if (!localStorage.getItem('tut_seq3')) {
-                            // 정확히 500ms 후 동기화 개입
+                            // 완벽한 500ms 동기화 제어
                             setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500);
                         }
                     }
@@ -1143,7 +1160,7 @@
                 }
             });
 
-            // [이미지 자세히보기 뷰어 모듈 (이동/확대)]
+            // [이미지 자세히보기 뷰어 모듈]
             const ivOverlay = document.getElementById('imageViewOverlay');
             const ivTarget = document.getElementById('imageViewTarget');
             let ivScale = 1; let ivPanX = 0; let ivPanY = 0;
@@ -1283,7 +1300,7 @@
                         
                         localStorage.setItem('fate_class_cutscene', 'true');
                         
-                        // 이중 rAF로 카메라 복귀 끊김 방지 최적화
+                        // 카메라 프레임 이중 분리로 끊김 현상 제거
                         requestAnimationFrame(() => {
                             requestAnimationFrame(() => {
                                 currentScale = 1.0;
@@ -1502,10 +1519,10 @@
                         
                         setTimeout(() => {
                             illustTarget.classList.add('move-left');
-                            classTabPhase = 2; 
+                            classTabPhase = 2; // 일러스트 안착 상태
                             isTransitioning = false;
                         }, 1000);
-                    }, 1000); 
+                    }, 1000); // 카드가 내려가는 시간 대기
                 });
             });
 
@@ -1539,6 +1556,7 @@
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
 
+                // 클래스 탭 일러스트 상태 인터셉트 롤백
                 if (currentStage === 3 && currentActiveTabId === 'class' && classTabPhase === 2) {
                     isTransitioning = true;
                     playSfx(pstSfx, 1.15);
@@ -1550,7 +1568,7 @@
                     });
                     classTabPhase = 0;
                     setTimeout(() => { isTransitioning = false; }, 1000);
-                    return; 
+                    return; // 브라우저 히스토리 롤백 차단
                 }
 
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
@@ -1595,6 +1613,7 @@
                     document.getElementById('bgLayer').style.opacity = '1';
                     document.getElementById('dustEffect').style.opacity = '0.55';
                     
+                    // 탭 탈출 시 클래스 탭 상태 완전히 초기화
                     if (currentActiveTabId === 'class') {
                         classTabPhase = 0;
                         const illustTarget = document.getElementById('classIllustTarget');
@@ -1694,3 +1713,4 @@
     </script>
 </body>
 </html>
+```》
