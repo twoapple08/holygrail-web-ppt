@@ -5,30 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fate/series</title>
     <!-- 
-      AI 렌더링 가이드라인 및 시스템 목적
-      이 코드는 Fate/series의 세계관 개념을 마인드맵 형태로 탐색하는 Single Page Application 형태의 웹 모듈입니다.
+      [AI 렌더링 가이드라인 & 시스템 목적]
+      이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
       
-      절대 준수 사항
-      1. 브라우저의 기본 뒤로가기를 통해 뷰포트가 전환됩니다. 라우팅 로직을 임의로 변경하지 마십시오.
-      2. 튜토리얼 시스템은 오버레이를 통한 클릭 차단 기능만 수행하며, 화면의 밝기나 Z-index 시각 효과를 변형하지 않습니다.
-      3. DOM 트리의 삽입 및 삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막습니다.
+      [절대 준수 사항 (Guardrails)]
+      1. 브라우저의 기본 뒤로가기(History API)를 통해 뷰포트가 전환(popstate)됩니다. 라우팅 로직을 임의로 변경하지 마십시오.
+      2. 튜토리얼 시스템은 오버레이(투명)를 통한 클릭 차단 기능만 수행하며, 화면의 밝기나 Z-index 시각 효과를 변형하지 않습니다.
+      3. DOM 트리의 삽입/삭제를 최소화하고, opacity와 visibility 속성으로 화면 전환을 제어하여 Reflow 연산 부하를 막습니다.
       4. 모바일 환경의 터치 및 스크롤로 인한 UI 붕괴를 막기 위해 body에 overflow: hidden이 강제되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <style>
+        /* [CSS 전역 초기화] 터치 하이라이트 등 기본 브라우저 액션 제어 */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Song Myung', serif; color: #ffffff; min-height: 100vh; display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; background-color: #000000; }
 
+        /* [메인화면 레이어] 배경 및 붉은 먼지 이펙트 */
         .main-background-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('first-background.png'); background-size: cover; background-position: center; background-repeat: no-repeat; z-index: 1; opacity: 0; pointer-events: none; transition: opacity 1.5s ease-in-out, filter 0.5s ease; }
         .main-background-layer.active { opacity: 1; }
         .red-dust-effect { position: absolute; bottom: 0; left: 0; width: 100%; height: 55%; background: linear-gradient(to top, rgba(140, 10, 10, 0.35) 0%, rgba(70, 0, 0, 0.15) 50%, transparent 100%); z-index: 2; pointer-events: none; opacity: 0; transition: opacity 1.8s ease-in-out, filter 0.5s ease; }
         .red-dust-effect.active { opacity: 0.55; animation: dust-fade-soft 5s infinite alternate ease-in-out 1.8s; }
         @keyframes dust-fade-soft { 0% { opacity: 0.5; } 100% { opacity: 0.75; } }
 
-        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; }
+        /* [토스트 알림 시스템] */
+        #acquireToastContainer { position: absolute; top: 150px; left: 50%; transform: translateX(-50%); z-index: 9999; pointer-events: none; display: block; transition: filter 0.5s ease; }
         .word-toast-item { position: absolute; left: 50%; top: 0; color: #ffffff; font-size: 1.8rem; font-weight: 700; letter-spacing: 2px; opacity: 0; animation: float-continuous-fade 1.5s forwards linear; text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 5px rgba(255, 215, 0, 0.6); user-select: none; white-space: nowrap; padding: 10px 20px; border-radius: 8px; }
         
-        body.tut-active .word-toast-item { animation-play-state: paused !important; }
+        .tut-paused * { animation-play-state: paused !important; }
 
         @keyframes float-continuous-fade { 
             0% { transform: translate(-50%, 30px); opacity: 0; } 
@@ -37,6 +40,7 @@
             100% { transform: translate(-50%, -30px); opacity: 0; } 
         }
 
+        /* [상호작용 텍스트 객체] 신규개념 획득 클릭 유도 */
         .interactive-keyword { color: #ffd700; font-weight: 700; cursor: pointer; text-shadow: 0 0 8px rgba(255, 215, 0, 0.6); transition: all 0.5s ease; user-select: none; display: inline-block; position: relative; z-index: 100; pointer-events: auto; }
         .interactive-keyword:hover { color: #ffffff !important; text-shadow: 0 0 12px rgba(255, 255, 255, 0.9); }
         .interactive-keyword.clicked { color: #d0c5b5 !important; font-weight: 400 !important; cursor: default !important; text-shadow: none !important; pointer-events: none !important; }
@@ -44,6 +48,7 @@
         @keyframes keyword-error-shake { 0% { transform: translateX(0); color: #ff3333; text-shadow: 0 0 10px red; } 25% { transform: translateX(-3px); } 50% { transform: translateX(3px); } 75% { transform: translateX(-3px); color: #ff3333; text-shadow: 0 0 10px red; } 100% { transform: translateX(0); } }
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
+        /* [어록 인터랙션 객체] */
         .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; font-size: 1.458rem; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
@@ -51,6 +56,7 @@
 
         rt { font-size: 0.45em; letter-spacing: 0px; }
 
+        /* --- [시작하기 창 및 메인화면 타이틀 레이아웃] --- */
         .start-btn-container { position: absolute; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 70px; transition: opacity 0.6s ease-out, transform 0.6s ease-out, visibility 0.6s; }
         .fate-start-btn { font-family: 'Song Myung', serif; font-size: 1.5rem; font-weight: 700; color: #f5f0e6; background: rgba(20, 0, 0, 0.85); border: 2px solid #900000; padding: 16px 48px; letter-spacing: 6px; margin-right: -6px; cursor: pointer; outline: none; position: relative; box-shadow: 0 0 15px rgba(140, 0, 0, 0.6), inset 0 0 10px rgba(100, 0, 0, 0.5); transition: all 0.3s ease; text-transform: uppercase; }
         .fate-start-btn:hover { color: #ffffff; background: rgba(60, 0, 0, 0.95); border-color: #ff2222; box-shadow: 0 0 25px rgba(255, 30, 30, 0.9), inset 0 0 15px rgba(180, 0, 0, 0.8); transform: scale(1.05); }
@@ -82,6 +88,7 @@
         .intro-notice-left.animate { animation: fade-in 1.2s ease-out forwards; }
         .intro-notice-left.slow-fade-out { animation: smooth-scale-fade-out 1.2s ease-out forwards !important; }
 
+        /* --- [탭 선택 창 트리 렌더링 계층] --- */
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         
@@ -128,21 +135,20 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.6s ease; }
+        /* --- [상세 설명창 뷰 모듈] --- */
+        .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
-
-        #tabDetail_sungbwar, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { justify-content: center; padding-left: 0; gap: 0; }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
         .title-yellow { color: #fffdfa; text-shadow: 3px 3px 0px #705000, -1px -1px 0px #705000, 1px -1px 0px #705000, -1px 1px 0px #705000, 0 0 40px rgba(255, 255, 0, 0.8); }
         .title-red { color: #fffdfa; text-shadow: 3px 3px 0px #900000, -1px -1px 0px #900000, 1px -1px 0px #900000, -1px 1px 0px #900000, 0 0 40px rgba(255, 50, 50, 0.8); }
-        .title-white { color: #fffdfa; text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 40px rgba(255, 255, 255, 0.8); }
-        .title-brightred { color: #990000; text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 40px rgba(255, 50, 50, 0.95); }
-        .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8); }
-        .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
-        .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
-        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 40px rgba(255, 105, 180, 0.8); }
+        .title-white { color: #fffdfa; text-shadow: 3px 3px 0px #555555, -1px -1px 0px #555555, 1px -1px 0px #555555, -1px 1px 0px #555555, 0 0 35px rgba(255, 255, 255, 0.95), 0 0 15px rgba(200, 200, 200, 0.8); }
+        .title-brightred { color: #990000; text-shadow: 3px 3px 0px #400000, -1px -1px 0px #400000, 1px -1px 0px #400000, -1px 1px 0px #400000, 0 0 35px rgba(255, 50, 50, 0.95), 0 0 15px rgba(200, 0, 0, 0.8); }
+        .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 35px rgba(135, 206, 235, 0.95), 0 0 15px rgba(100, 180, 220, 0.8); }
+        .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 35px rgba(50, 50, 255, 0.95), 0 0 15px rgba(0, 0, 200, 0.8); }
+        .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 35px rgba(0, 0, 0, 1), 0 0 15px rgba(40, 40, 40, 0.9); }
+        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 35px rgba(255, 105, 180, 0.95), 0 0 15px rgba(200, 50, 150, 0.8); }
 
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
@@ -175,10 +181,11 @@
         #tooltipBox.show { display: block; opacity: 1; }
         #tooltipBox::after { content: ''; position: absolute; border-width: 8px; border-style: solid; border-color: transparent transparent #ffd700 transparent; top: -16px; left: 50%; transform: translateX(-50%); bottom: auto; }
 
+        /* [가이드 시스템 렌더링 계층] */
         #tutorialOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: transparent; z-index: 8000; opacity: 0; visibility: hidden; pointer-events: auto; }
         body.tut-active #tutorialOverlay { opacity: 1; visibility: visible; }
         
-        #tutorialGuide { position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; transition: opacity 0.5s ease; }
+        #tutorialGuide { position: fixed; left: 50%; transform: translateX(-50%); width: 550px; background: rgba(30, 30, 30, 0.95); border: 3px solid #ffffff; color: #f5f0e6; padding: 30px; border-radius: 10px; text-align: left; z-index: 9005; box-shadow: 0 0 45px rgba(255, 255, 255, 0.8); opacity: 0; visibility: hidden; font-size: 1.3rem; line-height: 1.7; word-break: keep-all; display: flex; flex-direction: column; transition: opacity 0.5s ease; }
         #tutorialGuide.active { opacity: 1; visibility: visible; }
         
         .guide-btn-wrapper { display: flex; justify-content: flex-end; margin-top: 25px; }
@@ -189,18 +196,28 @@
         #tutorialArrow.active { opacity: 1; visibility: visible; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
-        .tut-dimmed { filter: brightness(0.6) !important; transition: filter 0.5s ease !important; pointer-events: none !important; }
-        .tut-highlight { filter: brightness(1) !important; transform: scale(var(--highlight-scale, 1.1)) !important; z-index: 8500 !important; position: relative; transition: all 0.5s ease !important; pointer-events: auto !important; }
-        .tut-shrink { transform: scale(0.93) !important; filter: brightness(0.6) !important; transform-origin: left center; transition: all 0.5s ease !important; pointer-events: none !important; }
-        .tut-nowrap { white-space: nowrap !important; }
-        .tut-keyword-spacing { display: inline-block !important; margin: 0 10px !important; transform: scale(1.18) translateY(-2px) !important; filter: brightness(1) !important; position: relative; z-index: 8500 !important; pointer-events: auto !important; transition: all 0.5s ease !important; }
+        /* --- [튜토리얼 시각 통제용 모듈 (Dimming & Highlight & Anti-Reflow)] --- */
+        .tut-dimmed { filter: brightness(0.6) !important; transition: filter 0.5s ease !important; }
+        .tut-highlight { filter: brightness(1) !important; transform: scale(var(--highlight-scale, 1.1)) !important; z-index: 8500 !important; position: relative; transition: all 0.5s ease !important; }
+        
+        /* A-방식 텍스트 겹침 및 줄바꿈 방어 로직 */
+        .tut-p-dimmed { transition: all 0.5s ease !important; white-space: nowrap !important; font-size: 0.93em !important; filter: brightness(0.6) !important; }
+        .tut-highlight-word { display: inline-block !important; font-size: 1.18em !important; filter: brightness(1.66) !important; margin: 0 10px !important; transform: translateY(-3px) !important; position: relative; z-index: 8500 !important; transition: all 0.5s ease !important; }
 
+        /* 특정 이미지 전용 혼합 하이라이트 (Drop shadow 보존) */
+        .tut-highlight-img { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)) brightness(1) !important; transform: scale(1.05) !important; z-index: 8500 !important; position: relative; transition: all 0.5s ease !important; }
+        
+        /* 설명 글귀 전용 스케일업 및 밝기 150% 렌더링 */
+        .tut-highlight-label { filter: brightness(1.5) !important; transform: scale(1.25) !important; z-index: 8500 !important; position: relative; transition: all 0.5s ease !important; display: inline-block; }
+
+        /* --- [뒤로가기 버튼] --- */
         .bottom-left-controls { position: absolute; bottom: 20px; left: 25px; z-index: 8500; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
         .bottom-left-controls.show { opacity: 1; pointer-events: auto; }
         .fate-back-btn { font-family: 'Song Myung', serif; font-size: 1.0rem; font-weight: 700; color: #c0c0c8; background: rgba(20, 0, 0, 0.6); border: 1px solid rgba(160, 0, 0, 0.7); padding: 8px 24px; letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 10px rgba(100, 0, 0, 0.4); transition: all 0.5s ease; position: relative; }
 
-        .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999 !important; opacity: 0; pointer-events: none; }
-        .bottom-right-controls.animate { pointer-events: auto; animation: fade-in 1.2s ease-out forwards; }
+        /* --- [마스터 오디오 제어 모듈] --- */
+        .bottom-right-controls { position: absolute; bottom: 20px; right: 25px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 9999 !important; opacity: 0; pointer-events: none; transition: opacity 0.6s ease-in-out; }
+        .bottom-right-controls.animate { opacity: 1; pointer-events: auto; }
         .sound-panel { display: flex; flex-direction: column; gap: 6px; background: rgba(15, 0, 0, 0.7); border: 1px solid rgba(140, 0, 0, 0.8); padding: 8px 12px; border-radius: 4px; backdrop-filter: blur(3px); }
         .volume-control-box { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
         .volume-label { font-size: 0.75rem; color: #d0c5b5; font-weight: 700; user-select: none; min-width: 48px; text-align: left; }
@@ -209,7 +226,8 @@
         .volume-slider::-webkit-slider-thumb:hover { transform: scale(1.25); background: #ff6666; }
         .watermark { font-size: 0.85rem; color: rgba(255, 255, 255, 0.4); letter-spacing: 1.5px; user-select: none; margin-top: 2px; }
 
-        #imageViewOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 75; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: all 0.6s ease; pointer-events: none; overflow: hidden; }
+        /* --- [이미지 자세히보기 뷰어 오버레이] --- */
+        #imageViewOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); z-index: 75; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.6s ease, visibility 0.6s; pointer-events: none; overflow: hidden; }
         #imageViewOverlay.show { opacity: 1; visibility: visible; pointer-events: auto; }
         #imageViewTarget { max-width: 85%; max-height: 85%; cursor: grab; transform-origin: center center; transition: transform 0.1s ease-out; user-select: none; -webkit-user-drag: none; }
         #imageViewTarget:active { cursor: grabbing; }
@@ -220,9 +238,9 @@
         @keyframes grail-gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
 
+        /* [반응형 레이어 모듈 (Media Queries)] 모바일 기기 세로 및 가로 환경 대응 연산 */
         @media (max-width: 1024px) {
             .tab-detail-view { flex-direction: column; padding-left: 0; gap: 20px; justify-content: center; align-items: center; }
-            #tabDetail_sungbwar, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { gap: 20px; }
             .static-tab-title { top: 3vh; left: 50%; transform: translateX(-50%) scale(0.6); transform-origin: center center; }
             .detail-left-box { min-width: auto; max-width: 90%; }
             .detail-img { width: 220px; }
@@ -243,17 +261,21 @@
 </head>
 <body>
 
+    <!-- [안내창 가이드 시스템] -->
     <div id="tutorialOverlay"></div>
-    <div id="tutorialGuide"></div>
+    <div id="tutorialGuide" style="bottom: 10%;"></div>
     <div id="tutorialArrow">⇩</div>
     
+    <!-- [툴팁 박스 및 알림 컨테이너] -->
     <div id="tooltipBox"></div>
     <div id="acquireToastContainer"></div>
 
+    <!-- [이미지 자세히보기 뷰어] -->
     <div id="imageViewOverlay">
         <img id="imageViewTarget" src="" alt="Zoomed Detail View">
     </div>
 
+    <!-- [오디오 자산] -->
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
     <audio id="bgmTheme2" src="BGM/BGM-theme2.mp3" loop preload="auto"></audio>
     <audio id="pstSfx" src="sfx/sfx-pst.mp3" preload="auto"></audio>
@@ -272,6 +294,7 @@
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
 
+    <!-- [메인화면 레이어] -->
     <div class="main-background-layer" id="bgLayer"></div>
     <div class="red-dust-effect" id="dustEffect"></div>
 
@@ -300,6 +323,7 @@
         ※유입자를 위해 만들어진 사이트이니 생략되거나 스포일러 때문에 진실과는 다르게 설명한 것들이 있을 수 있습니다.
     </div>
 
+    <!-- [탭 선택 화면] 트리 노드 매트릭스 -->
     <div class="tree-selection-container" id="treeSelectionContainer">
         <div class="tree-matrix-world" id="treeMatrixWorld">
             <svg class="tree-svg-layer" id="treeSvg"></svg>
@@ -307,8 +331,10 @@
         </div>
     </div>
 
+    <!-- [설명창 뷰 모듈] -->
     <div id="dynamicTabDetailViews">
         
+        <!-- 1. 성배 -->
         <section class="tab-detail-view" id="tabDetail_sung">
             <div class="static-tab-title title-yellow">성배</div>
             <div class="detail-left-box">
@@ -325,6 +351,7 @@
             </div>
         </section>
 
+        <!-- 2. 성배전쟁 -->
         <section class="tab-detail-view" id="tabDetail_sungbwar">
             <div class="static-tab-title title-red">성배전쟁</div>
             <div class="detail-right-box">
@@ -342,6 +369,7 @@
             </div>
         </section>
 
+        <!-- 3. 마술사 -->
         <section class="tab-detail-view" id="tabDetail_ma">
             <div class="static-tab-title title-white">마술사</div>
             <div class="detail-left-box">
@@ -367,6 +395,7 @@
             </div>
         </section>
         
+        <!-- 4. 령주 -->
         <section class="tab-detail-view" id="tabDetail_rj">
             <div class="static-tab-title title-brightred"><ruby>령주<rt>令呪</rt></ruby></div>
             <div class="detail-left-box">
@@ -395,6 +424,7 @@
             </div>
         </section>
 
+        <!-- 5. 마스터 -->
         <section class="tab-detail-view" id="tabDetail_master">
             <div class="static-tab-title title-white">마스터</div>
             <div class="detail-left-box">
@@ -419,6 +449,7 @@
             </div>
         </section>
 
+        <!-- 6. 서번트 -->
         <section class="tab-detail-view" id="tabDetail_suv">
             <div class="static-tab-title title-skyblue">서번트</div>
             <div class="detail-left-box">
@@ -444,6 +475,7 @@
             </div>
         </section>
 
+        <!-- 7. 감독관 -->
         <section class="tab-detail-view" id="tabDetail_gam">
             <div class="static-tab-title title-black">감독관</div>
             <div class="detail-left-box">
@@ -451,7 +483,7 @@
                 <span class="detail-sub-label">제 5차 성배전쟁 감독관 코토미네 키레이</span>
             </div>
             <div class="detail-right-box">
-                <h2 class="description-title">감독관란?</h2>
+                <h2 class="description-title">감독관이란?</h2>
                 <div class="description-content">
                     <p style="margin-top: 12px;">
                         <span class="annotation-word" data-tooltip="그리스도교의 이면에 존재하는 비밀 조직이다.<br>세상을 운행하는 과학적인 물리 법칙을 신의 섭리라 신봉하며<br>이에 거스르는 자를 이단으로 규정하며 박멸하는 것이 목표이다.">성당교회</span>에서 성배전쟁의 관리 감독 및 은폐를 위해 파견되는 사람.<br>
@@ -467,6 +499,7 @@
             </div>
         </section>
 
+        <!-- 8. 서번트 소환 의식 -->
         <section class="tab-detail-view" id="tabDetail_sso">
             <div class="static-tab-title title-blue">서번트 소환 의식</div>
             <div class="detail-left-box">
@@ -490,6 +523,7 @@
             </div>
         </section>
 
+        <!-- 9. 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
@@ -510,6 +544,7 @@
             </div>
         </section>
 
+        <!-- 10. 보구 -->
         <section class="tab-detail-view" id="tabDetail_bogu">
             <div class="static-tab-title title-yellow"><ruby>보구<rt>노블 판타즘</rt></ruby></div>
             <div class="detail-left-box">
@@ -532,6 +567,7 @@
             </div>
         </section>
         
+        <!-- 11. 진명개방 -->
         <section class="tab-detail-view" id="tabDetail_jinbang">
             <div class="static-tab-title title-yellow">진명개방</div>
             <div class="detail-right-box">
@@ -551,6 +587,7 @@
             </div>
         </section>
         
+        <!-- 12. 브로큰 판타즘 -->
         <section class="tab-detail-view" id="tabDetail_brokenf">
             <div class="static-tab-title title-pink">브로큰 판타즘</div>
             <div class="detail-right-box">
@@ -568,6 +605,7 @@
             </div>
         </section>
 
+        <!-- 13. 클래스 -->
         <section class="tab-detail-view" id="tabDetail_class">
             <div class="static-tab-title title-white color-gold">클래스</div>
             <div class="detail-right-box" style="background: transparent; border: none; box-shadow: none; text-align: center;">
@@ -576,10 +614,12 @@
         </section>
     </div>
 
+    <!-- [뒤로가기 버튼] -->
     <div class="bottom-left-controls" id="backBtnWrapper">
         <button class="fate-back-btn" id="backBtn">⇦ 뒤로가기</button>
     </div>
 
+    <!-- [마스터 오디오 통합 제어 모듈 및 워터마크] -->
     <div class="bottom-right-controls" id="controlsGroup">
         <div class="sound-panel">
             <div class="volume-control-box">
@@ -602,6 +642,7 @@
         <footer class="watermark">Made by 사과사과</footer>
     </div>
 
+    <!-- [시스템 코어 프로세서] -->
     <script>
         let isTransitioning = false;
         let isKeywordLocked = false;
@@ -609,6 +650,7 @@
         let currentScale = 1.0; 
         let tutState = { seq: 0, step: 0 };
 
+        // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -625,6 +667,7 @@
             'brokenf': { name: '브로큰<br>판타즘', parent: 'bogu', x: 81.8, y: 104.7 }
         };
 
+        // 초기화 및 캐시 영구 소멸 루틴
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -791,6 +834,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
+            // 어록 인터랙션 오디오 출력 파라미터 적용 엔진
             document.addEventListener('click', function(e) {
                 const triggerPlay = (targetId, audioObj, boost = 1.0) => {
                     const target = e.target.closest(targetId);
@@ -813,17 +857,20 @@
                 triggerPlay('#suvsoTrigger', suvsoFsfSfx, 5.2785); 
             });
 
+            // [튜토리얼 텍스트 렌더링 파서] 
             function formatTutText(text) {
                 return text
                     .replace(/\[(.*?)\]/g, '<span style="color:#ffd700;">$1</span>')
                     .replace(/\{(.*?)\}/g, '<span style="text-shadow: 0 0 10px #ffffff;">$1</span>');
             }
 
+            // [튜토리얼 시각 통제 엔진 및 스케일 제어 로직]
             function resetTutClasses() {
-                document.querySelectorAll('.tut-dimmed, .tut-highlight, .tut-shrink, .tut-nowrap, .tut-keyword-spacing').forEach(el => {
-                    el.classList.remove('tut-dimmed', 'tut-highlight', 'tut-shrink', 'tut-nowrap', 'tut-keyword-spacing');
+                document.querySelectorAll('.tut-dimmed, .tut-highlight, .tut-highlight-img, .tut-highlight-label, .tut-p-dimmed, .tut-highlight-word').forEach(el => {
+                    el.classList.remove('tut-dimmed', 'tut-highlight', 'tut-highlight-img', 'tut-highlight-label', 'tut-p-dimmed', 'tut-highlight-word');
                     el.style.removeProperty('--highlight-scale');
                 });
+                document.getElementById('acquireToastContainer').classList.remove('tut-paused', 'tut-dimmed');
             }
             
             function dimAllTargetObjects() {
@@ -835,15 +882,13 @@
             function endTutorial() {
                 document.getElementById('tutorialArrow').classList.remove('active');
                 document.getElementById('tutorialOverlay').classList.remove('active');
-                const guide = document.getElementById('tutorialGuide');
-                guide.classList.remove('active');
-                setTimeout(() => { guide.style.top = ''; guide.style.bottom = ''; }, 500);
+                document.getElementById('tutorialGuide').classList.remove('active');
                 document.body.classList.remove('tut-active');
                 resetTutClasses();
                 isTutorialActive = false;
             }
 
-            function showTutorialGuide(text, btnText, callback, positionStr = 'bottom') {
+            function showTutorialGuide(text, btnText, callback, posTop = false) {
                 const overlay = document.getElementById('tutorialOverlay');
                 const guide = document.getElementById('tutorialGuide');
                 guide.innerHTML = `<p>${formatTutText(text)}</p>`;
@@ -861,17 +906,16 @@
                 btnWrapper.appendChild(btn);
                 guide.appendChild(btnWrapper);
                 
-                if (positionStr === 'top') { 
-                    guide.style.bottom = 'auto'; guide.style.top = '10%'; 
-                } else { 
-                    guide.style.top = 'auto'; guide.style.bottom = '10%'; 
-                }
+                if (posTop) { guide.style.bottom = 'auto'; guide.style.top = '10%'; } 
+                else { guide.style.top = 'auto'; guide.style.bottom = '10%'; }
                 
                 document.body.classList.add('tut-active');
                 overlay.classList.add('active');
                 guide.classList.add('active');
+                guide.style.opacity = '1';
             }
 
+            // 튜토리얼 시퀀스 연산 프로세서
             function runTutStep() {
                 if (tutState.seq === 1) { 
                     if (tutState.step === 0) { showTutorialGuide("환영합니다. 페이트 시리즈의 기초 설정 탐구 방법에 대해 알려드리겠습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); dimAllTargetObjects(); } 
@@ -895,8 +939,7 @@
                         document.querySelector('#tabDetail_sung .detail-left-box').classList.remove('tut-dimmed');
                         document.querySelector('#tabDetail_sung .detail-sub-label').classList.add('tut-dimmed');
                         const img = document.querySelector('#tabDetail_sung .detail-img');
-                        img.classList.add('tut-highlight');
-                        img.style.setProperty('--highlight-scale', '1.05');
+                        img.classList.add('tut-highlight-img');
                     } 
                     else if (tutState.step === 2) { 
                         showTutorialGuide("이건 배치 된 사진이 무엇인지 알려주는 글입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
@@ -904,8 +947,7 @@
                         document.querySelector('#tabDetail_sung .detail-left-box').classList.remove('tut-dimmed');
                         document.querySelector('#tabDetail_sung .detail-img').classList.add('tut-dimmed');
                         const label = document.querySelector('#tabDetail_sung .detail-sub-label');
-                        label.classList.add('tut-highlight');
-                        label.style.setProperty('--highlight-scale', '1.1');
+                        label.classList.add('tut-highlight-label');
                     } 
                     else if (tutState.step === 3) { 
                         showTutorialGuide("이것은 개념의 설명창입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
@@ -931,23 +973,29 @@
                         document.querySelectorAll('#tabDetail_sung .description-title, #tabDetail_sung .description-quote, #tabDetail_sung .description-quote-author').forEach(e => e.classList.add('tut-dimmed'));
                         const kw = document.querySelector('#tabDetail_sung .interactive-keyword');
                         const p = kw.closest('p');
-                        p.classList.add('tut-shrink', 'tut-nowrap');
-                        kw.classList.add('tut-keyword-spacing');
+                        p.classList.add('tut-p-dimmed');
+                        kw.classList.add('tut-highlight-word');
                     } 
                     else if (tutState.step === 6) { showTutorialGuide("[신규개념]은 단어를 누르는 것으로 획득할 수 있습니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq2', 'done'); endTutorial(); }); }
                 } else if (tutState.seq === 3) { 
-                    if (tutState.step === 0) { showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
+                    if (tutState.step === 0) { 
+                        document.getElementById('acquireToastContainer').classList.add('tut-paused');
+                        dimAllTargetObjects(); 
+                        showTutorialGuide("신규개념을 획득하면 이렇게 알람이 뜨고 단어 선택 창에서 선택지로 추가됩니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
+                    } 
                     else if (tutState.step === 1) { 
+                        document.getElementById('acquireToastContainer').classList.add('tut-dimmed');
                         const backBtn = document.querySelector('.fate-back-btn');
                         document.getElementById('tutorialArrow').classList.add('active');
                         const rect = backBtn.getBoundingClientRect();
                         document.getElementById('tutorialArrow').style.left = (rect.left + rect.width / 2 - 32) + 'px'; 
                         document.getElementById('tutorialArrow').style.top = (rect.top - 65) + 'px';
-                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
+                        backBtn.classList.remove('tut-dimmed');
+                        backBtn.classList.add('tut-highlight');
+                        showTutorialGuide("뒤로가기 버튼 혹은 Esc를 눌러 돌아가 봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq3', 'done'); endTutorial(); }); 
                     }
                 } else if (tutState.seq === 4) { 
                     if (tutState.step === 0) { 
-                        showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, 'top'); 
                         dimAllTargetObjects();
                         const sungbwarNode = document.querySelector('.tree-node-box[data-id="sungbwar"]');
                         if (sungbwarNode) {
@@ -955,26 +1003,30 @@
                             sungbwarNode.querySelector('.tab-item-btn').classList.add('tut-highlight');
                             sungbwarNode.querySelector('.tab-item-btn').style.setProperty('--highlight-scale', '1.1');
                         }
+                        showTutorialGuide("방금 획득한 [신규개념]인 성배전쟁을 획득하여 성배전쟁이 선택지로써 추가 되었습니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }, true); 
                     } else if (tutState.step === 1) {
-                        showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }, 'top');
+                        showTutorialGuide("성배전쟁의 상세페이지로 접속해봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq4', 'done'); endTutorial(); }, true);
                     }
                 } else if (tutState.seq === 5) { 
-                    if (tutState.step === 0) { showTutorialGuide("이런식으로 [신규개념]을 획득해가며 설정들을 알아가봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq5', 'done'); endTutorial(); }); dimAllTargetObjects(); }
+                    if (tutState.step === 0) { 
+                        dimAllTargetObjects();
+                        showTutorialGuide("이런식으로 [신규개념]을 획득해가며 설정들을 알아가봅시다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq5', 'done'); endTutorial(); }); 
+                    }
                 } else if (tutState.seq === 6) { 
                     if (tutState.step === 0) { 
-                        showTutorialGuide("이것은 {주석}이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
                         dimAllTargetObjects();
-                        const activeRightBox = document.querySelector('#tabDetail_' + currentActiveTabId + ' .detail-right-box');
-                        if (activeRightBox) {
-                            activeRightBox.classList.remove('tut-dimmed');
-                            activeRightBox.querySelectorAll('.description-title, .description-quote, .description-quote-author').forEach(e => e.classList.add('tut-dimmed'));
-                            const anno = activeRightBox.querySelector('.annotation-word');
-                            if (anno) {
+                        const rightBox = document.querySelector(`#tabDetail_${currentActiveTabId} .detail-right-box`);
+                        if(rightBox) {
+                            rightBox.classList.remove('tut-dimmed');
+                            rightBox.querySelectorAll('.description-title, .description-quote, .description-quote-author').forEach(e => e.classList.add('tut-dimmed'));
+                            const anno = rightBox.querySelector('.annotation-word');
+                            if(anno) {
                                 const p = anno.closest('p');
-                                p.classList.add('tut-shrink', 'tut-nowrap');
-                                anno.classList.add('tut-keyword-spacing');
+                                p.classList.add('tut-p-dimmed');
+                                anno.classList.add('tut-highlight-word');
                             }
                         }
+                        showTutorialGuide("이것은 {주석}이 달린 단어입니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); 
                     } 
                     else if (tutState.step === 1) { showTutorialGuide("신규개념보다는 중요도가 적지만 이해하기 어려운 단어나 단체의 대한 정보를 간략하게 알려줍니다.", "다음", () => { playSfx(anneSfx); tutState.step++; runTutStep(); }); } 
                     else if (tutState.step === 2) { showTutorialGuide("그리고 {주석}이 달린 단어를 누르면 {주석창}이 펼쳐집니다. 그 뒤 화면 아무곳을 다시 누르면 {주석창}이 다시 접혀집니다.", "확인", () => { playSfx(anneSfx); localStorage.setItem('tut_seq6', 'done'); endTutorial(); }); }
@@ -1002,7 +1054,9 @@
                 
                 function tick() {
                     let now = Date.now();
-                    if (!isTutorialActive) remaining -= (now - lastTime);
+                    if (!isTutorialActive && !acquireToastContainer.classList.contains('tut-paused')) {
+                        remaining -= (now - lastTime);
+                    }
                     lastTime = now;
                     
                     if (remaining <= 0) {
@@ -1044,7 +1098,7 @@
                         spawnAcquireToast(keyTarget.innerHTML.trim());
 
                         if (!localStorage.getItem('tut_seq3')) {
-                            setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 500);
+                            setTimeout(() => { isTutorialActive = true; tutState = { seq: 3, step: 0 }; runTutStep(); }, 50);
                         }
                     }
                 }
@@ -1058,7 +1112,7 @@
 
             let activeAnnotation = null;
             document.addEventListener('click', function(e) {
-                if (isTutorialActive && localStorage.getItem('tut_seq6') === 'done') endTutorial();
+                if (isTutorialActive) return;
                 const annoTarget = e.target.closest('.annotation-word');
                 const tooltipBox = document.getElementById('tooltipBox');
                 if (annoTarget) {
@@ -1077,6 +1131,7 @@
                 }
             });
 
+            // [이미지 자세히보기 뷰어 모듈 통합 연산 (이동/확대)]
             const ivOverlay = document.getElementById('imageViewOverlay');
             const ivTarget = document.getElementById('imageViewTarget');
             let ivScale = 1; let ivPanX = 0; let ivPanY = 0;
@@ -1101,7 +1156,7 @@
                 if (!ivOverlay.classList.contains('show')) return;
                 ivOverlay.classList.remove('show');
                 const activeView = document.getElementById('tabDetail_' + currentActiveTabId);
-                if (activeView) activeView.style.opacity = '';
+                if (activeView) activeView.style.removeProperty('opacity');
             }
 
             ivOverlay.addEventListener('click', (e) => {
@@ -1189,7 +1244,7 @@
                 focusToNode('class');
                 
                 setTimeout(() => {
-                    playSfx(unlockSfx, 2.0); 
+                    playSfx(unlockSfx, 1.4); 
                     
                     btnObj.classList.add('is-unlocking'); 
                     
@@ -1381,7 +1436,9 @@
                                     } else if (id === 'sungbwar' && !localStorage.getItem('tut_seq5') && localStorage.getItem('tut_seq4')) {
                                         isTutorialActive = true; tutState = { seq: 5, step: 0 }; setTimeout(() => runTutStep(), 1000);
                                     }
-                                    if (['ma', 'master', 'gam', 'rj', 'suv'].includes(id) && targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6') && localStorage.getItem('tut_seq5')) {
+                                    
+                                    if (targetView.querySelector('.annotation-word') && !localStorage.getItem('tut_seq6') && 
+                                        ['ma', 'master', 'gam', 'rj', 'suv'].includes(id)) {
                                         setTimeout(() => { if(!isTutorialActive) { isTutorialActive = true; tutState = { seq: 6, step: 0 }; runTutStep(); } }, 1000); 
                                     }
                                 }, 600);
@@ -1431,7 +1488,12 @@
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
-                if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
+                if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { 
+                    if (currentStage === 3) {
+                        history.back(); 
+                    }
+                    return; 
+                }
                 if (isTutorialActive) return; 
 
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
