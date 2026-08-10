@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
-    <script src="https://www.youtube.com/iframe_api"></script>
+    <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
         /* [CSS 전역 초기화] */
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -91,38 +91,6 @@
         .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 1.7s cubic-bezier(0.25, 1, 0.4, 1); transform-origin: center center; will-change: transform; }
         .tree-matrix-inner { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transform-origin: center center; }
 
-        /* 초고밀도 파괴적 지진 애니메이션 (스케일 오버라이드 픽스 적용) */
-        .ending-shake-active { animation: earthquake-extreme 5s linear forwards; }
-        @keyframes earthquake-extreme {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            2% { transform: translate(-30px, 45px) rotate(-2deg); }
-            4% { transform: translate(50px, -35px) rotate(3deg); }
-            6% { transform: translate(-65px, 50px) rotate(-3deg); }
-            8% { transform: translate(80px, -60px) rotate(4deg); }
-            10% { transform: translate(-100px, 85px) rotate(-5deg); }
-            12% { transform: translate(120px, -110px) rotate(6deg); }
-            14% { transform: translate(-145px, 130px) rotate(-7deg); }
-            16% { transform: translate(170px, -150px) rotate(8deg); }
-            18% { transform: translate(-190px, 175px) rotate(-9deg); }
-            20% { transform: translate(210px, -195px) rotate(10deg); filter: blur(0px); }
-            25% { transform: translate(-250px, 230px) rotate(-12deg); filter: blur(1px); }
-            30% { transform: translate(280px, -260px) rotate(14deg); filter: blur(1px); }
-            35% { transform: translate(-310px, 290px) rotate(-16deg); filter: blur(2px); }
-            40% { transform: translate(350px, -330px) rotate(18deg); filter: blur(2px); }
-            45% { transform: translate(-380px, 360px) rotate(-20deg); filter: blur(3px); }
-            50% { transform: translate(410px, -390px) rotate(22deg); filter: blur(4px); }
-            55% { transform: translate(-450px, 420px) rotate(-24deg); filter: blur(5px); }
-            60% { transform: translate(480px, -460px) rotate(26deg); filter: blur(6px); }
-            65% { transform: translate(-520px, 490px) rotate(-28deg); filter: blur(7px); }
-            70% { transform: translate(550px, -530px) rotate(30deg); filter: blur(8px); }
-            75% { transform: translate(-590px, 560px) rotate(-32deg); filter: blur(9px); }
-            80% { transform: translate(630px, -600px) rotate(34deg); filter: blur(10px); }
-            85% { transform: translate(-660px, 630px) rotate(-36deg); filter: blur(11px); }
-            90% { transform: translate(700px, -670px) rotate(38deg); filter: blur(12px); }
-            95% { transform: translate(-740px, 710px) rotate(-40deg); filter: blur(13px); }
-            100% { transform: translate(800px, -750px) rotate(42deg); filter: blur(15px); }
-        }
-
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
         
         .tree-branch-line { stroke-width: 2px; fill: none; filter: drop-shadow(0 0 14px rgba(255, 30, 30, 0.85)); pointer-events: none; opacity: 0; transition: all 0.5s ease; }
@@ -173,18 +141,19 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        /* --- [상세 설명창 뷰 모듈] --- */
+        /* --- [상세 설명창 뷰 모듈 - 강제 정렬 분리 적용] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
+        /* [클래스 탭 전용 독립 절대좌표 레이어] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
-        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.5s ease; opacity: 0; pointer-events: none; }
+        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; transition: filter 0.7s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; transition: filter 0.5s ease; pointer-events: none; }
-        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 1.4s cubic-bezier(0.25, 1, 0.5, 1), filter 0.3s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
+        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; transform: translate(-50%, -50%); transition: transform 0.5s ease, filter 0.7s ease; cursor: pointer; filter: drop-shadow(0 0 5px transparent); pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -193,13 +162,21 @@
         .class-card[data-idx="5"] { left: calc(50% + 24vw) !important; } 
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
 
+        /* 호버 시 transform 상승 연산 제거, 본래 중심 위치 고정 */
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff); transform: translate(-50%, -50%); }
-        .class-card.falling { top: 150vh !important; transition: top 1.4s cubic-bezier(0.25, 1, 0.5, 1) !important; }
+        /* 하강 모션 2.0s 감속 및 부드러운 곡선 적용 */
+        .class-card.falling { top: 150vh !important; transition: top 2.0s ease-in-out !important; }
         .class-blurred { filter: blur(12px) !important; pointer-events: none; }
         
         .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
+
+        /* [클래스 정보 텍스트 UI 스타일 렌더링] */
+        .class-info-container { position: absolute; top: 25%; right: 8%; width: 450px; text-align: center; opacity: 0; transition: opacity 0.8s ease; z-index: 40; pointer-events: none; }
+        .class-info-container.show { opacity: 1; }
+        .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; transition: all 0.5s ease; letter-spacing: 4px; }
+        .class-info-desc { font-size: 1.458rem; line-height: 1.85; color: #d0c5b5; word-break: keep-all; }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -264,10 +241,10 @@
         #tutorialArrow.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0s linear 0s; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
-        /* [엔딩 연출 오버레이 및 유튜브 컨테이너 - Z-Index 락 및 해상도 강제 우회 패치] */
-        #youtubeContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; overflow: hidden; }
-        #youtubePlayer { position: absolute; top: 50%; left: 50%; width: 2560px; height: 1440px; transform-origin: center center; }
-        #youtubeClickBlocker { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 23000; cursor: pointer; }
+        /* [엔딩 연출 오버레이 및 비메오(Vimeo) 컨테이너 매핑] */
+        #vimeoContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; }
+        #vimeoPlayer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; }
+        #videoClickBlocker { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 23000; cursor: pointer; }
         
         #endingWhiteOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #ffffff; z-index: 24000; opacity: 0; pointer-events: none; display: none; }
         #endingBlackOverlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000000; z-index: 25000; opacity: 0; pointer-events: none; display: none; }
@@ -318,9 +295,9 @@
 
     <div id="endingWhiteOverlay"></div>
     <div id="endingBlackOverlay"></div>
-    <div id="youtubeContainer">
-        <div id="youtubePlayer"></div>
-        <div id="youtubeClickBlocker"></div>
+    <div id="vimeoContainer">
+        <div id="vimeoPlayer"></div>
+        <div id="videoClickBlocker"></div>
     </div>
 
     <audio id="bgmMain" src="BGM/BGM-main-theme.mp3" loop preload="auto"></audio>
@@ -654,6 +631,11 @@
                 <img src="classes/class-back.png" class="class-card" data-idx="6" alt="Card Berserker">
             </div>
             <img src="" class="class-illust-target detail-img" id="classIllustTarget" alt="Class Illustration">
+            
+            <div id="classInfoContainer" class="class-info-container">
+                <div id="classInfoName" class="class-info-name"></div>
+                <div id="classInfoDesc" class="class-info-desc">더미 텍스트입니다. 추후 설명글이 업데이트될 예정입니다.</div>
+            </div>
         </section>
     </div>
 
@@ -694,7 +676,7 @@
         let currentActiveClone = null;
         let visitedClasses = JSON.parse(sessionStorage.getItem('fate_visited_classes') || '[]');
 
-        // [방사형 매트릭스 좌표 맵핑 - 마방진 노드 추가]
+        // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -722,6 +704,17 @@
             'classes/class-berserker.png'
         ];
 
+        // [클래스 텍스트 UI 글로우 및 이름 매핑 데이터]
+        const CLASS_INFO_DATA = [
+            { name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '' }, 
+            { name: '랜서', shadow: '0 0 15px #4169e1, 0 0 30px #0000cd', extraSize: '' }, 
+            { name: '아처', shadow: '0 0 15px #ff4444, 0 0 30px #aa0000', extraSize: '' }, 
+            { name: '라이더', shadow: '0 0 15px #da70d6, 0 0 30px #800080', extraSize: '' }, 
+            { name: '캐스터', shadow: '0 0 15px #000080, 0 0 30px #000033', extraSize: '' }, 
+            { name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '4.8rem' }, 
+            { name: '버서커', shadow: '0 0 15px #8b0000, 0 0 30px #330000', extraSize: '' }  
+        ];
+
         // 캐시 데이터 소멸자 (초기화)
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
@@ -746,9 +739,9 @@
             }
         })();
 
-        let youtubePlayer = null;
-        let youtubeUIHidden = false;
-        function onYouTubeIframeAPIReady() { }
+        let vimeoPlayer = null;
+        let vimeoUIHidden = false;
+        let videoEndingTriggered = false;
 
         document.addEventListener('DOMContentLoaded', function() {
             if (!history.state || history.state.stage !== 1) {
@@ -921,12 +914,14 @@
                 triggerPlay('#suvsoTrigger', suvsoFsfSfx, 5.2785); 
             });
 
+            // [튜토리얼 텍스트 렌더링 파서] 
             function formatTutText(text) {
                 return text
                     .replace(/\[(.*?)\]/g, '<span style="color:#ffd700;">$1</span>')
                     .replace(/\{(.*?)\}/g, '<span style="text-shadow: 0 0 10px #ffffff;">$1</span>');
             }
 
+            // [완벽한 스케일 매트릭스 반영 복제 오브젝트 매니저 엔진]
             function clearCloneHighlights() {
                 cloneHighlightEls.forEach(el => {
                     if (el && el.parentNode) {
@@ -1495,119 +1490,83 @@
                 }, 1200);
             }
 
-            function resizeYoutubeHack() {
-                const player = document.getElementById('youtubePlayer');
-                if (player) {
-                    const scale = Math.max(window.innerWidth / 2560, window.innerHeight / 1440);
-                    player.style.transform = `translate(-50%, -50%) scale(${scale})`;
-                }
-            }
-            window.addEventListener('resize', resizeYoutubeHack);
-
-            // [엔딩 컷신 및 유튜브 480p 방어(1440p 강제) 동기화 시퀀스]
+            // [비메오(Vimeo) 재생 동기화 시퀀스]
             function triggerEndingCutscene() {
                 isTransitioning = true;
                 playSfx(mahojinSfx, 1.5);
+                playSfx(risingSfx, 1.5); 
                 
-                currentScale = 0.4;
-                focusToNode('sung');
+                const whiteOverlay = document.getElementById('endingWhiteOverlay');
+                whiteOverlay.style.display = 'block';
+                
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        whiteOverlay.style.transition = 'opacity 1s linear';
+                        whiteOverlay.style.opacity = '1';
+                    });
+                });
 
                 setTimeout(() => {
-                    treeMatrixInner.classList.add('ending-shake-active');
-                    const whiteOverlay = document.getElementById('endingWhiteOverlay');
-                    whiteOverlay.style.display = 'block';
-                    
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => {
-                            whiteOverlay.style.transition = 'opacity 5s linear';
-                            whiteOverlay.style.opacity = '1';
-                        });
-                    });
-
-                    setTimeout(() => {
-                        playSfx(risingSfx, 1.5);
-                    }, 3780);
-
-                    setTimeout(() => {
-                        startYoutubeEnding();
-                    }, 6000);
-                }, 1700);
+                    startVimeoEnding();
+                }, 1000);
             }
 
-            let videoEndingInterval;
-            function startYoutubeEnding() {
-                const ytContainer = document.getElementById('youtubeContainer');
-                ytContainer.style.display = 'block';
-                resizeYoutubeHack();
+            let videoEndingTriggered = false;
+            function startVimeoEnding() {
+                const vmContainer = document.getElementById('vimeoContainer');
+                vmContainer.style.display = 'block';
 
-                if (typeof YT !== 'undefined' && YT.Player) {
-                    youtubePlayer = new YT.Player('youtubePlayer', {
-                        videoId: 'z-1S1CyyjOk',
-                        playerVars: {
-                            'autoplay': 1,
-                            'controls': 0,
-                            'disablekb': 1,
-                            'fs': 0,
-                            'modestbranding': 1,
-                            'rel': 0,
-                            'showinfo': 0,
-                            'iv_load_policy': 3,
-                            'vq': 'hd1440' 
-                        },
-                        events: {
-                            'onReady': onPlayerReady,
-                            'onStateChange': onPlayerStateChange
-                        }
-                    });
-                }
-            }
+                const options = {
+                    id: 1217078190,
+                    autoplay: true,
+                    controls: false,
+                    keyboard: false,
+                    title: false,
+                    byline: false,
+                    portrait: false,
+                    dnt: true
+                };
 
-            function onPlayerReady(event) {
-                event.target.setPlaybackQuality('hd1440');
-                event.target.playVideo();
-                
-                videoEndingInterval = setInterval(() => {
-                    const duration = event.target.getDuration();
-                    const current = event.target.getCurrentTime();
-                    if (duration > 0 && (duration - current <= 3)) {
-                        clearInterval(videoEndingInterval);
+                vimeoPlayer = new Vimeo.Player('vimeoPlayer', options);
+
+                vimeoPlayer.on('play', function() {
+                    if (!vimeoUIHidden) {
+                        setTimeout(() => {
+                            vimeoUIHidden = true;
+                            const whiteOverlay = document.getElementById('endingWhiteOverlay');
+                            whiteOverlay.style.transition = 'opacity 1.5s ease-out';
+                            whiteOverlay.style.opacity = '0';
+                            setTimeout(() => { whiteOverlay.style.display = 'none'; }, 1500);
+                        }, 3500);
+                    }
+                });
+
+                vimeoPlayer.on('timeupdate', function(data) {
+                    if (data.duration > 0 && (data.duration - data.seconds <= 3) && !videoEndingTriggered) {
+                        videoEndingTriggered = true; 
                         executeEndingBlackout(3000);
                     }
-                }, 500);
-            }
+                });
 
-            function onPlayerStateChange(event) {
-                if (event.data === YT.PlayerState.PLAYING && !youtubeUIHidden) {
-                    // 화질 저하 방어 락(Lock): 재생 시작 후 6초간 1440p 강제 호출 스팸
-                    let qualitySpam = setInterval(() => {
-                        if(event.target.setPlaybackQuality) event.target.setPlaybackQuality('hd1440');
-                    }, 500);
-                    setTimeout(() => clearInterval(qualitySpam), 6000);
-
-                    // 유튜브 타이틀 UI가 사라질 때까지(약 2.5초) 백색 암막 대기
-                    setTimeout(() => {
-                        youtubeUIHidden = true;
-                        const whiteOverlay = document.getElementById('endingWhiteOverlay');
-                        whiteOverlay.style.transition = 'opacity 1.5s ease-out';
-                        whiteOverlay.style.opacity = '0';
-                        setTimeout(() => { whiteOverlay.style.display = 'none'; }, 1500);
-                    }, 2500);
-                }
-                if (event.data === YT.PlayerState.ENDED) {
-                    clearInterval(videoEndingInterval);
-                    executeEndingBlackout(0);
-                }
+                vimeoPlayer.on('ended', function() {
+                    if(!videoEndingTriggered) {
+                        videoEndingTriggered = true;
+                        executeEndingBlackout(0);
+                    }
+                });
             }
 
             let skipClickCount = 0;
             let skipClickTimer;
-            document.getElementById('youtubeClickBlocker').addEventListener('click', () => {
+            document.getElementById('videoClickBlocker').addEventListener('click', () => {
                 skipClickCount++;
                 clearTimeout(skipClickTimer);
                 if (skipClickCount >= 5) {
-                    clearInterval(videoEndingInterval);
-                    if (youtubePlayer && youtubePlayer.pauseVideo) youtubePlayer.pauseVideo();
-                    executeEndingBlackout(0);
+                    if (!videoEndingTriggered) {
+                        videoEndingTriggered = true;
+                        if (vimeoPlayer) vimeoPlayer.pause();
+                        executeEndingBlackout(0);
+                    }
                 } else {
                     skipClickTimer = setTimeout(() => { skipClickCount = 0; }, 1000);
                 }
@@ -1719,7 +1678,6 @@
                         mContainer.className = 'mahojin-container';
                         mContainer.innerHTML = `
                             <img src="img/img-suvso-mahojin.png" class="mahojin-img" alt="Mahojin">
-                            <div class="mahojin-spark"></div>
                         `;
                         mContainer.onclick = () => {
                             if (isTransitioning || ivOverlay.classList.contains('show')) return;
@@ -1840,6 +1798,7 @@
                 }
             });
 
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (방문 로그 수집 연동 및 블러 동기화 패치)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
@@ -1847,11 +1806,6 @@
                     playSfx(classOpenSfx, 1.0);
                     
                     this.classList.add('falling');
-                    
-                    document.querySelector('.class-bg-layer').classList.add('class-blurred');
-                    document.querySelectorAll('.class-card').forEach(c => {
-                        if(c !== this) c.classList.add('class-blurred');
-                    });
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1864,16 +1818,41 @@
                     illustTarget.style.opacity = '0';
                     illustTarget.src = CLASS_ILLUST_MAP[idx];
 
+                    const infoContainer = document.getElementById('classInfoContainer');
+                    infoContainer.classList.remove('show');
+
+                    // 2초 하강 완료 후 일러스트 상승 및 블러 동기화 가동
                     setTimeout(() => {
+                        document.querySelector('.class-bg-layer').classList.add('class-blurred');
+                        document.querySelectorAll('.class-card').forEach(c => {
+                            if(c !== this) c.classList.add('class-blurred');
+                        });
+
                         illustTarget.style.opacity = '';
-                        illustTarget.classList.add('rise');
+                        illustTarget.classList.add('rise'); // 0.7초 상승
                         
+                        // 상승 완료 0.7초 후 1.0초 대기 (총 1.7초)
                         setTimeout(() => {
-                            illustTarget.classList.add('move-left');
-                            classTabPhase = 2;
-                            isTransitioning = false;
-                        }, 1000);
-                    }, 1400); 
+                            illustTarget.classList.add('move-left'); // 1.0초 좌측 이동
+                            
+                            // 좌측 이동 완료 후 텍스트 UI 렌더링
+                            setTimeout(() => {
+                                const data = CLASS_INFO_DATA[idx];
+                                const nameEl = document.getElementById('classInfoName');
+                                nameEl.innerText = data.name;
+                                nameEl.style.textShadow = data.shadow;
+                                if(data.extraSize) {
+                                    nameEl.style.fontSize = data.extraSize;
+                                } else {
+                                    nameEl.style.fontSize = '4rem';
+                                }
+                                infoContainer.classList.add('show');
+                                
+                                classTabPhase = 2;
+                                isTransitioning = false;
+                            }, 1000);
+                        }, 1700); 
+                    }, 2000); 
                 });
             });
 
@@ -1917,9 +1896,11 @@
                     document.querySelectorAll('.class-card').forEach(c => {
                         c.classList.remove('class-blurred', 'falling');
                     });
+                    document.getElementById('classInfoContainer').classList.remove('show');
                     classTabPhase = 0;
                     setTimeout(() => { isTransitioning = false; }, 1000);
 
+                    // 클래스 7장 획득 검증 완료 시 엔딩 노드 해금
                     if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
                         sessionStorage.setItem('ending_unlocked', 'true');
                     }
@@ -1980,6 +1961,7 @@
                         document.querySelectorAll('.class-card').forEach(c => {
                             c.classList.remove('class-blurred', 'falling');
                         });
+                        document.getElementById('classInfoContainer').classList.remove('show');
                         
                         if (visitedClasses.length === 7 && sessionStorage.getItem('ending_unlocked') !== 'true') {
                             sessionStorage.setItem('ending_unlocked', 'true');
