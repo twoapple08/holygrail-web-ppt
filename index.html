@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fate/series</title>
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
@@ -52,7 +52,7 @@
         .keyword-error { animation: keyword-error-shake 0.3s ease-in-out; display: inline-block; }
 
         /* [어록 인터랙션 객체] */
-        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; }
+        .description-quote { font-style: italic; color: rgba(220, 210, 195, 0.9); display: inline-block; cursor: pointer; position: relative; z-index: 100; user-select: none; animation: quote-gentle-glow 1.2s infinite alternate ease-in-out; transition: all 0.5s ease; pointer-events: auto; font-size: 1.458rem; }
         .description-quote:hover { color: #ffffff !important; transform: scale(1.02); text-shadow: 0 0 15px rgba(255, 255, 255, 1.0), 0 0 30px rgba(255, 255, 255, 0.9), 0 0 45px rgba(255, 255, 255, 0.7) !important; }
         .description-quote.glow-fade-out { animation: none !important; text-shadow: none !important; }
         @keyframes quote-gentle-glow { 0% { text-shadow: 0 0 4px rgba(220, 200, 170, 0.4); } 100% { text-shadow: 0 0 15px rgba(255, 220, 120, 0.9), 0 0 25px rgba(255, 180, 80, 0.6); } }
@@ -66,7 +66,7 @@
         .start-btn-container.hide { opacity: 0; transform: scale(0.9); visibility: hidden; pointer-events: none; }
         
         /* 튜토리얼 비활성화 체크박스 */
-        .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: auto; }
+        .initial-notice-center { font-size: 0.95rem; color: rgba(215, 205, 190, 0.7); letter-spacing: 1.5px; user-select: none; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 5px rgba(100, 0, 0, 0.8); transition: opacity 0.6s ease-out; pointer-events: auto; text-align: center; }
         .tut-checkbox-wrapper { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 15px; cursor: pointer; }
         .tut-checkbox-wrapper input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: #900000; }
         .tut-checkbox-wrapper span { font-size: 1.0rem; color: #d7cdbe; transition: color 0.3s; }
@@ -96,8 +96,8 @@
         .tree-selection-container { position: absolute; z-index: 30; top: 0; left: 0; width: 100vw; height: 100vh; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease-in-out, visibility 0.6s step-end; overflow: hidden; }
         .tree-selection-container.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease-in-out, visibility 0.6s step-start; }
         
-        /* 컷신 카메라 이동의 정밀 연산을 위해 transform-origin 동적 제어 알고리즘 주입 구역 */
-        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 0.8s cubic-bezier(0.25, 1, 0.25, 1), filter 0.5s ease; transform-origin: center center; }
+        /* 컷신 카메라 이동의 정밀 연산을 위해 transform-origin 동적 제어 알고리즘 주입 구역 - 지연시간 연장 */
+        .tree-matrix-world { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; transition: transform 1.2s cubic-bezier(0.25, 1, 0.4, 1), filter 0.5s ease; transform-origin: center center; }
         
         /* SVG 선분이 뷰포트를 넘어가도 절단되지 않도록 overflow: visible 강제 */
         .tree-svg-layer { position: absolute; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 31; overflow: visible; }
@@ -158,13 +158,14 @@
         @keyframes wave-flow { 0% { background-position: 0% 100%; } 100% { background-position: 0% -100%; } }
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         
-        .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 1.5s ease-out; }
+        .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
         /* --- [상세 설명창 뷰 모듈] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.6s ease; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
 
-        #tabDetail_sungbwar, #tabDetail_sso, #tabDetail_yong, #tabDetail_bogu, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { justify-content: center; padding-left: 0; gap: 0; }
+        /* 중앙 정렬 배열 객체 필터링 - 영령, 보구, 서번트 소환의식 분리 복구 연산 완료 */
+        #tabDetail_sungbwar, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { justify-content: center; padding-left: 0; gap: 0; }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -193,13 +194,13 @@
         .img-glow-bogu { filter: drop-shadow(0 0 30px rgba(50, 255, 50, 0.9)); }
         .img-glow-yong { filter: drop-shadow(0 0 30px rgba(50, 50, 255, 0.9)); }
 
-        .detail-sub-label { margin-top: 15px; font-size: 0.95rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: all 0.5s ease; }
+        .detail-sub-label { margin-top: 15px; font-size: 1.14rem; color: rgba(215, 205, 190, 0.65); letter-spacing: 2px; text-shadow: 0 0 8px rgba(0, 0, 0, 0.9), 0 0 4px rgba(100, 0, 0, 0.5); text-align: center; position: relative; transition: all 0.5s ease; }
 
         /* 가로 폭 팽창 방어: max-width 제한을 통한 강제 줄바꿈 및 여백 보장 */
         .detail-right-box { flex: 1; max-width: 700px; background: rgba(15, 0, 0, 0.75); border: 2px solid rgba(160, 0, 0, 0.8); border-radius: 8px; padding: 30px 35px 40px 35px; box-shadow: 0 0 25px rgba(100, 0, 0, 0.7), inset 0 0 15px rgba(80, 0, 0, 0.5); backdrop-filter: blur(4px); position: relative; z-index: 5; transition: all 0.5s ease; }
 
         .description-title { font-size: 2.2rem; font-weight: 700; color: #f5f0e6; letter-spacing: 2px; margin-top: -6px; margin-bottom: 20px; border-bottom: 1px solid rgba(180, 0, 0, 0.6); padding-bottom: 12px; text-shadow: 0 0 12px rgba(255, 50, 50, 0.7); position: relative; transition: all 0.5s ease; }
-        .description-content p { font-size: 1.35rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: all 0.5s ease; }
+        .description-content p { font-size: 1.458rem; line-height: 1.85; color: #d0c5b5; letter-spacing: 1px; word-break: keep-all; max-width: 100%; position: relative; transition: all 0.5s ease; }
         .description-quote-author { font-style: normal; font-size: 1.15rem; color: #a08a75; display: block; margin-top: 4px; margin-bottom: 16px; text-align: right; user-select: none; position: relative; transition: all 0.5s ease; }
 
         /* [주석효과 (툴팁) 모듈] 텍스트 좌측 정렬 */
@@ -247,6 +248,27 @@
         @keyframes grail-smooth-fadein { 0% { opacity: 0; transform: scale(0.96); } 100% { opacity: 1; transform: scale(1); } }
         @keyframes grail-gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
         @keyframes fade-in { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+        /* [반응형 레이어 모듈 (Media Queries)] 모바일 기기 세로 및 가로 환경 대응 연산 */
+        @media (max-width: 1024px) {
+            .tab-detail-view { flex-direction: column; padding-left: 0; gap: 20px; justify-content: center; align-items: center; }
+            #tabDetail_sungbwar, #tabDetail_class, #tabDetail_jinbang, #tabDetail_brokenf { gap: 20px; }
+            .static-tab-title { top: 3vh; left: 50%; transform: translateX(-50%) scale(0.6); transform-origin: center center; }
+            .detail-left-box { min-width: auto; max-width: 90%; }
+            .detail-img { width: 220px; }
+            .detail-right-box { max-width: 90%; padding: 20px 25px; }
+            .tab-item-btn { transform: scale(0.6); }
+            .tree-node-box.focused .tab-item-btn { transform: scale(0.7); }
+            .description-content p, .description-quote { font-size: 1.2rem !important; }
+            .detail-sub-label { font-size: 1rem; }
+            #tutorialGuide { width: 90%; }
+        }
+        @media (max-width: 1024px) and (orientation: landscape) {
+            .tab-detail-view { flex-direction: row; padding-left: 5%; gap: 5%; }
+            .static-tab-title { top: 5vh; left: 2vw; transform: scale(0.5); transform-origin: top left; }
+            .detail-img { width: 180px; }
+            .description-content p, .description-quote { font-size: 1.1rem !important; }
+        }
     </style>
 </head>
 <body>
@@ -343,7 +365,7 @@
                 <h2 class="description-title">성배전쟁이란?</h2>
                 <div class="description-content">
                     <span class="description-quote" id="kiritsuguTrigger">"온갖 시대, 온갖 나라의 영웅이 현대에 되살아나 힘을 겨루는 살육전.<br>그게 성배전쟁이다."</span>
-                    <span class="description-quote-author">-에미야 키리츠구</span>
+                    <span class="description-quote-author">- 토오사카 토키오미</span>
                     <p style="margin-top: 12px;">
                         성배의 소유권을 둘러싸고 벌이는 전쟁.<br>
                         성배가 7명의 <span class="interactive-keyword" data-key="ma">마술사</span>에게 <span class="interactive-keyword" data-key="rj"><ruby>령주<rt>令呪</rt></ruby></span>를 내려<br>
@@ -395,7 +417,7 @@
                     <p style="margin-top: 12px;">
                         서번트와 계약한 마스터가 3회에 걸쳐<br>
                         서번트에게 강제적인 명령을 내릴 수 있는 주술을 말한다.<br>
-                        그 형태는 신체 어딘가에 나타나는 3획의 선 형태의<br>
+                        그 형태는 <span class="annotation-word" data-tooltip="주로 손등이다.">신체 어딘가</span>에 나타나는 <span class="annotation-word" data-tooltip="말이 선이지 3파트로 나뉘어진 그림에 가깝다.">3획의 선 형태</span>의<br>
                         붉은 멍처럼 보이는 문양으로 나타나며<br>
                         세부적인 형태는 마스터마다 전부 다르다.<br>
                         성배가 주는 강대한 마력 덩어리로<br>
@@ -497,7 +519,12 @@
                     <span class="description-quote" id="suvsoTrigger">"세트. 소재로는 은과 철. 초석에는 돌과 계약의 대공.<br>내려서는 바람에는 벽을, 사방의 문은 닫히고,<br>왕관에서 나와, 왕국에 이르는 삼거리는 순환하라!<br>채워라, 채워라, 채워라, 채워라, 채워라!<br>거듭 반복하기를 5번. 그저 채워지는 때를 파각한다.<br>고한다. 그대의 몸은 나의 곁에, 나의 운명은 그대의 검에.<br>성배의 인도에 따라, 이 뜻, 이 이치에 따른다면 대답하라!"</span>
                     <span class="description-quote-author">- 스노우 필드의 성배전쟁에서 사용된 영창</span>
                     <p style="margin-top: 12px;">
-                        서번트를 소환하기 위해서는 촉매가 필요하다.<br>그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.<br>서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.<br>이 소환 자체는 성배가 도와주는 것이기 때문에<br>소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르다.
+                        서번트를 소환하기 위해 행하는 의식<br>
+                        서번트를 소환하기 위해서는 촉매가 필요하다.<br>
+                        그 촉매는 성유물이며, 없다면 자기 자신을 촉매로써 활용해 촉매와 부합한 서번트를 소환한다.<br>
+                        서번트는 소환되기 전에 소환에 응하거나 거부할 수 있다.<br>
+                        이 소환 자체는 성배가 도와주는 것이기 때문에<br>
+                        소환 의식을 진행하는 마스터에 따라 조금씩 영창의 내용이 다르기도 한다.
                     </p>
                 </div>
             </div>
@@ -559,7 +586,7 @@
                         보구의 진정한 힘을 사용하기 위해 진정한 보구의 이름을 외치는 것.<br>
                         진명개방을 하기 전까지 대부분의 보구들은 대체적으로 그냥 강력한 냉병기에 지나지 않지만<br>이 진명개방을 함으로써 보구의 진정한 위력을 끌어낼 수 있다.<br>
                         진명개방을 하기 위해서는 <span class="annotation-word" data-tooltip="두 손으로 보구를 들고 진명개방을 해야 한다든지 등.">선행조건</span>을 갖춰야 하는 경우도 있으며<br>
-                        무구의 이름과 진명개방의 명칭이 일치하는 경우.<br>
+                        무구의 이름과 진명개방의 명칭이 일치하는 경우,<br>
                         무구의 이름과 진명개방이 일치하지 않는 경우 등<br>
                         진명개방의 방식도 여러가지가 있다.
                     </p>
@@ -577,8 +604,9 @@
                     <span class="description-quote-author">-제 5차 성배전쟁 서번트</span>
                     <p style="margin-top: 12px;">
                         보구의 특수한 사용법.<br>
-                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.<br>이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
-                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라 원형은 유지된다.<br>하지만 마력이 사라졌기에 곧 소멸한다.
+                        보구를 구성하는 숨겨진 마력을 전부 폭발시켜 써먹는 기술.<br>
+                        이를 통해 압도적인 위력을 발휘하는데, 그 대가로 보구는 완전 소멸하기에 단 1번만 쓸 수 있다.<br>
+                        마력이 터지는 것이지 보구 자체가 터지는 것이 아니라서 원형은 잠시 유지되지만 마력이 사라졌기에 곧 소멸한다.
                     </p>
                 </div>
             </div>
@@ -816,7 +844,7 @@
             document.addEventListener('pointerdown', unlockAllAudioPolicy, { once: true });
             document.addEventListener('click', unlockAllAudioPolicy, { once: true });
 
-            // 어록 인터랙션 클릭 리스너 (요구된 특정 오디오에 35% 증폭 파라미터 적용 완료)
+            // 어록 인터랙션 클릭 리스너 (증폭 파라미터 적용)
             document.addEventListener('click', function(e) {
                 const triggerPlay = (targetId, audioObj, boost = 1.0) => {
                     const target = e.target.closest(targetId);
@@ -833,11 +861,11 @@
 
                 triggerPlay('#kotomineTrigger', kotomineSfx);
                 triggerPlay('#kiritsuguTrigger', kiritsuguSfx);
-                triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx, 1.35); // 령주 35% 증폭
+                triggerPlay('#kiritsuguYongTrigger', kiritsuguYongSfx, 5.4); 
                 triggerPlay('#yongTrigger', yongSfx);
-                triggerPlay('#bfTrigger', bfEmiyaSfx, 1.35); // 브로큰 판타즘 35% 증폭
-                triggerPlay('#jinmTrigger', jinmExcarSfx, 1.35); // 진명개방 35% 증폭
-                triggerPlay('#suvsoTrigger', suvsoFsfSfx, 1.35); // 서번트 소환 의식 35% 증폭
+                triggerPlay('#bfTrigger', bfEmiyaSfx, 2.295); 
+                triggerPlay('#jinmTrigger', jinmExcarSfx, 2.295); 
+                triggerPlay('#suvsoTrigger', suvsoFsfSfx, 3.105); 
             });
 
             // 튜토리얼 종료 시스템 (오버레이 및 가이드 숨김)
@@ -1015,7 +1043,7 @@
                 }
             });
 
-            // 트리 좌표 및 포커싱 계산 렌더링 (Transform Origin 동적 할당 재설계 완료)
+            // 트리 좌표 및 포커싱 계산 렌더링
             function focusToNode(targetId) {
                 const nodeInfo = CONCEPT_REGISTRY[targetId];
                 if (!nodeInfo) return;
@@ -1036,15 +1064,15 @@
                 treeMatrixWorld.style.transform = `translate(${offsetX}vw, ${offsetY}vh) scale(${currentScale})`;
             }
 
-            // 컷신 카메라 워킹 및 타노스 스냅 파티클 연산 엔진 (이중 레이어 동시 렌더링 적용 완료)
+            // 컷신 카메라 워킹 및 타노스 스냅 파티클 연산 엔진 (지연 속도 상향 및 부드러운 이동 적용)
             function triggerClassCutscene(nodeBox, btnObj, prevFocusedId) {
                 isTransitioning = true;
                 currentScale = 1.6;
                 focusToNode('class');
                 
-                // 화면 줌 인(800ms) 완료 후 컷신 본격 가동
+                // 화면 줌 인 완료 후 컷신 본격 가동
                 setTimeout(() => {
-                    playSfx(unlockSfx, 2.0); // 70% 볼륨 감소 적용 완료 (기존 2.8 -> 2.0 하향)
+                    playSfx(unlockSfx, 2.3); 
                     
                     // 오버레이 페이드 아웃 및 밑에 깔린 베이스 텍스트의 동시 출현 가동
                     btnObj.classList.add('is-unlocking'); 
@@ -1053,12 +1081,10 @@
                     for (let i = 0; i < numParticles; i++) {
                         const pt = document.createElement('div');
                         pt.className = 'dust-particle';
-                        // 검은색과 붉은색, 회색이 혼합된 먼지
                         pt.style.backgroundColor = Math.random() > 0.5 ? '#000000' : (Math.random() > 0.5 ? '#880000' : '#444444');
                         pt.style.left = (Math.random() * 100) + '%';
                         pt.style.top = (Math.random() * 100) + '%';
                         
-                        // 우측 상단(타노스 스냅 방향)으로 향하도록 좌표 연산
                         const dx = Math.random() * 120 + 40;
                         const dy = -(Math.random() * 120 + 40);
                         
@@ -1069,7 +1095,7 @@
                             pt.style.opacity = '0';
                         }, 50);
                         
-                        setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 1600);
+                        setTimeout(() => { if(pt.parentNode) pt.parentNode.removeChild(pt); }, 2000);
                     }
 
                     // 먼지 및 오버레이 페이드아웃 종료 후 복귀 페이즈
@@ -1083,9 +1109,9 @@
                         // 배율 정상화 후 원래 머물렀던 탭으로 카메라 회귀 연산 가동
                         currentScale = 1.0;
                         focusToNode(prevFocusedId);
-                        setTimeout(() => { isTransitioning = false; }, 800);
-                    }, 1600);
-                }, 800);
+                        setTimeout(() => { isTransitioning = false; }, 1200);
+                    }, 2000);
+                }, 1200);
             }
 
             // 트리 SVG 노드 계산 및 버튼 생성
@@ -1147,7 +1173,7 @@
                             playSfx(moveSfx, 4.5);
                             isTransitioning = true;
                             focusToNode(nextFocus);
-                            setTimeout(() => { isTransitioning = false; }, 800);
+                            setTimeout(() => { isTransitioning = false; }, 1200);
                         };
 
                         treeSvg.appendChild(branchObj); treeSvg.appendChild(hitboxObj);
@@ -1212,7 +1238,7 @@
                             playSfx(moveSfx, 4.5);
                             isTransitioning = true;
                             focusToNode(id);
-                            setTimeout(() => { isTransitioning = false; }, 800);
+                            setTimeout(() => { isTransitioning = false; }, 1200);
                         } else {
                             isTransitioning = true;
                             history.pushState({ stage: 3, id: id }, '', '');
