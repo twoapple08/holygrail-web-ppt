@@ -7,7 +7,7 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      오디오 믹서 출력 게인 증폭, UI 반응형 좌표계 교정 및 비메오(Vimeo) API가 적용되어 있습니다.
+      클래스 노드 다중 개방 트리거, 카드 사운드 15배 증폭 믹서 및 비메오(Vimeo) API가 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <script src="https://player.vimeo.com/api/player.js"></script>
@@ -110,9 +110,9 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
-        /* [엔딩 마방진 렌더링 스타일 - 호버 transform 소각 픽스] */
+        /* [엔딩 마방진 렌더링 스타일] */
         .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); }
+        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); transition: transform 0.3s ease; }
         .mahojin-container:hover .mahojin-img { filter: invert(15%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(100%) contrast(150%) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
         
         @keyframes spin-slow { 100% { transform: rotate(360deg); } }
@@ -144,13 +144,13 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        /* --- [상세 설명창 뷰 모듈 - 페이드아웃 UI 복구 적용] --- */
+        /* --- [상세 설명창 뷰 모듈] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease, visibility 0s linear 0s; }
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어 및 동기화 블러 페이드 적용] */
+        /* [클래스 탭 전용 독립 절대좌표 레이어] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
         .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; filter: blur(0px); transition: filter 0.7s ease-in-out, opacity 0.6s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
@@ -158,7 +158,7 @@
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; transition: opacity 0.6s ease; }
         
-        /* 0.95초 트랜지션 (하강 스피드 0.3초 가속 완료) */
+        /* 0.95초 트랜지션 기반 설정 유지 */
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 0.5s ease, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
@@ -172,7 +172,6 @@
         .class-card.falling { top: 150vh !important; transition: top 0.95s ease-in-out !important; pointer-events: none; }
         .class-blurred { filter: drop-shadow(0 0 5px transparent) blur(12px) !important; pointer-events: none; }
         
-        /* 카드 등장(파도타기) 모션 클래스 */
         .card-wave-ready { top: -60vh !important; opacity: 0 !important; transition: none !important; pointer-events: none; }
         .card-wave-enter { top: 50% !important; opacity: 1 !important; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease !important; }
         
@@ -180,7 +179,7 @@
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
-        /* [신규 클래스 정보 텍스트 UI - 중앙 우측 정밀 배치 매트릭스 픽스 적용] */
+        /* [신규 클래스 정보 텍스트 UI - 사이즈 추가 증폭 및 좌표 조율] */
         .class-info-container { position: absolute; top: 20%; left: 70%; transform: translateX(-50%); width: 528px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
         .class-info-container.show { opacity: 1; pointer-events: auto; }
         .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
@@ -198,10 +197,10 @@
         .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 35px rgba(255, 105, 180, 0.95), 0 0 15px rgba(200, 50, 150, 0.8); }
 
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
+        /* [4. 영령 탭 이미지 사이즈 10퍼센트 증가 매핑] */
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
-        
-        #tabDetail_yong .detail-img { transform: scale(1.15); animation: yong-gentle-float 3.5s infinite ease-in-out; }
-        @keyframes yong-gentle-float { 0%, 100% { transform: scale(1.15) translateY(0); } 50% { transform: scale(1.15) translateY(-4px); } }
+        #tabDetail_yong .detail-img { transform: scale(1.265); animation: yong-gentle-float 3.5s infinite ease-in-out; }
+        @keyframes yong-gentle-float { 0%, 100% { transform: scale(1.265) translateY(0); } 50% { transform: scale(1.265) translateY(-4px); } }
 
         .img-glow-default { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.7)); } 
         .img-glow-ma { filter: drop-shadow(0 0 30px rgba(255, 50, 50, 0.7)); } 
@@ -324,16 +323,14 @@
     <audio id="kiritsuguYongSfx" src="voice/voice-yong-kiri.mp3" preload="auto"></audio>
     <audio id="yongSfx" src="voice/voice-yong-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
-    <!-- [1. 페이트 보이스 출력 증폭 시스템 동기화 대상] -->
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
     <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
     <audio id="blockSfx" src="sfx/sfx-block.mp3" preload="auto"></audio>
-    <!-- [5. 클래스 탭 봉인해제 300퍼센트 증폭 대상] -->
     <audio id="unlockSfx" src="sfx/sfx-unlock.mp3" preload="auto"></audio>
     <audio id="bfEmiyaSfx" src="voice/voice-bf-emiya.mp3" preload="auto"></audio>
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
-    <!-- [2. 클래스 카드 조작 오디오 호출 승수 증폭 시스템 적용 대상] -->
+    
     <audio id="cardGetSfx" src="sfx/sfx-cardget.mp3" preload="auto"></audio>
     <audio id="cardOpenSfx" src="sfx/sfx-cardopen.mp3" preload="auto"></audio>
     <audio id="cardRemoveSfx" src="sfx/sfx-cardremove.mp3" preload="auto"></audio>
@@ -572,7 +569,7 @@
             </div>
         </section>
 
-        <!-- 9. 영령 -->
+        <!-- [3. 영령 탭 수정 사항 적용 완료] -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
@@ -587,6 +584,7 @@
                         <span class="text-part">각 시대에 이루기 힘든 비범한 위업을 이룬 영웅(英雄)이 죽은 뒤에도</span><br>
                         <span class="text-part">전설로 남아 사람들의 신앙이 모여서 되는 존재.</span><br>
                         <span class="text-part">영혼이 <span class="annotation-word" data-tooltip="일반적인 인간의 영혼이 거치는<br>삶과 죽음의 반복">윤회</span>에서 벗어나 더 높은 존재로 진화한 것이다.</span><br>
+                        <span class="text-part">그중에는 신화에 나오는 인물들도 있으며 이들은 영령과 같은 취급이지만 신령이라고 불리기도 한다.</span><br>
                         <span class="text-part">기본적으로 생전의 기억을 가지고 있다.</span>
                     </p>
                 </div>
@@ -784,6 +782,8 @@
                 sessionStorage.removeItem('fate_voice_played');
                 sessionStorage.removeItem('fate_visited_yong');
                 sessionStorage.removeItem('fate_visited_bogu');
+                sessionStorage.removeItem('fate_visited_jinbang');
+                sessionStorage.removeItem('fate_visited_brokenf');
                 sessionStorage.removeItem('fate_visited_classes');
                 sessionStorage.removeItem('ending_unlocked');
                 
@@ -1509,7 +1509,7 @@
                 focusToNode('class');
                 
                 setTimeout(() => {
-                    playSfx(unlockSfx, 6.0); // 봉인 해제 사운드 300퍼센트 증폭 완료
+                    playSfx(unlockSfx, 6.0); 
                     
                     btnObj.classList.add('is-unlocking'); 
                     
@@ -1552,7 +1552,7 @@
                 }, 1200);
             }
 
-            // [비메오(Vimeo) 재생 동기화 시퀀스 및 BGM 페이드 아웃 연동]
+            // [비메오(Vimeo) 재생 동기화 시퀀스]
             function triggerEndingCutscene() {
                 isTransitioning = true;
                 
@@ -1724,8 +1724,13 @@
                     }
                 });
 
+                // [2. 클래스 탭 다중 개방 트리거 업데이트 동기화]
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                 const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
+                const isJinbangVisited = sessionStorage.getItem('fate_visited_jinbang') === 'true';
+                const isBrokenfVisited = sessionStorage.getItem('fate_visited_brokenf') === 'true';
+                const isClassUnlockConditionMet = isYongVisited && isBoguVisited && isJinbangVisited && isBrokenfVisited;
+                
                 const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
 
                 unlockedIds.forEach(id => {
@@ -1768,7 +1773,7 @@
                         
                         if (id === 'class') {
                             btn.classList.add('white-glow-btn', 'color-gold');
-                            if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
+                            if (!isClassUnlockConditionMet || !isClassCutsceneDone) {
                                 btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
                                 btn.classList.add('is-locked');
                             } else {
@@ -1839,7 +1844,8 @@
                                     document.getElementById('dustEffect').style.opacity = '0.55';
                                 }
 
-                                if (id === 'yong' || id === 'bogu') {
+                                // [다중 탭 플래그 개방 데이터 수집]
+                                if (id === 'yong' || id === 'bogu' || id === 'jinbang' || id === 'brokenf') {
                                     sessionStorage.setItem('fate_visited_' + id, 'true');
                                 }
 
@@ -1880,14 +1886,14 @@
                 }
             });
 
-            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 오버랩 패치 적용)]
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 오버랩 패치 및 사운드 15배 펌핑 적용)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
-                    playSfx(cardGetSfx, 4.0); // 볼륨 펌핑 패치 완료
+                    playSfx(cardGetSfx, 15.0);
                     
-                    this.classList.add('falling'); // 하강 모션 0.95초
+                    this.classList.add('falling');
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1903,7 +1909,6 @@
                     const infoContainer = document.getElementById('classInfoContainer');
                     infoContainer.classList.remove('show');
 
-                    // 0.95초의 하강 모션 중 0.55초 시점에 일러스트 상승 및 블러 동기화 가동
                     setTimeout(() => {
                         document.querySelector('.class-bg-layer').classList.add('class-blurred');
                         document.querySelectorAll('.class-card').forEach(c => {
@@ -1912,11 +1917,11 @@
 
                         illustTarget.style.transition = 'top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                         illustTarget.style.opacity = '';
-                        illustTarget.classList.add('rise'); // 0.7초 상승
-                        playSfx(cardOpenSfx, 4.0); // 볼륨 펌핑 패치 완료
+                        illustTarget.classList.add('rise'); 
+                        playSfx(cardOpenSfx, 15.0); 
                         
                         setTimeout(() => {
-                            illustTarget.classList.add('move-left'); // 1.0초 좌측 이동
+                            illustTarget.classList.add('move-left'); 
                             
                             setTimeout(() => {
                                 const data = CLASS_INFO_DATA[idx];
@@ -1937,8 +1942,8 @@
                                 classTabPhase = 2;
                                 isTransitioning = false;
                             }, 1000);
-                        }, 1300); // 상승 0.7초 + 대기 0.6초 = 1300ms
-                    }, 550); 
+                        }, 1300); 
+                    }, 250); 
                 });
             });
 
@@ -1966,12 +1971,21 @@
                 }, 1450);
             });
 
-            // [클래스 탭 역순 애니메이션 및 1.2배 감속 동기화 교정]
+            // [클래스 탭 역순 애니메이션 (15배 사운드 펌핑 적용)]
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
                 if (localStorage.getItem('tut_seq3') === 'done' && !localStorage.getItem('tut_seq4')) { history.back(); return; }
                 if (isTutorialActive) return; 
+
+                // [다중 탭 플래그 개방 데이터 수집]
+                const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
+                const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
+                const isJinbangVisited = sessionStorage.getItem('fate_visited_jinbang') === 'true';
+                const isBrokenfVisited = sessionStorage.getItem('fate_visited_brokenf') === 'true';
+                const isClassUnlockConditionMet = isYongVisited && isBoguVisited && isJinbangVisited && isBrokenfVisited;
+                
+                const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
 
                 if (currentStage === 3 && currentActiveTabId === 'class' && classTabPhase === 2) {
                     isTransitioning = true;
@@ -1980,16 +1994,14 @@
                     const illustTarget = document.getElementById('classIllustTarget');
                     const infoContainer = document.getElementById('classInfoContainer');
                     
-                    // 1단계: 텍스트 소멸 (0.5s 소요)
                     infoContainer.classList.remove('show');
                     
                     setTimeout(() => {
-                        // 2단계: 중앙 정렬 이동 (1.0s 소요)
                         illustTarget.classList.remove('move-left');
                         
                         setTimeout(() => {
-                            playSfx(cardRemoveSfx, 4.0); // 볼륨 펌핑 패치 완료
-                            // 3단계: 일러스트 0.84초 하강 및 카드 1.5초 상승 (약 1.2배 감속 동기화)
+                            playSfx(cardRemoveSfx, 15.0);
+                            
                             illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                             illustTarget.classList.remove('rise'); 
                             
@@ -2004,7 +2016,6 @@
                                 c.classList.remove('falling');
                             });
                             
-                            // 카드 부상이 완료되는 1.5초 기준으로 초기화
                             setTimeout(() => {
                                 illustTarget.style.opacity = '0'; 
                                 document.querySelectorAll('.class-card').forEach(c => {
@@ -2024,10 +2035,7 @@
                     return;
                 }
 
-                const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
-                const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
-                const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
-                if (currentStage === 3 && isYongVisited && isBoguVisited && !isClassCutsceneDone) {
+                if (currentStage === 3 && isClassUnlockConditionMet && !isClassCutsceneDone) {
                     if(unlockSfx) { unlockSfx.volume = 0; unlockSfx.play().catch(()=>{}); }
                 }
 
@@ -2037,7 +2045,6 @@
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape' || event.keyCode === 27) {
                     if (isTransitioning || currentStage <= 1 || isTutorialActive) return;
-                    // ESC 입력 시 즉각 백버튼 리스너로 이벤트 바이패스
                     backBtn.click();
                 }
             });
@@ -2095,12 +2102,17 @@
                         currentActiveTabId = null;
                         isTransitioning = false;
 
+                        // [다중 탭 플래그 개방 데이터 수집]
                         const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                         const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
+                        const isJinbangVisited = sessionStorage.getItem('fate_visited_jinbang') === 'true';
+                        const isBrokenfVisited = sessionStorage.getItem('fate_visited_brokenf') === 'true';
+                        const isClassUnlockConditionMet = isYongVisited && isBoguVisited && isJinbangVisited && isBrokenfVisited;
+                        
                         const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
                         const classNodeBox = document.querySelector(`.tree-node-box[data-id="class"]`);
 
-                        if (isYongVisited && isBoguVisited && !isClassCutsceneDone && classNodeBox) {
+                        if (isClassUnlockConditionMet && !isClassCutsceneDone && classNodeBox) {
                             if(unlockSfx) { unlockSfx.volume = 0; unlockSfx.play().catch(()=>{}); }
                             setTimeout(() => {
                                 const classBtn = classNodeBox.querySelector('.tab-item-btn');
@@ -2150,7 +2162,6 @@
                 }
 
                 const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * getMasterVol());
-                // [1. 페이트 보이스 200퍼센트 증폭 패치 적용]
                 if (fateVoice) fateVoice.volume = Math.min(1.0, baseVoiceVol * 0.9);
 
                 setTimeout(() => document.getElementById('bgLayer').classList.add('active'), 300);
