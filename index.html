@@ -1891,7 +1891,7 @@
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
-                    playSfx(cardGetSfx, 80.0);
+                    playSfx(cardGetSfx, 120.0);
                     
                     this.classList.add('falling');
 
@@ -2000,7 +2000,7 @@
                         illustTarget.classList.remove('move-left');
                         
                         setTimeout(() => {
-                            playSfx(cardRemoveSfx, 80.0);
+                            playSfx(cardRemoveSfx, 180.0);
                             
                             illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                             illustTarget.classList.remove('rise'); 
