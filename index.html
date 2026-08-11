@@ -145,15 +145,16 @@
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어 및 동기화 블러 필터 적용] */
+        /* [클래스 탭 전용 독립 절대좌표 레이어 및 동기화 블러 페이드 적용] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
-        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; filter: blur(0px); transition: filter 0.7s ease-in-out; opacity: 0; pointer-events: none; }
+        .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; filter: blur(0px); transition: filter 0.7s ease-in-out, opacity 0.6s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
+        .class-bg-layer.class-blurred { filter: blur(12px) !important; }
         
-        .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; }
+        .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; transition: opacity 0.6s ease; }
         
-        /* 1.5초 트랜지션 (1.3배 가속 하강) 및 0.7초 블러 페이드 인 완벽 동기화 */
-        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 1.5s ease-in-out, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
+        /* 1.25초 트랜지션 (1.2배 가속 하강) 및 0.7초 블러 페이드 인 완벽 동기화 방어막 */
+        .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 0.5s ease, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
         .class-card[data-idx="2"] { left: calc(50% - 12vw); }
@@ -163,18 +164,22 @@
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
 
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff) blur(0px); transform: translate(-50%, -50%); }
-        .class-card.falling { top: 150vh !important; pointer-events: none; }
-        .class-blurred { filter: blur(12px) !important; pointer-events: none; }
+        .class-card.falling { top: 150vh !important; transition: top 1.25s ease-in-out !important; pointer-events: none; }
+        .class-blurred { filter: drop-shadow(0 0 5px transparent) blur(12px) !important; pointer-events: none; }
         
-        .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; transition: top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), transform 1.0s cubic-bezier(0.25, 1, 0.5, 1); filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
+        /* 카드 등장(파도타기) 모션 클래스 */
+        .card-wave-ready { top: -60vh !important; opacity: 0 !important; transition: none !important; pointer-events: none; }
+        .card-wave-enter { top: 50% !important; opacity: 1 !important; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease !important; }
+        
+        .class-illust-target { position: absolute !important; top: 150% !important; left: 50% !important; transform: translate(-50%, -50%) !important; height: 85vh; width: auto; z-index: 20; opacity: 0; filter: drop-shadow(0 0 30px rgba(255,255,255,0.4)); pointer-events: none; cursor: pointer; }
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
-        /* [신규 클래스 정보 텍스트 UI] */
-        .class-info-container { position: absolute; top: 20%; right: 5%; width: 450px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
+        /* [신규 클래스 정보 텍스트 UI - 좌측 이동 및 센터 정렬 / 음영, 글로우 추가] */
+        .class-info-container { position: absolute; top: 20%; right: 15%; width: 480px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
         .class-info-container.show { opacity: 1; pointer-events: auto; }
         .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
-        .class-info-desc { font-size: 1.3rem; line-height: 1.7; color: #d0c5b5; word-break: keep-all; text-align: left; }
+        .class-info-desc { font-size: 1.3rem; line-height: 1.7; color: #d0c5b5; word-break: keep-all; text-align: center; text-shadow: 0 0 5px #000000, 0 0 10px #000000, 0 0 15px rgba(255, 255, 255, 0.4); }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -185,7 +190,7 @@
         .title-skyblue { color: #fffdfa; text-shadow: 3px 3px 0px #005580, -1px -1px 0px #005580, 1px -1px 0px #005580, -1px 1px 0px #005580, 0 0 40px rgba(135, 206, 235, 0.8); }
         .title-blue { color: #fffdfa; text-shadow: 3px 3px 0px #002266, -1px -1px 0px #002266, 1px -1px 0px #002266, -1px 1px 0px #002266, 0 0 40px rgba(50, 50, 255, 0.8); }
         .title-black { color: #fffdfa; text-shadow: 3px 3px 0px #111111, -1px -1px 0px #111111, 1px -1px 0px #111111, -1px 1px 0px #111111, 0 0 40px rgba(0, 0, 0, 0.9); }
-        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 40px rgba(255, 105, 180, 0.8); }
+        .title-pink { color: #fffdfa; text-shadow: 3px 3px 0px #800040, -1px -1px 0px #800040, 1px -1px 0px #800040, -1px 1px 0px #800040, 0 0 35px rgba(255, 105, 180, 0.95), 0 0 15px rgba(200, 50, 150, 0.8); }
 
         .detail-left-box { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 280px; position: relative; transition: all 0.5s ease; }
         .detail-img { width: 364px; max-width: 100%; height: auto; animation: grail-gentle-float 3.5s infinite ease-in-out; position: relative; transition: all 0.5s ease; cursor: pointer; }
@@ -239,7 +244,7 @@
         #tutorialArrow.active { opacity: 1; visibility: visible; transition: opacity 0.5s ease, visibility 0s linear 0s; }
         @keyframes point-down { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
 
-        /* [엔딩 연출 오버레이 및 비메오 컨테이너 반응형 비율 픽스] */
+        /* [엔딩 연출 오버레이 및 비메오 컨테이너 반응형 비율 보존] */
         #vimeoContainer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 22000; display: none; background: #000000; align-items: center; justify-content: center; overflow: hidden; }
         #vimeoPlayer { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
         #vimeoPlayer iframe { width: 100vw !important; height: 100vh !important; position: absolute; top: 0; left: 0; border: none; }
@@ -321,7 +326,11 @@
     <audio id="bfEmiyaSfx" src="voice/voice-bf-emiya.mp3" preload="auto"></audio>
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
-    <audio id="classOpenSfx" src="classes/sfx-card-open.mp3" preload="auto"></audio>
+    <!-- 13. 클래스 카드 조작 오디오 파일 갱신 -->
+    <audio id="cardGetSfx" src="sfx/sfx-cardget.mp3" preload="auto"></audio>
+    <audio id="cardOpenSfx" src="sfx/sfx-cardopen.mp3" preload="auto"></audio>
+    <audio id="cardRemoveSfx" src="sfx/sfx-cardremove.mp3" preload="auto"></audio>
+    
     <audio id="mahojinSfx" src="sfx/sfx-mahojin.mp3" preload="auto"></audio>
     <audio id="risingSfx" src="sfx/sfx-rising.mp3" preload="auto"></audio>
     <audio id="zabaSfx" src="voice/voice-class-zaba.mp3" preload="auto"></audio>
@@ -414,8 +423,9 @@
                 <div class="description-content">
                     <p style="margin-top: 12px;">
                         <span class="text-part"><span class="annotation-word" data-tooltip="마력을 사용해 원소를 다루며<br>초현실적인 일을 벌일 수 있는 기술<br>마술각인 같은 마술회로가 없으면 사용할 수 없다.">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="세계의 진리를 추구하는 학문">마도</span>(魔道)를 걸으며,</span><br>
+                        <!-- 11. 마술사 텍스트 수정 및 툴팁 파라미터 적용 -->
                         <span class="text-part"><span class="annotation-word" data-tooltip="만물의 시작과 끝이자,<br>모든 진리와 정보가 기록된<br>우주의 중심(소용돌이)">근원</span>을 추구하는 자를 일컫는다.</span><br>
-                        <span class="text-part">마술사는 되고 싶다고 되는 것이 아니고</span><br>
+                        <span class="text-part">마술사는 되고 싶다고 되는 것이 아니고 <span class="annotation-word" data-tooltip="마술을 사용하기 위한 특수한 신경계">마술회로</span>가 있거나</span><br>
                         <span class="text-part">특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.</span><br>
                         <span class="text-part">마술사는 가계로부터 대대로 <span class="annotation-word" data-tooltip="형체를 지닌 마술회로로, 일종의 장기.<br>마술사의 연구 성과를<br>다음 세대에 남기기 위한 각인.">마술각인</span>을 이어받는다.</span><br>
                         <span class="text-part">대부분의 마술사는 <span class="annotation-word" data-tooltip="마술사들이 성당교회의 위협으로부터 몸을 지키기 위해 만든<br>국적, 장르 불문의 자위 단체.<br>대표적으로 영국 런던의 시계탑">마술협회</span>에 소속되어 있다.</span><br>
@@ -501,7 +511,7 @@
                         <span class="text-part">성배가 그것을 특수한 방법으로 마스터들에 한해서 가능하게 한다.</span><br>
                         <span class="text-part">서번트는 소환될때 각기 다른 7개의 <span class="interactive-keyword color-gold" data-key="class">클래스</span> 중</span><br>
                         <span class="text-part">적성에 맞는 클래스가 부여된다.</span><br>
-                        <span class="text-part">강력한 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="서번트들이 보유한 능력.<br>서번트가 생전에 익힌 기술이나<br>원전이 되는 전승에서 유래한 것들이 대부분이다.">스킬</span>을 가지고 있으며</span><br>
+                        <span class="text-part">강력 무기가 될 수 있는 <span class="interactive-keyword" data-key="bogu"><ruby>보구<rt>노블 판타즘</rt></ruby></span>나 <span class="annotation-word" data-tooltip="서번트들이 보유한 능력.<br>서번트가 생전에 익힌 기술이나<br>원전이 되는 전승에서 유래한 것들이 대부분이다.">스킬</span>을 가지고 있으며</span><br>
                         <span class="text-part">한 개체 개체가 어마무시한 힘을 가지고 있다.</span>
                     </p>
                 </div>
@@ -727,6 +737,7 @@
             'classes/class-berserker.png'
         ];
 
+        /* [4. 어새신 텍스트 줄바꿈 최적화 및 어록 형식 교정] */
         const CLASS_INFO_DATA = [
             { 
                 name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '',
@@ -750,7 +761,7 @@
             }, 
             { 
                 name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '4.8rem',
-                desc: '<span class="description-quote" id="zabaTrigger">"자바니야"<br>-어새신 클래스의 대표적인 보구 이름</span><br><br>암살자의 영령, 그림자의 영령.<br>어새신 클래스는 특이하게 영웅이 아닌 존재를 소환할 수 있다. 그리고 소환되는 서번트들중 많은 수가 전설적인 암살집단 클래스의 어원이기도 한 어쌔신(아사신)을 만든 자 하산 에 사바흐의 이름과 의지를 계승받아 ○○의 하산 이라는 이름의 서번트가 대부분이다. 총 19명이 존재하며, 그들 모두가 해골 모양의 가면을 쓰고, 보구 또한 똑같이 자바니야라는 이름을 가진다. 그러나 겉으로 나온 이름만 같을 뿐 속은 가지각색이다. 닌자나 살인귀 그리고 처형인과 스파이 또한 어새신 클래스가 될 수 있다. 주 특기는 잠입, 정찰 그리고 공작. 높은 민첩성을 자랑한다. 하지만 다른 능력들이 떨어지는 편이다. 주된 공격방식은 기습과 다른 클래스의 서번트와의 정면대결은 승산이 없는 수준이기에 마스터만을 노리는 방식을 주로 사용한다.<br>어새신 클래스가 될 수 있는 인물들은 대표적으로 전설의 살인귀 잭 더 리퍼, 하산 에 사바흐 본인인 산의 노인 등이 있다.'
+                desc: '<span class="description-quote" id="zabaTrigger">"자바니야"</span><br><span class="description-quote-author">-어새신 클래스의 대표적인 보구 이름</span><br>암살자의 영령, 그림자의 영령.<br>어새신 클래스는 특이하게 영웅이 아닌 존재를 소환할 수 있다. 소환되는 서번트들중 많은 수가 전설적인 암살집단 클래스의 어원이기도 한 어쌔신을 만든 자 하산 에 사바흐의 이름과 의지를 계승받아 ○○의 하산 이라는 이름의 서번트가 대부분이다. 총 19명이 존재하며, 그들 모두가 해골 모양의 가면을 쓰고 보구 또한 똑같이 자바니야라는 이름을 가진다.<br>그러나 겉으로 나온 이름만 같을 뿐 속은 가지각색이다. 닌자나 살인귀 그리고 처형인과 스파이 또한 어새신 클래스가 될 수 있다. 주 특기는 잠입, 정찰 그리고 공작이며 높은 민첩성을 자랑하지만 다른 능력들이 떨어지는 편이다.<br>주된 공격방식은 기습이다. 정면대결은 승산이 없는 수준이기에 마스터만을 노리는 방식을 주로 사용한다. 어새신 클래스가 될 수 있는 인물들은 전설의 살인귀 잭 더 리퍼, 하산 에 사바흐 본인인 산의 노인 등이 있다.'
             }, 
             { 
                 name: '버서커', shadow: '0 0 15px #8b0000, 0 0 30px #330000', extraSize: '',
@@ -814,7 +825,12 @@
             const bfEmiyaSfx = document.getElementById('bfEmiyaSfx');
             const jinmExcarSfx = document.getElementById('jinmExcarSfx');
             const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
-            const classOpenSfx = document.getElementById('classOpenSfx');
+            
+            // [13. 신규 SFX 매핑]
+            const cardGetSfx = document.getElementById('cardGetSfx');
+            const cardOpenSfx = document.getElementById('cardOpenSfx');
+            const cardRemoveSfx = document.getElementById('cardRemoveSfx');
+
             const mahojinSfx = document.getElementById('mahojinSfx');
             const risingSfx = document.getElementById('risingSfx');
             const zabaSfx = document.getElementById('zabaSfx');
@@ -916,7 +932,7 @@
             let isAudioUnlocked = false;
             function unlockAllAudioPolicy() {
                 if (isAudioUnlocked) return;
-                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, classOpenSfx, mahojinSfx, risingSfx, zabaSfx].forEach(audio => {
+                [bgmMain, bgmTheme2, pstSfx, wordSfx, noshinSfx, kotomineSfx, kiritsuguSfx, kiritsuguYongSfx, yongSfx, moveSfx, fateVoice, anneSfx, blockSfx, unlockSfx, bfEmiyaSfx, jinmExcarSfx, suvsoFsfSfx, cardGetSfx, cardOpenSfx, cardRemoveSfx, mahojinSfx, risingSfx, zabaSfx].forEach(audio => {
                     if (audio) {
                         const originalVol = audio.volume;
                         audio.volume = 0; 
@@ -1532,7 +1548,7 @@
                 }, 1200);
             }
 
-            // [비메오(Vimeo) 재생 동기화 및 비율 100% 매핑 시퀀스]
+            // [비메오(Vimeo) 재생 동기화 시퀀스 및 BGM 페이드 아웃 연동]
             function triggerEndingCutscene() {
                 isTransitioning = true;
                 
@@ -1795,6 +1811,26 @@
                                 if (id === 'class') {
                                     document.getElementById('bgLayer').style.opacity = '0';
                                     document.getElementById('dustEffect').style.opacity = '0';
+                                    
+                                    // [10. 파도타기 카드 슬라이드 등장 호출]
+                                    const cards = document.querySelectorAll('.class-card');
+                                    cards.forEach(c => {
+                                        c.classList.remove('card-wave-enter', 'falling', 'class-blurred');
+                                        c.classList.add('card-wave-ready');
+                                    });
+                                    
+                                    void document.body.offsetWidth; // 리플로우 강제
+                                    
+                                    cards.forEach((c, idx) => {
+                                        setTimeout(() => {
+                                            c.classList.remove('card-wave-ready');
+                                            c.classList.add('card-wave-enter');
+                                            
+                                            setTimeout(() => {
+                                                c.classList.remove('card-wave-enter');
+                                            }, 800);
+                                        }, idx * 80);
+                                    });
                                 } else {
                                     document.getElementById('bgLayer').style.opacity = '1';
                                     document.getElementById('dustEffect').style.opacity = '0.55';
@@ -1841,14 +1877,14 @@
                 }
             });
 
-            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 1.0초 오버랩 패치 적용)]
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 오버랩 패치 적용)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
-                    playSfx(classOpenSfx, 1.0);
+                    playSfx(cardGetSfx, 1.0);
                     
-                    this.classList.add('falling'); // 하강 모션 1.5초
+                    this.classList.add('falling'); // 하강 모션 1.25초
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1864,15 +1900,17 @@
                     const infoContainer = document.getElementById('classInfoContainer');
                     infoContainer.classList.remove('show');
 
-                    // 1.5초의 하강 모션 중 0.5초(1.0초 앞당김) 시점에 일러스트 상승 및 블러 동기화 가동
+                    // 1.25초의 하강 모션 중 1.0초 앞당겨진 0.25초(250ms) 시점에 일러스트 상승 및 블러 동기화 가동
                     setTimeout(() => {
                         document.querySelector('.class-bg-layer').classList.add('class-blurred');
                         document.querySelectorAll('.class-card').forEach(c => {
                             if(c !== this) c.classList.add('class-blurred');
                         });
 
+                        illustTarget.style.transition = 'top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                         illustTarget.style.opacity = '';
                         illustTarget.classList.add('rise'); // 0.7초 상승
+                        playSfx(cardOpenSfx, 1.0);
                         
                         setTimeout(() => {
                             illustTarget.classList.add('move-left'); // 1.0초 좌측 이동
@@ -1896,8 +1934,8 @@
                                 classTabPhase = 2;
                                 isTransitioning = false;
                             }, 1000);
-                        }, 1700); 
-                    }, 500); 
+                        }, 1300); // 상승 0.7초 + 대기 0.6초 = 1300ms
+                    }, 250); 
                 });
             });
 
@@ -1925,7 +1963,7 @@
                 }, 1450);
             });
 
-            // [클래스 탭 역순 애니메이션 ESC 브릿지 구축 및 락 해제 오버랩 동기화]
+            // [클래스 탭 역순 애니메이션 및 1.0초 앞당겨진 오버랩 교정]
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
@@ -1939,27 +1977,36 @@
                     const illustTarget = document.getElementById('classIllustTarget');
                     const infoContainer = document.getElementById('classInfoContainer');
                     
+                    // 1단계: 텍스트 소멸 (0.5s 소요)
                     infoContainer.classList.remove('show');
                     
                     setTimeout(() => {
+                        // 2단계: 중앙 정렬 이동 (1.0s 소요)
                         illustTarget.classList.remove('move-left');
                         
-                        // 1.0s 앞당겨진 역순 오버랩 연산: 중앙 정렬 완료 직후 하강과 동시에 카드 부상 가동
                         setTimeout(() => {
-                            illustTarget.classList.remove('rise'); // 0.7초 하강
+                            playSfx(cardRemoveSfx, 1.0);
+                            // 3단계: 일러스트 0.84초 하강 및 카드 1.5초 상승 동시 오버랩 실행 (1.0초 앞당겨진 타이밍)
+                            illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
+                            illustTarget.classList.remove('rise'); 
+                            
                             document.querySelector('.class-bg-layer').classList.remove('class-blurred');
                             document.querySelectorAll('.class-card').forEach(c => {
                                 c.classList.remove('class-blurred');
                             });
                             
-                            // 카드 1.5초 부상 모션 즉각(동시) 가동
                             document.querySelectorAll('.class-card.falling').forEach(c => {
+                                c.style.transition = 'top 1.5s ease-in-out';
+                                void c.offsetWidth; 
                                 c.classList.remove('falling');
                             });
                             
-                            // 모든 애니메이션 종료 대기 (가장 긴 모션인 카드 부상 1.5초 기준)
+                            // 카드 부상이 완료되는 1.5초 기준으로 초기화
                             setTimeout(() => {
                                 illustTarget.style.opacity = '0'; 
+                                document.querySelectorAll('.class-card').forEach(c => {
+                                    c.style.transition = '';
+                                });
                                 classTabPhase = 0;
                                 isTransitioning = false;
 
