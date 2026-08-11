@@ -7,7 +7,7 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      클래스 노드 다중 개방 트리거, 카드 사운드 15배 증폭 믹서 및 비메오(Vimeo) API가 적용되어 있습니다.
+      클래스 노드 다중 개방 트리거, 카드 사운드 초고출력 증폭 믹서 및 비메오(Vimeo) API가 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <script src="https://player.vimeo.com/api/player.js"></script>
@@ -79,7 +79,7 @@
 
         .press-start-wrapper { opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.8s ease-out, visibility 0.8s step-end; position: relative; width: 100%; display: flex; justify-content: center; }
         .press-start-wrapper.animate { opacity: 1; visibility: visible; pointer-events: auto !important; transition: opacity 0.8s ease-out, visibility 0.8s step-start; }
-        .press-start-btn { font-family: 'Song Myung', serif; font-size: 1.25rem; font-weight: 700; color: #a0a0aa; letter-spacing: 5px; text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5); background: transparent; border: none; padding: 30px 60px; cursor: pointer; outline: none; display: inline-block; white-space: nowrap; pointer-events: auto !important; transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease; animation: slow-blink-loop 2.8s infinite alternate ease-in-out; position: relative; }
+        .press-start-btn { font-family: 'Song Myung', serif; font-size: 1.25rem; font-weight: 700; color: #a0a0aa; letter-spacing: 5px; text-shadow: 0 0 12px rgba(0, 0, 0, 0.9), 0 0 5px rgba(100, 100, 110, 0.5); background: transparent; border: none; padding: 30px 60px; cursor: outline: none; display: inline-block; white-space: nowrap; pointer-events: auto !important; transition: color 0.3s ease, text-shadow 0.3s ease, transform 0.2s ease; animation: slow-blink-loop 2.8s infinite alternate ease-in-out; position: relative; }
         .press-start-btn:hover { animation-play-state: paused !important; opacity: 1 !important; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.9); transform: scale(1.08); }
         .press-start-wrapper.flash-exit { animation: simple-flash-fade 0.25s ease-out forwards !important; pointer-events: none !important; }
 
@@ -110,9 +110,9 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
-        /* [엔딩 마방진 렌더링 스타일] */
+        /* [엔딩 마방진 렌더링 스타일 - 호버 transform 소각 픽스] */
         .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); transition: transform 0.3s ease; }
+        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); }
         .mahojin-container:hover .mahojin-img { filter: invert(15%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(100%) contrast(150%) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
         
         @keyframes spin-slow { 100% { transform: rotate(360deg); } }
@@ -144,13 +144,13 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        /* --- [상세 설명창 뷰 모듈] --- */
+        /* --- [상세 설명창 뷰 모듈 - 페이드아웃 UI 복구 적용] --- */
         .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
         .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease, visibility 0s linear 0s; }
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
-        /* [클래스 탭 전용 독립 절대좌표 레이어] */
+        /* [클래스 탭 전용 독립 절대좌표 레이어 및 동기화 블러 페이드 적용] */
         #tabDetail_class { margin: 0 !important; padding: 0 !important; gap: 0 !important; justify-content: center !important; align-items: center !important; flex-direction: column; overflow: hidden; width: 100vw; height: 100vh; }
         .class-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('classes/class-backg.png') center/cover no-repeat; z-index: 1; filter: blur(0px); transition: filter 0.7s ease-in-out, opacity 0.6s ease; opacity: 0; pointer-events: none; }
         #tabDetail_class.show .class-bg-layer { opacity: 1; }
@@ -158,7 +158,7 @@
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; transition: opacity 0.6s ease; }
         
-        /* 0.95초 트랜지션 기반 설정 유지 */
+        /* 0.95초 트랜지션 (하강 스피드 0.3초 가속 완료) 및 0.7초 블러 페이드 인 완벽 동기화 방어막 */
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 0.5s ease, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
@@ -172,6 +172,7 @@
         .class-card.falling { top: 150vh !important; transition: top 0.95s ease-in-out !important; pointer-events: none; }
         .class-blurred { filter: drop-shadow(0 0 5px transparent) blur(12px) !important; pointer-events: none; }
         
+        /* 카드 등장(파도타기) 모션 클래스 */
         .card-wave-ready { top: -60vh !important; opacity: 0 !important; transition: none !important; pointer-events: none; }
         .card-wave-enter { top: 50% !important; opacity: 1 !important; transition: top 0.8s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.8s ease !important; }
         
@@ -179,7 +180,7 @@
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
-        /* [신규 클래스 정보 텍스트 UI - 사이즈 추가 증폭 및 좌표 조율] */
+        /* [신규 클래스 정보 텍스트 UI - 10퍼센트 사이즈 상향, 8퍼센트 우측 이동, 센터 정렬 강제 고정] */
         .class-info-container { position: absolute; top: 20%; left: 70%; transform: translateX(-50%); width: 528px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
         .class-info-container.show { opacity: 1; pointer-events: auto; }
         .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
@@ -331,6 +332,7 @@
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
     
+    <!-- 클래스 카드 조작 오디오 파일 유지 -->
     <audio id="cardGetSfx" src="sfx/sfx-cardget.mp3" preload="auto"></audio>
     <audio id="cardOpenSfx" src="sfx/sfx-cardopen.mp3" preload="auto"></audio>
     <audio id="cardRemoveSfx" src="sfx/sfx-cardremove.mp3" preload="auto"></audio>
@@ -569,7 +571,7 @@
             </div>
         </section>
 
-        <!-- [3. 영령 탭 수정 사항 적용 완료] -->
+        <!-- 9. 영령 -->
         <section class="tab-detail-view" id="tabDetail_yong">
             <div class="static-tab-title title-blue">영령</div>
             <div class="detail-left-box">
@@ -1724,13 +1726,8 @@
                     }
                 });
 
-                // [2. 클래스 탭 다중 개방 트리거 업데이트 동기화]
                 const isYongVisited = sessionStorage.getItem('fate_visited_yong') === 'true';
                 const isBoguVisited = sessionStorage.getItem('fate_visited_bogu') === 'true';
-                const isJinbangVisited = sessionStorage.getItem('fate_visited_jinbang') === 'true';
-                const isBrokenfVisited = sessionStorage.getItem('fate_visited_brokenf') === 'true';
-                const isClassUnlockConditionMet = isYongVisited && isBoguVisited && isJinbangVisited && isBrokenfVisited;
-                
                 const isClassCutsceneDone = localStorage.getItem('fate_class_cutscene') === 'true';
 
                 unlockedIds.forEach(id => {
@@ -1773,7 +1770,7 @@
                         
                         if (id === 'class') {
                             btn.classList.add('white-glow-btn', 'color-gold');
-                            if (!isClassUnlockConditionMet || !isClassCutsceneDone) {
+                            if (!isYongVisited || !isBoguVisited || !isClassCutsceneDone) {
                                 btn.innerHTML = `<span class="class-base-text">${nodeInfo.name}</span><div class="class-lock-overlay">${nodeInfo.name}</div>`;
                                 btn.classList.add('is-locked');
                             } else {
@@ -1844,8 +1841,7 @@
                                     document.getElementById('dustEffect').style.opacity = '0.55';
                                 }
 
-                                // [다중 탭 플래그 개방 데이터 수집]
-                                if (id === 'yong' || id === 'bogu' || id === 'jinbang' || id === 'brokenf') {
+                                if (id === 'yong' || id === 'bogu') {
                                     sessionStorage.setItem('fate_visited_' + id, 'true');
                                 }
 
@@ -1886,12 +1882,12 @@
                 }
             });
 
-            // [클래스 탭 전용 카드 클릭 컷신 엔진 (동기화 락 오버랩 패치 및 사운드 15배 펌핑 적용)]
+            // [클래스 탭 전용 카드 클릭 컷신 엔진 (사운드 최대 출력 오버라이드 픽스)]
             document.querySelectorAll('.class-card').forEach(card => {
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
-                    playSfx(cardGetSfx, 15.0);
+                    playSfx(cardGetSfx, 40.0);
                     
                     this.classList.add('falling');
 
@@ -1918,7 +1914,7 @@
                         illustTarget.style.transition = 'top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                         illustTarget.style.opacity = '';
                         illustTarget.classList.add('rise'); 
-                        playSfx(cardOpenSfx, 15.0); 
+                        playSfx(cardOpenSfx, 60.0); 
                         
                         setTimeout(() => {
                             illustTarget.classList.add('move-left'); 
@@ -1943,7 +1939,7 @@
                                 isTransitioning = false;
                             }, 1000);
                         }, 1300); 
-                    }, 250); 
+                    }, 550); 
                 });
             });
 
@@ -1971,7 +1967,7 @@
                 }, 1450);
             });
 
-            // [클래스 탭 역순 애니메이션 (15배 사운드 펌핑 적용)]
+            // [클래스 탭 역순 애니메이션 (사운드 최대 출력 오버라이드 픽스)]
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
@@ -2000,7 +1996,7 @@
                         illustTarget.classList.remove('move-left');
                         
                         setTimeout(() => {
-                            playSfx(cardRemoveSfx, 15.0);
+                            playSfx(cardRemoveSfx, 40.0);
                             
                             illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                             illustTarget.classList.remove('rise'); 
