@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fate/series</title>
+    <!-- 
+      [AI 렌더링 가이드라인 & 시스템 목적]
+      이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
+      페이드 아웃 복구, 오버랩 최소화 하강 스피드업, 비메오(Vimeo) API가 적용되어 있습니다.
+    -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <script src="https://player.vimeo.com/api/player.js"></script>
     <style>
@@ -105,10 +110,10 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
-        /* [엔딩 마방진 렌더링 스타일 - 백색 발광 소각 및 회전] */
+        /* [엔딩 마방진 렌더링 스타일 - 호버 transform 소각 및 회전 버그 픽스 완료] */
         .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); transition: transform 0.3s ease; }
-        .mahojin-container:hover .mahojin-img { transform: scale(1.1); filter: invert(15%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(100%) contrast(150%) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
+        .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); }
+        .mahojin-container:hover .mahojin-img { filter: invert(15%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(100%) contrast(150%) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
         
         @keyframes spin-slow { 100% { transform: rotate(360deg); } }
 
@@ -139,9 +144,9 @@
         .class-locked-shake { animation: keyword-error-shake 0.3s ease-in-out, wave-flow 3s linear infinite !important; }
         .dust-particle { position: absolute; width: 4px; height: 4px; border-radius: 50%; pointer-events: none; opacity: 1; z-index: 10000; transition: transform 2.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 2.0s ease-out; }
 
-        /* --- [상세 설명창 뷰 모듈] --- */
-        .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease; }
-        .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; }
+        /* --- [상세 설명창 뷰 모듈 - 페이드아웃 UI 복구 적용] --- */
+        .tab-detail-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 25; display: flex; justify-content: flex-start; align-items: center; padding-left: 18%; gap: 16%; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
+        .tab-detail-view.show { z-index: 55 !important; opacity: 1; visibility: visible; pointer-events: auto; transition: opacity 0.6s ease, visibility 0s linear 0s; }
 
         #tabDetail_sungbwar, #tabDetail_jinbang, #tabDetail_brokenf { margin: 0 auto; justify-content: center !important; padding-left: 0 !important; gap: 0 !important; }
 
@@ -153,7 +158,7 @@
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; transition: opacity 0.6s ease; }
         
-        /* 1.25초 트랜지션 (1.2배 가속 하강) 및 0.7초 블러 페이드 인 완벽 동기화 방어막 */
+        /* 0.95초 트랜지션 (하강 스피드 0.3초 가속 완료) 및 0.7초 블러 페이드 인 완벽 동기화 방어막 */
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 0.5s ease, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
@@ -164,7 +169,7 @@
         .class-card[data-idx="6"] { left: calc(50% + 36vw); }
 
         .class-card:hover { filter: drop-shadow(0 0 20px #ffffff) blur(0px); transform: translate(-50%, -50%); }
-        .class-card.falling { top: 150vh !important; transition: top 1.25s ease-in-out !important; pointer-events: none; }
+        .class-card.falling { top: 150vh !important; transition: top 0.95s ease-in-out !important; pointer-events: none; }
         .class-blurred { filter: drop-shadow(0 0 5px transparent) blur(12px) !important; pointer-events: none; }
         
         /* 카드 등장(파도타기) 모션 클래스 */
@@ -175,11 +180,11 @@
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
-        /* [신규 클래스 정보 텍스트 UI - 좌측 이동 및 센터 정렬 / 음영, 글로우 추가] */
-        .class-info-container { position: absolute; top: 20%; right: 15%; width: 480px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
+        /* [신규 클래스 정보 텍스트 UI - 10퍼센트 사이즈 상향, 8퍼센트 우측 이동, 센터 정렬 강제 고정] */
+        .class-info-container { position: absolute; top: 20%; right: 8%; width: 528px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
         .class-info-container.show { opacity: 1; pointer-events: auto; }
         .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
-        .class-info-desc { font-size: 1.3rem; line-height: 1.7; color: #d0c5b5; word-break: keep-all; text-align: center; text-shadow: 0 0 5px #000000, 0 0 10px #000000, 0 0 15px rgba(255, 255, 255, 0.4); }
+        .class-info-desc { font-size: 1.43rem; line-height: 1.87; color: #d0c5b5; word-break: keep-all; text-align: center; text-shadow: 0 0 5px #000000, 0 0 10px #000000, 0 0 15px rgba(255, 255, 255, 0.4); }
 
         .static-tab-title { position: absolute; top: 7vh; left: 6vw; font-family: 'Song Myung', serif; font-size: 4.5rem; font-weight: 700; letter-spacing: 12px; white-space: nowrap; transform-origin: top left; transform: scale(0.75); filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.2)); pointer-events: none; z-index: 10; transition: all 0.5s ease; }
 
@@ -326,7 +331,7 @@
     <audio id="bfEmiyaSfx" src="voice/voice-bf-emiya.mp3" preload="auto"></audio>
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
-    <!-- 13. 클래스 카드 조작 오디오 파일 갱신 -->
+    <!-- 클래스 카드 조작 오디오 파일 유지 -->
     <audio id="cardGetSfx" src="sfx/sfx-cardget.mp3" preload="auto"></audio>
     <audio id="cardOpenSfx" src="sfx/sfx-cardopen.mp3" preload="auto"></audio>
     <audio id="cardRemoveSfx" src="sfx/sfx-cardremove.mp3" preload="auto"></audio>
@@ -423,7 +428,6 @@
                 <div class="description-content">
                     <p style="margin-top: 12px;">
                         <span class="text-part"><span class="annotation-word" data-tooltip="마력을 사용해 원소를 다루며<br>초현실적인 일을 벌일 수 있는 기술<br>마술각인 같은 마술회로가 없으면 사용할 수 없다.">마술</span>(魔術)을 탐구하고 <span class="annotation-word" data-tooltip="세계의 진리를 추구하는 학문">마도</span>(魔道)를 걸으며,</span><br>
-                        <!-- 11. 마술사 텍스트 수정 및 툴팁 파라미터 적용 -->
                         <span class="text-part"><span class="annotation-word" data-tooltip="만물의 시작과 끝이자,<br>모든 진리와 정보가 기록된<br>우주의 중심(소용돌이)">근원</span>을 추구하는 자를 일컫는다.</span><br>
                         <span class="text-part">마술사는 되고 싶다고 되는 것이 아니고 <span class="annotation-word" data-tooltip="마술을 사용하기 위한 특수한 신경계">마술회로</span>가 있거나</span><br>
                         <span class="text-part">특수한 경우를 제외하면 집안이 마술사 가문이어야 한다.</span><br>
@@ -663,6 +667,7 @@
             </div>
             <img src="" class="class-illust-target detail-img" id="classIllustTarget" alt="Class Illustration">
             
+            <!-- [신규 클래스 정보 텍스트 UI 컨테이너] -->
             <div id="classInfoContainer" class="class-info-container">
                 <div id="classInfoName" class="class-info-name"></div>
                 <div id="classInfoDesc" class="class-info-desc"></div>
@@ -710,6 +715,7 @@
         let currentActiveClone = null;
         let visitedClasses = JSON.parse(sessionStorage.getItem('fate_visited_classes') || '[]');
 
+        // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -737,7 +743,7 @@
             'classes/class-berserker.png'
         ];
 
-        /* [4. 어새신 텍스트 줄바꿈 최적화 및 어록 형식 교정] */
+        /* [어새신 텍스트 줄바꿈 최적화 및 어록 형식 교정 완료] */
         const CLASS_INFO_DATA = [
             { 
                 name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '',
@@ -760,7 +766,7 @@
                 desc: '마술사의 영령.<br>보통 무력보다는 책략가 같이 지력이 대표적인 인물들이 보통 캐스터 클래스에 부합하다. 예술가나 문인도 캐스터 클래스에 부합하다. 그렇기에 싸움과는 어울리지 않는 서번트이다. 그렇기에 캐스터에게는 「진지작성」 스킬이 있다. 이 스킬은 어떠한 환경에서도 최단기간으로 완벽한 수준의 "공방"이라는 거점을 구축할 수 있는 스킬이다. 캐스터의 거점에 정면 돌파하는 행위는 세이버 클래스라 할지라도 자살 행위에 가깝다.<br>캐스터 클래스가 될 수 있는 인물들은 대표적으로 중국 최고의 책략가 제갈량, 지혜로운 사람의 대명사 솔로몬, 아서왕 전설에 등장하는 전설의 대마법사이자 현자인 원탁의 기사 멀린 등이 있다.'
             }, 
             { 
-                name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '4.8rem',
+                name: '어새신', shadow: '0 0 15px #555555, 0 0 30px #000000, 0 0 45px #000000', extraSize: '5.28rem',
                 desc: '<span class="description-quote" id="zabaTrigger">"자바니야"</span><br><span class="description-quote-author">-어새신 클래스의 대표적인 보구 이름</span><br>암살자의 영령, 그림자의 영령.<br>어새신 클래스는 특이하게 영웅이 아닌 존재를 소환할 수 있다. 소환되는 서번트들중 많은 수가 전설적인 암살집단 클래스의 어원이기도 한 어쌔신을 만든 자 하산 에 사바흐의 이름과 의지를 계승받아 ○○의 하산 이라는 이름의 서번트가 대부분이다. 총 19명이 존재하며, 그들 모두가 해골 모양의 가면을 쓰고 보구 또한 똑같이 자바니야라는 이름을 가진다.<br>그러나 겉으로 나온 이름만 같을 뿐 속은 가지각색이다. 닌자나 살인귀 그리고 처형인과 스파이 또한 어새신 클래스가 될 수 있다. 주 특기는 잠입, 정찰 그리고 공작이며 높은 민첩성을 자랑하지만 다른 능력들이 떨어지는 편이다.<br>주된 공격방식은 기습이다. 정면대결은 승산이 없는 수준이기에 마스터만을 노리는 방식을 주로 사용한다. 어새신 클래스가 될 수 있는 인물들은 전설의 살인귀 잭 더 리퍼, 하산 에 사바흐 본인인 산의 노인 등이 있다.'
             }, 
             { 
@@ -769,6 +775,7 @@
             }  
         ];
 
+        // 캐시 데이터 소멸자
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -826,7 +833,6 @@
             const jinmExcarSfx = document.getElementById('jinmExcarSfx');
             const suvsoFsfSfx = document.getElementById('suvsoFsfSfx');
             
-            // [13. 신규 SFX 매핑]
             const cardGetSfx = document.getElementById('cardGetSfx');
             const cardOpenSfx = document.getElementById('cardOpenSfx');
             const cardRemoveSfx = document.getElementById('cardRemoveSfx');
@@ -1505,7 +1511,7 @@
                 focusToNode('class');
                 
                 setTimeout(() => {
-                    playSfx(unlockSfx, 2.0); 
+                    playSfx(unlockSfx, 6.0); // 봉인 해제 사운드 300퍼센트 증폭 완료
                     
                     btnObj.classList.add('is-unlocking'); 
                     
@@ -1812,14 +1818,13 @@
                                     document.getElementById('bgLayer').style.opacity = '0';
                                     document.getElementById('dustEffect').style.opacity = '0';
                                     
-                                    // [10. 파도타기 카드 슬라이드 등장 호출]
                                     const cards = document.querySelectorAll('.class-card');
                                     cards.forEach(c => {
                                         c.classList.remove('card-wave-enter', 'falling', 'class-blurred');
                                         c.classList.add('card-wave-ready');
                                     });
                                     
-                                    void document.body.offsetWidth; // 리플로우 강제
+                                    void document.body.offsetWidth; 
                                     
                                     cards.forEach((c, idx) => {
                                         setTimeout(() => {
@@ -1884,7 +1889,7 @@
                     isTransitioning = true;
                     playSfx(cardGetSfx, 1.0);
                     
-                    this.classList.add('falling'); // 하강 모션 1.25초
+                    this.classList.add('falling'); // 하강 모션 0.95초 (0.3초 가속 적용 완료)
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1900,7 +1905,7 @@
                     const infoContainer = document.getElementById('classInfoContainer');
                     infoContainer.classList.remove('show');
 
-                    // 1.25초의 하강 모션 중 1.0초 앞당겨진 0.25초(250ms) 시점에 일러스트 상승 및 블러 동기화 가동
+                    // 0.95초의 하강 모션 중 0.55초 시점에 일러스트 상승 및 블러 동기화 가동
                     setTimeout(() => {
                         document.querySelector('.class-bg-layer').classList.add('class-blurred');
                         document.querySelectorAll('.class-card').forEach(c => {
@@ -1925,7 +1930,7 @@
                                 if(data.extraSize) {
                                     nameEl.style.fontSize = data.extraSize;
                                 } else {
-                                    nameEl.style.fontSize = '4rem';
+                                    nameEl.style.fontSize = '4.4rem';
                                 }
                                 descEl.innerHTML = data.desc;
 
@@ -1935,7 +1940,7 @@
                                 isTransitioning = false;
                             }, 1000);
                         }, 1300); // 상승 0.7초 + 대기 0.6초 = 1300ms
-                    }, 250); 
+                    }, 550); 
                 });
             });
 
@@ -1963,7 +1968,7 @@
                 }, 1450);
             });
 
-            // [클래스 탭 역순 애니메이션 및 1.0초 앞당겨진 오버랩 교정]
+            // [클래스 탭 역순 애니메이션 및 1.2배 감속 동기화 교정]
             backBtn.addEventListener('click', function() { 
                 if (ivOverlay.classList.contains('show')) { closeImageView(); return; }
                 if (isTransitioning) return;
@@ -1986,7 +1991,7 @@
                         
                         setTimeout(() => {
                             playSfx(cardRemoveSfx, 1.0);
-                            // 3단계: 일러스트 0.84초 하강 및 카드 1.5초 상승 동시 오버랩 실행 (1.0초 앞당겨진 타이밍)
+                            // 3단계: 일러스트 0.84초 하강 및 카드 1.5초 상승 (약 1.2배 감속 동기화)
                             illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                             illustTarget.classList.remove('rise'); 
                             
