@@ -7,7 +7,7 @@
     <!-- 
       [AI 렌더링 가이드라인 & 시스템 목적]
       이 코드는 'Fate/series'의 세계관 개념을 마인드맵(트리) 형태로 탐색하는 Single Page Application(SPA) 형태의 웹 모듈입니다.
-      페이드 아웃 복구, 오버랩 최소화 하강 스피드업, 비메오(Vimeo) API가 적용되어 있습니다.
+      오디오 믹서 출력 게인 증폭, UI 반응형 좌표계 교정 및 비메오(Vimeo) API가 적용되어 있습니다.
     -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap" rel="stylesheet">
     <script src="https://player.vimeo.com/api/player.js"></script>
@@ -110,7 +110,7 @@
         .tab-item-btn { font-family: 'Song Myung', serif; font-size: 3.8rem; font-weight: 700; width: 320px; height: 120px; display: flex; justify-content: center; align-items: center; background: transparent; border: none; outline: none; cursor: pointer; user-select: none; white-space: nowrap; transition: all 0.5s ease; position: relative; }
         .btn-sso { font-size: 2.5rem !important; text-align: center; line-height: 1.2; flex-direction: column; }
 
-        /* [엔딩 마방진 렌더링 스타일 - 호버 transform 소각 및 회전 버그 픽스 완료] */
+        /* [엔딩 마방진 렌더링 스타일 - 호버 transform 소각 픽스] */
         .mahojin-container { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; cursor: pointer; }
         .mahojin-img { width: 100%; height: 100%; animation: spin-slow 40s linear infinite; filter: invert(20%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(80%) contrast(150%) drop-shadow(0 0 15px #ff0000) drop-shadow(0 0 30px #880000); }
         .mahojin-container:hover .mahojin-img { filter: invert(15%) sepia(100%) saturate(7000%) hue-rotate(350deg) brightness(100%) contrast(150%) drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 45px #cc0000); }
@@ -158,7 +158,7 @@
         
         .class-cards-container { position: absolute; z-index: 10; width: 100vw; height: 100vh; top: 0; left: 0; pointer-events: none; transition: opacity 0.6s ease; }
         
-        /* 0.95초 트랜지션 (하강 스피드 0.3초 가속 완료) 및 0.7초 블러 페이드 인 완벽 동기화 방어막 */
+        /* 0.95초 트랜지션 (하강 스피드 0.3초 가속 완료) */
         .class-card { position: absolute; top: 50%; width: 12vw; max-width: 160px; filter: drop-shadow(0 0 5px transparent) blur(0px); transform: translate(-50%, -50%); transition: top 0.5s ease, filter 0.7s ease-in-out, transform 0.5s ease; cursor: pointer; pointer-events: auto; }
         .class-card[data-idx="0"] { left: calc(50% - 36vw); }
         .class-card[data-idx="1"] { left: calc(50% - 24vw); }
@@ -180,8 +180,8 @@
         .class-illust-target.rise { top: 50% !important; opacity: 1; pointer-events: auto; }
         .class-illust-target.move-left { left: 25% !important; }
 
-        /* [신규 클래스 정보 텍스트 UI - 10퍼센트 사이즈 상향, 8퍼센트 우측 이동, 센터 정렬 강제 고정] */
-        .class-info-container { position: absolute; top: 20%; right: 8%; width: 528px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
+        /* [신규 클래스 정보 텍스트 UI - 중앙 우측 정밀 배치 매트릭스 픽스 적용] */
+        .class-info-container { position: absolute; top: 20%; left: 70%; transform: translateX(-50%); width: 528px; text-align: center; opacity: 0; transition: opacity 0.5s ease; z-index: 40; pointer-events: none; }
         .class-info-container.show { opacity: 1; pointer-events: auto; }
         .class-info-name { font-weight: 700; color: #ffffff; margin-bottom: 25px; font-family: 'Song Myung', serif; letter-spacing: 4px; }
         .class-info-desc { font-size: 1.43rem; line-height: 1.87; color: #d0c5b5; word-break: keep-all; text-align: center; text-shadow: 0 0 5px #000000, 0 0 10px #000000, 0 0 15px rgba(255, 255, 255, 0.4); }
@@ -324,14 +324,16 @@
     <audio id="kiritsuguYongSfx" src="voice/voice-yong-kiri.mp3" preload="auto"></audio>
     <audio id="yongSfx" src="voice/voice-yong-tosarin.mp3" preload="auto"></audio>
     <audio id="moveSfx" src="sfx/sfx-choicemove.mp3" preload="auto"></audio>
+    <!-- [1. 페이트 보이스 출력 증폭 시스템 동기화 대상] -->
     <audio id="fateVoice" src="voice/voice-fate.mp3" preload="auto"></audio>
     <audio id="anneSfx" src="sfx/sfx-anne.mp3" preload="auto"></audio>
     <audio id="blockSfx" src="sfx/sfx-block.mp3" preload="auto"></audio>
+    <!-- [5. 클래스 탭 봉인해제 300퍼센트 증폭 대상] -->
     <audio id="unlockSfx" src="sfx/sfx-unlock.mp3" preload="auto"></audio>
     <audio id="bfEmiyaSfx" src="voice/voice-bf-emiya.mp3" preload="auto"></audio>
     <audio id="jinmExcarSfx" src="voice/voice-jinm-excar.mp3" preload="auto"></audio>
     <audio id="suvsoFsfSfx" src="voice/voice-suvso-fsf.mp3" preload="auto"></audio>
-    <!-- 클래스 카드 조작 오디오 파일 유지 -->
+    <!-- [2. 클래스 카드 조작 오디오 호출 승수 증폭 시스템 적용 대상] -->
     <audio id="cardGetSfx" src="sfx/sfx-cardget.mp3" preload="auto"></audio>
     <audio id="cardOpenSfx" src="sfx/sfx-cardopen.mp3" preload="auto"></audio>
     <audio id="cardRemoveSfx" src="sfx/sfx-cardremove.mp3" preload="auto"></audio>
@@ -667,7 +669,6 @@
             </div>
             <img src="" class="class-illust-target detail-img" id="classIllustTarget" alt="Class Illustration">
             
-            <!-- [신규 클래스 정보 텍스트 UI 컨테이너] -->
             <div id="classInfoContainer" class="class-info-container">
                 <div id="classInfoName" class="class-info-name"></div>
                 <div id="classInfoDesc" class="class-info-desc"></div>
@@ -715,7 +716,6 @@
         let currentActiveClone = null;
         let visitedClasses = JSON.parse(sessionStorage.getItem('fate_visited_classes') || '[]');
 
-        // [방사형 매트릭스 좌표 맵핑]
         const CONCEPT_REGISTRY = {
             'sung': { name: '성배', parent: null, x: 50, y: 15 },
             'sungbwar': { name: '성배전쟁', parent: 'sung', x: 50, y: 45 },
@@ -743,7 +743,6 @@
             'classes/class-berserker.png'
         ];
 
-        /* [어새신 텍스트 줄바꿈 최적화 및 어록 형식 교정 완료] */
         const CLASS_INFO_DATA = [
             { 
                 name: '세이버', shadow: '0 0 15px #90ee90, 0 0 30px #32cd32', extraSize: '',
@@ -775,7 +774,6 @@
             }  
         ];
 
-        // 캐시 데이터 소멸자
         (function checkReloadAndReset() {
             const navEntries = performance.getEntriesByType('navigation');
             const isReload = (navEntries.length > 0 && navEntries[0].type === 'reload') || 
@@ -1887,9 +1885,9 @@
                 card.addEventListener('click', function(e) {
                     if (isTransitioning || classTabPhase > 0) return;
                     isTransitioning = true;
-                    playSfx(cardGetSfx, 1.0);
+                    playSfx(cardGetSfx, 4.0); // 볼륨 펌핑 패치 완료
                     
-                    this.classList.add('falling'); // 하강 모션 0.95초 (0.3초 가속 적용 완료)
+                    this.classList.add('falling'); // 하강 모션 0.95초
 
                     const idx = parseInt(this.getAttribute('data-idx'));
                     
@@ -1915,7 +1913,7 @@
                         illustTarget.style.transition = 'top 0.7s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.7s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                         illustTarget.style.opacity = '';
                         illustTarget.classList.add('rise'); // 0.7초 상승
-                        playSfx(cardOpenSfx, 1.0);
+                        playSfx(cardOpenSfx, 4.0); // 볼륨 펌핑 패치 완료
                         
                         setTimeout(() => {
                             illustTarget.classList.add('move-left'); // 1.0초 좌측 이동
@@ -1990,7 +1988,7 @@
                         illustTarget.classList.remove('move-left');
                         
                         setTimeout(() => {
-                            playSfx(cardRemoveSfx, 1.0);
+                            playSfx(cardRemoveSfx, 4.0); // 볼륨 펌핑 패치 완료
                             // 3단계: 일러스트 0.84초 하강 및 카드 1.5초 상승 (약 1.2배 감속 동기화)
                             illustTarget.style.transition = 'top 0.84s cubic-bezier(0.25, 1, 0.5, 1), left 1.0s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.84s ease, transform 1.0s cubic-bezier(0.25, 1, 0.5, 1)';
                             illustTarget.classList.remove('rise'); 
@@ -2152,7 +2150,8 @@
                 }
 
                 const baseVoiceVol = Math.min(1.0, parseFloat(voiceSlider.value) * 1.2 * getMasterVol());
-                if (fateVoice) fateVoice.volume = baseVoiceVol * 0.45;
+                // [1. 페이트 보이스 200퍼센트 증폭 패치 적용]
+                if (fateVoice) fateVoice.volume = Math.min(1.0, baseVoiceVol * 0.9);
 
                 setTimeout(() => document.getElementById('bgLayer').classList.add('active'), 300);
                 setTimeout(() => document.getElementById('dustEffect').classList.add('active'), 500);
